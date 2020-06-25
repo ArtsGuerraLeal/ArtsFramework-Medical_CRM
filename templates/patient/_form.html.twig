@@ -1,0 +1,94 @@
+{{ form_start(form) }}
+
+<div class="app-page-title">
+<div class="page-title-wrapper">
+    <div class="page-title-heading">
+        <div class="page-title-icon">
+            <i class="pe-7s-graph text-success">
+            </i>
+        </div>
+        <div>Crear Paciente
+            <div class="page-title-subheading">Agrega un nuevo paciente
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+    <li class="nav-item">
+        <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+            <span>Informacion de Paciente</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">
+            <span>Dirrecion</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-2">
+            <span>Foto</span>
+        </a>
+    </li>
+
+    <!--
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-3">
+            <span>Finish</span>
+        </a>
+    </li>
+    -->
+</ul>
+<div class="tab-content">
+    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+                <h5 class="card-title">Paciente</h5>
+                {{ form_row(form.firstName, {'attr':{'pattern': '[a-zA-Z ]*'} })  }}
+                {{ form_row(form.lastName, {'attr':{'pattern': '[a-zA-Z ]*'} })  }}
+                {{ form_row(form.gender) }}
+                {{ form_row(form.birthdate) }}
+                {{ form_row(form.email) }}
+                {{ form_row(form.phone, {'value':'+52' }) }}
+                {{ form_row(form.religion, {'attr':{'pattern': '[a-zA-Z ]*'} })  }}
+                {{ form_row(form.maritalStatus, {'label':'Estado Civil'} )  }}
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body"><h5 class="card-title">Address</h5>
+                {% for row in form.address %}
+                                {{ form_row(row.line1, {'attr':{'pattern': '[a-zA-Z0-9 ]+'} })  }}
+                                {{ form_row(row.line2, {'attr':{'pattern': '[a-zA-Z0-9 ]+'} })  }}
+                                {{ form_row(row.postalCode, {'attr':{'pattern': '[0-9]*'} })  }}
+                                {{ form_row(row.city, {'attr':{'pattern': '[a-zA-Z ]*'} })  }}
+                                {{ form_row(row.state, {'label':'Estado', 'attr':{'pattern': '[a-zA-Z ]*'} })  }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane tabs-animation fade" id="tab-content-2" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body"><h5 class="card-title">Picture</h5>
+                {{ form_row(form.attachment) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane tabs-animation fade" id="tab-content-3" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body"><h5 class="card-title">Finish</h5>
+
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_row(form.save) }}
+{{ form_end(form) }}
+
+
+

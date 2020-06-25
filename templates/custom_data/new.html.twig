@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New CustomData{% endblock %}
+
+{% block body %}
+    <h1>Create new CustomData</h1>
+
+    {{ include('custom_data/_form.html.twig') }}
+
+    <a href="{{ path('custom_data_index') }}">back to list</a>
+{% endblock %}

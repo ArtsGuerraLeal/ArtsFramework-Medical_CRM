@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patient{% endblock %}
+
+{% block body %}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Patient
+                    <div class="page-title-subheading">Patient Info Screen
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+    <div class="card-header">
+        Patient</div>
+    <div class="card-body">
+        <div class="row mr-n4">
+            <div class="col-lg-4 pb-5">
+
+                <div class="author-card pb-3">
+                    <div class="author-card-cover" style="background-image: url(https://demo.createx.studio/createx-html/img/widgets/author/cover.jpg);"></div>
+                    <div class="author-card-profile">
+                        <div class="author-card-avatar">
+
+                            {% if  patient.image  == NULL or ""%}
+                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+
+                            {% else %}
+                                <img style="max-width: 100%; height: auto;" src="{{ '/uploads/' ~ patient.image }}" alt="">
+                            {% endif %}
+
+                        </div>
+                        <div class="author-card-details">
+                            <h5 class="author-card-name text-lg">{{patient.firstname}} {{patient.lastname}}</h5><span class="author-card-position">Birthday: {{ patient.birthdate|date("d-m-Y")}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard">
+                    <nav class="list-group list-group-flush">
+                        <a class="list-group-item" href="#">
+                        </a>
+                        <a class="list-group-item active" href="#">
+                            <i class="fe-icon-user text-muted">
+
+                            </i>Profile</a>
+                        <a class="list-group-item" href="{{ path('patient_edit', {'id': patient.id}) }}">
+                            <i class="fe-icon-map-pin text-muted">
+                            </i>Edit</a>
+                        <a class="list-group-item " href="{{ path('patient_pdf', {'id': patient.id}) }}">
+                            <i class="fe-icon-user text-muted">
+                            </i>Print</a>
+
+
+                        {% for customForm in customForms %}
+
+                        {% endfor %}
+
+                        <label class="list-group-item" for="customForms">Choose a form:</label>
+
+
+                            {% for customForm in customForms %}
+
+                                <a class="list-group-item " href="{{ path('patient_data_new', {'id': patient.id,'formId': customForm.id }) }}">
+                                    <i class="fe-icon-user text-muted">
+                                    </i>New Form: {{ customForm.name }}</a>
+
+                            {% endfor %}
+
+                        {% for customForm in customForms %}
+
+                            <a class="list-group-item " href="{{ path('patient_data_edit', {'id': patient.id,'formId': customForm.id }) }}">
+                                <i class="fe-icon-user text-muted">
+                                </i>Edit Form: {{ customForm.name }}</a>
+
+                        {% endfor %}
+
+
+                        <a class="list-group-item text-danger" href="    ">
+
+                            {{ include('patient/_delete_form.html.twig') }}
+
+                            </i></a>
+
+
+
+                    </nav>
+                </div>
+            </div>
+            <!-- Profile Settings-->
+            <div class="col-lg-8 pb-5">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Patient ID</th>
+                        <td>{{ patient.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>
+                            {% if  patient.gender  == "M"%}
+                                Male
+                            {% elseif patient.gender == "F" %}
+                               Female
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ patient.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone</th>
+                        <td>{{ patient.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th>Religion</th>
+                        <td>{{ patient.religion }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+
+                <tr>
+                    <th>Nombre</th>
+                    <th>Hora</th>
+                    <th>Terminacion</th>
+                    <th>Acciónes</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for appointment in appointments %}
+
+                        <tr>
+                            <td>{{ appointment.title }}</td>
+                            <td>{{ appointment.beginAt ? appointment.beginAt|date('Y-m-d H:i:s') : '' }}</td>
+                            <td>{{ appointment.endAt ? appointment.endAt|date('Y-m-d H:i:s') : '' }}</td>
+                            <td>
+                                <div class="btn btn-primary btn-sm">
+                                    <a class="text-white" href="{{ path('appointment_show', {'id': appointment.id}) }}">Show</a>
+
+                                </div>
+                                <div class="btn btn-primary btn-sm">
+                                    <a class="text-white" href="{{ path('appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                                </div>
+
+                                <div class="btn btn-primary btn-sm">
+                                    <a class="text-white" href="{{ path('appointment_followup', {'id': appointment.id}) }}">Seguimiento</a>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    </div>
+
+{% endblock %}

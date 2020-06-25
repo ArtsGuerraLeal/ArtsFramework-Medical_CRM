@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patient index{% endblock %}
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block body %}
+    <!-- in the <head> section -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+
+    <!-- before the closing <body> tag -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+
+    <div id="presidents">Loading...</div>
+
+    <!-- Insert this at the end of your body element, but before the closing tag -->
+    <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+    <script>
+        $(function() {
+            $('#presidents').initDataTables({{ datatable_settings(datatable) }})
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    {% block stylesheets %}
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{{ path('home.index') }}">Clinimed</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+
+            {% if is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_granted('IS_AUTHENTICATED_FULLY') == false %}
+                <li class="nav-item float-right">
+                    <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                </li>
+                <li class="nav-item float-right">
+                    <a class="nav-link" href="{{ path('register') }}">Register</a>
+                </li>
+            {% endif %}
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('patient_index') }}">Patients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('address_index') }}">Address</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('state_index') }}">State</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('marital_status_index') }}">Marital Status</a>
+                </li>
+                <li class="nav-item float-right">
+                    <a class="nav-link" href="{{ path('equipment_index') }}">Equipment</a>
+                </li>
+                <li class="nav-item float-right">
+                    <a class="nav-link" href="{{ path('treatment_index') }}">Treatment</a>
+                </li>
+                <li class="nav-item float-right">
+                    <a class="nav-link" href="{{ path('appointment_calendar') }}">Calendar</a>
+                </li>
+                <li class="nav-item float-right">
+                    <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+                </li>
+
+
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    {% block body %}{% endblock %}
+</div>
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-2.1.3.js"></script>
+    <script src="{{ asset('Assets/bootstrap.js') }}"></script>
+
+{% endblock %}
+
+
+</body>
+
+</html>

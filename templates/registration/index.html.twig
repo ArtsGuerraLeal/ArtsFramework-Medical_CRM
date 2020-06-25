@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <!-- Custom fonts for this template-->
+    <link href="{{ asset('fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template-->
+    <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/login.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+
+    {% block stylesheets %}
+    {% endblock %}
+</head>
+
+
+<body>
+
+{{ form_start(form) }}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 col-xl-9 mx-auto">
+            <div class="card card-signin flex-row my-5">
+                <div class="card-img-left d-none d-md-flex"></div>
+                <div class="card-body">
+                    <h5 class="card-title text-center">Register</h5>
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    {{form_widget(form.firstname, {'attr': {'class': 'form-control', 'id':'inputFirstName'}}) }}
+                                    <label for="inputFirstName">First Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                        {{form_widget(form.lastname, {'attr': {'class': 'form-control', 'id':'inputLastName'}}) }}
+                                        <label for="inputLastName">Last Name</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-label-group">
+                            {{form_widget(form.email, {'attr': {'class': 'form-control', 'id':'inputEmail'}}) }}
+                            <label for="inputEmail">Email</label>
+                        </div>
+
+                        <div class="form-label-group">
+                            {{form_widget(form.username, {'attr': {'class': 'form-control', 'id':'inputUsername'}}) }}
+                            <label for="inputUsername">Username</label>
+                        </div>
+                        <div class="form-label-group">
+                            <div class="form-label-group">
+                                {{form_widget(form.password.first, {'attr': {'class': 'form-control', 'id':'inputPassword'}}) }}
+                                <label for="inputPassword">Password</label>
+                            </div>
+                        </div>
+
+                        <div class="form-label-group">
+                            <div class="form-label-group">
+                                {{form_widget(form.password.second, {'attr': {'class': 'form-control', 'id':'inputPasswordConfirm'}}) }}
+                                <label for="inputPasswordConfirm">Confirm Password</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h5 class="card-title text-center">Create or join a company</h5>
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        {{form_row(form.create)}}
+                                        <div id="Tab1" class="tabcontent">
+                                            <div class="form-label-group">
+
+                                                {{form_widget(form.companyname, {'attr': {'class': 'form-control', 'id':'inputcompanyname'}}) }}
+                                                <label for="inputcompanyname">Company Name</label>
+                                            </div>
+                                            {{form_row(form.companyname)}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        {{form_row(form.join)}}
+                                        <div id="Tab2"class="tabcontent">
+                                            <div class="form-label-group">
+                                                {{form_widget(form.companyid, {'attr': {'class': 'form-control', 'id':'inputcompanyId'}}) }}
+                                                <label for="inputcompanyId">Company ID</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{form_row(form.register)}}
+                        <a class="d-block text-center mt-2 small" href="/login">Sign In</a>
+                        <hr class="my-4">
+                        <a class="d-block text-center mt-2 small" href="/">Home</a>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+
+
+        <!-- /.container-fluid -->
+        {{ form_end(form) }}
+
+        <!-- Sticky Footer -->
+
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button-->
+
+
+<!-- Logout Modal-->
+
+{% block javascripts %}
+    <!-- Bootstrap core JavaScript-->
+    <script src="{{ asset('jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="{{ asset('jquery-easing/jquery.easing.min.js') }}"></script>
+    <!-- Page level plugin JavaScript-->
+
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ asset('js/sb-admin.min.js') }}"></script>
+    <script src="{{ asset('js/collection.js') }}"></script>
+
+
+    <!-- Page level plugin JavaScript-->
+    <script src="{{ asset('chart.js/Chart.min.js') }}"></script>
+    <script src="{{ asset('datatables/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('datatables/dataTables.bootstrap4.js') }}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ asset('js/sb-admin.min.js') }}"></script>
+
+    <!-- Demo scripts for this page-->
+    <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+    <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('js/openTab.js') }}"></script>
+{% endblock %}
+
+</body>
+
+</html>

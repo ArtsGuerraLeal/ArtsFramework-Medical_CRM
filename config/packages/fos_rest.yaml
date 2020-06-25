@@ -1,0 +1,37 @@
+# Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
+fos_rest:
+    param_fetcher_listener: true
+    body_listener:
+      enabled: true
+      decoders:
+        json: fos_rest.decoder.json
+    routing_loader:
+      default_format: json
+      include_format: false
+    format_listener:
+        rules:
+            - { path: ^/, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
+    exception:
+        enabled: true
+    view:
+       view_response_listener:  'force'
+       formats:
+            json: true
+    service:
+      templating: twig
+
+#    param_fetcher_listener:  true
+#    allowed_methods_listener:  true
+#    routing_loader: true
+#    view:
+#        view_response_listener:  true
+#    exception:
+#        codes:
+#            App\Exception\MyException: 403
+#        messages:
+#            App\Exception\MyException: Forbidden area.
+#    format_listener:
+#        rules:
+#            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
+#curl -H "Content-Type: application/json" -X POST http://localhost/api/states -d "{\"name\":\"Test Value\"}"
+

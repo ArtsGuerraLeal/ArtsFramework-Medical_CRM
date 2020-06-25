@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-car icon-gradient bg-mean-fruit">
+                    </i>
+                </div>
+                <div>Dashboard
+                    <div class="page-title-subheading">Mi Dashboard
+                    </div>
+                </div>
+            </div>
+
+            <!--
+            <div class="page-title-actions">
+                <button type="button" data-toggle="tooltip" title="Example Tooltip" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
+                    <i class="fa fa-star"></i>
+                </button>
+                <div class="d-inline-block dropdown">
+                    <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+                                            <span class="btn-icon-wrapper pr-2 opacity-7">
+                                                <i class="fa fa-business-time fa-w-20"></i>
+                                            </span>
+                        Buttons
+                    </button>
+                    <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link">
+                                    <i class="nav-link-icon lnr-inbox"></i>
+                                    <span>
+                                                            Inbox
+                                                        </span>
+                                    <div class="ml-auto badge badge-pill badge-secondary">86</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link">
+                                    <i class="nav-link-icon lnr-book"></i>
+                                    <span>
+                                                            Book
+                                                        </span>
+                                    <div class="ml-auto badge badge-pill badge-danger">5</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link">
+                                    <i class="nav-link-icon lnr-picture"></i>
+                                    <span>
+                                                            Picture
+                                                        </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a disabled href="javascript:void(0);" class="nav-link disabled">
+                                    <i class="nav-link-icon lnr-file-empty"></i>
+                                    <span>
+                                                            File Disabled
+                                                        </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            -->
+
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6 col-xl-4">
+        <div class="card mb-3 widget-content bg-midnight-bloom">
+            <div class="widget-content-wrapper text-white">
+                <div class="widget-content-left">
+                    <div class="widget-heading">Citas Totales</div>
+                    <div class="widget-subheading"></div>
+                </div>
+                <div class="widget-content-right">
+                    <div class="widget-numbers text-white"><span>0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card mb-3 widget-content bg-arielle-smile">
+            <div class="widget-content-wrapper text-white">
+                <div class="widget-content-left">
+                    <div class="widget-heading">Numero de Visitas</div>
+                    <div class="widget-subheading"></div>
+                </div>
+                <div class="widget-content-right">
+                    <div class="widget-numbers text-white"><span>0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card mb-3 widget-content bg-grow-early">
+            <div class="widget-content-wrapper text-white">
+                <div class="widget-content-left">
+                    <div class="widget-heading">Campo</div>
+                    <div class="widget-subheading">Campo</div>
+                </div>
+                <div class="widget-content-right">
+                    <div class="widget-numbers text-white"><span>0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-xl-none d-lg-block col-md-6 col-xl-4">
+        <div class="card mb-3 widget-content bg-premium-dark">
+            <div class="widget-content-wrapper text-white">
+                <div class="widget-content-left">
+                    <div class="widget-heading">Products Sold</div>
+                    <div class="widget-subheading">Revenue streams</div>
+                </div>
+                <div class="widget-content-right">
+                    <div class="widget-numbers text-warning"><span>$14M</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container-fluid">
+
+        <!-- Breadcrumbs-->
+
+        <!-- Icon Cards-->
+
+
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt"></i>
+                Calendar</div>
+            <div class="card-body">
+            <div id="calendar-holder"></div>
+            </div>
+            <div class="card-footer small text-muted">Updated at {{ "now"|date("d-m-Y")}}</div>
+        </div>
+        <!-- Area Chart Example
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-chart-area"></i>
+                Area Chart Example</div>
+            <div class="card-body">
+                <canvas id="myAreaChart" width="100%" height="30"></canvas>
+            </div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        </div>
+-->
+        <!-- DataTables Example -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-table"></i>Citas de Hoy</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Hora</th>
+                            <th>Terminacion</th>
+                            <th>Acciónes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for appointment in appointments %}
+                            {% if appointment.beginAt|date('Y-m-d')  == "now"|date("Y-m-d") %}
+                                <tr>
+                                    <td>{{ appointment.title }}</td>
+                                    <td>{{ appointment.beginAt ? appointment.beginAt|date('Y-m-d H:i:s') : '' }}</td>
+                                    <td>{{ appointment.endAt ? appointment.endAt|date('Y-m-d H:i:s') : '' }}</td>
+                                    <td>
+                                        <div class="btn btn-primary btn-sm">
+                                            <a class="text-white" href="{{ path('appointment_show', {'id': appointment.id}) }}">Show</a>
+
+                                        </div>
+                                        <div class="btn btn-primary btn-sm">
+                                            <a class="text-white" href="{{ path('appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer small text-muted">Updated at {{ "now"|date("d-m-Y")}}</div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+    <!-- Sticky Footer -->
+
+
+
+
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patient index{% endblock %}
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet href="{{ asset('js/jquery.dataTables.min.css') }}">
+
+    <div class="app-page-title mb-1">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Lista de Pacientes
+                    <div class="page-title-subheading">Base de datos de Pacientes
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Patients</div>
+        <div class="card-body">
+            <div class="table-responsive">
+
+                <table id="example" class="table table-bordered" style="width:100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Genero</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Correo</th>
+                        <th>Telefono</th>
+                        <th>Accion</th>
+
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Genero</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Correo</th>
+                        <th>Telefono</th>
+                        <th>Accion</th>
+
+
+                    </tfoot>
+                </table>
+
+
+            </div>
+        </div>
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+    </div>
+
+    <a href="{{ path('patient_new') }}">Create new</a>
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function() {
+            $('#example').DataTable( {
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url":"{{ path('fetch_patients')}}",
+                    "type": "POST"
+                },
+                "columns":[
+                    {"data":"id","name":"id"},
+                    {"data":"firstName","name":"firstName"},
+                    {"data":"lastName","name":"lastName"},
+                    {"data":"gender","name":"gender"},
+                    {"data": "birthdate.date","name":"birthdate",
+                        render: function ( data, type, row ) {
+
+                            if(data != null){
+                                data = data.split(" ");
+                                return data[0];
+
+                            }else {
+                                return "";
+                            }
+                        }
+                    },
+                    { "data": "email" },
+                    { "data": "phone" },
+                    {
+                        "class":          "ac",
+                        "orderable":      false,
+                        "data":           "id",
+                        render: function ( data, type, row ) {
+                            ID = data;
+                            return '<div class="btn btn-primary btn-sm"><a class="text-white" href="'+ID+'">Detalles</a></div> <div class="btn btn-primary btn-sm"> <a class="text-white" href="'+ID+'/edit">Editar</a> </div> <div class="btn btn-primary btn-sm"> <a class="text-white" href="'+ID+'/appointment">Crear Cita</a> </div>';
+                        }
+                    }
+
+
+                ]
+
+            } );
+        } );
+
+/*
+        $(document).ready(function() {
+
+            $('#dataTable').DataTable( {
+                processing: true,
+                serverSide:true,
+                deferLoading: 100,
+                paging:true,
+
+                "ajax": {
+                    "url": "",
+                    "dataSrc": "",
+
+
+                },
+                "columns": [
+                    { "data": "id"},
+                    { "data": "firstName" },
+                    { "data": "lastName" },
+                    { "data": "gender"},
+                    { "data": "birthdate",
+                        render: function ( data, type, row ) {
+
+                            if(data != null){
+                                data = data.split("T");
+                                return data[0];
+
+                            }else {
+                                return data;
+                            }
+                        }
+                    },
+                    { "data": "email" },
+                    { "data": "phone" },
+                    {
+                        "class":          "ac",
+                        "orderable":      false,
+                        "data":           "id",
+                        render: function ( data, type, row ) {
+                            ID = data;
+                            return '<div class="btn btn-primary btn-sm"><a class="text-white" href="'+ID+'">Detalles</a></div> <div class="btn btn-primary btn-sm"> <a class="text-white" href="'+ID+'/edit">Editar</a> </div> <div class="btn btn-primary btn-sm"> <a class="text-white" href="'+ID+'/appointment">Crear Cita</a> </div>';
+                        }
+                    }
+                        ]
+            } );
+        } );
+        */
+    </script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Appointment{% endblock %}
+
+{% block body %}
+    <link href="{{ asset('css/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+
+
+
+    {{ include('patient/_appointment.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('appointment_index') }}">back to list</a>
+    <script src="{{ asset('jquery/jquery.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker1').datetimepicker()
+            $('#datetimepicker2').datetimepicker()
+        });
+    </script>
+
+    {{ include('appointment/_delete_form.html.twig') }}
+{% endblock %}

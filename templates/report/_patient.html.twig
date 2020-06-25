@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patient Report{% endblock %}
+
+{% block body %}
+    <div class="app-page-title mb-1">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Patient List
+                    <div class="page-title-subheading">Database of all the patients
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            Fields
+          </div>
+        <div class="card-body">
+{{ form_start(form) }}
+
+            {% for row in form %}
+
+                {{ form_row(row) }}
+
+            {% endfor %}
+
+{{ form_end(form) }}
+        </div>
+        <div class="card-footer small text-muted"></div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Patients</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Field 1</th>
+                        <th>Field 2</th>
+                        <th>Field 3</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Field 1</th>
+                        <th>Field 2</th>
+                        <th>Field 3</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for report in reports %}
+                        <tr>
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.firstName }}</td>
+                            <td>{{ report.lastName }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+    </div>
+
+
+{% endblock %}

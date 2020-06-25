@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Equipment{% endblock %}
+
+{% block body %}
+    <h1>Equipment</h1>
+
+    <table class="table">
+        <tbody>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <td>{{ equipment.id }}</td>
+            </tr>
+        </thead>
+            <tr>
+                <th>Name</th>
+                <td>{{ equipment.name }}</td>
+            </tr>
+            <tr>
+                <th>Cost</th>
+                <td>{{ equipment.cost }}</td>
+            </tr>
+            <tr>
+                <th>PurchasedOn</th>
+                <td>{{ equipment.purchasedOn ? equipment.purchasedOn|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>LastUsedOn</th>
+                <td>{{ equipment.lastUsedOn ? equipment.lastUsedOn|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('equipment_index') }}">back to list</a>
+
+    <a href="{{ path('equipment_edit', {'id': equipment.id}) }}">edit</a>
+
+    {{ include('equipment/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}StaffPositions{% endblock %}
+
+{% block body %}
+    <h1>StaffPositions</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ staff_position.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ staff_position.name }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('staff_positions_index') }}">back to list</a>
+
+    <a href="{{ path('staff_positions_edit', {'id': staff_position.id}) }}">edit</a>
+
+    {{ include('staff_positions/_delete_form.html.twig') }}
+{% endblock %}

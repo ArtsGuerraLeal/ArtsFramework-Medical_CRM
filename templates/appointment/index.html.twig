@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appointment index{% endblock %}
+
+{% block body %}
+    <div class="app-page-title mb-1">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Appointment List
+                    <div class="page-title-subheading">Database of all the appointments
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Patients</div>
+        <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Begin At</th>
+                    <th>End At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        <tbody>
+        {% for appointment in appointments%}
+            <tr>
+                <td>{{ appointment.id }}</td>
+                <td>{{ appointment.title }}</td>
+                <td>{{ appointment.beginAt ? appointment.beginAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ appointment.endAt ? appointment.endAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('appointment_show', {'id': appointment.id}) }}">View</a>
+                    </div>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                    </div>
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+
+
+{% endblock %}

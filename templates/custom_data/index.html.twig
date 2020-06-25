@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CustomData index{% endblock %}
+
+{% block body %}
+<h1>Custom Data List</h1>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        Custom Data</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for custom_datum in custom_datas %}
+            <tr>
+                <td>{{ custom_datum.id }}</td>
+                <td>{{ custom_datum.name }}</td>
+                <td>String</td>
+
+                <td>
+                    <a href="{{ path('custom_data_show', {'id': custom_datum.id}) }}">show</a>
+                    <a href="{{ path('custom_data_edit', {'id': custom_datum.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+
+    <a href="{{ path('custom_data_new') }}">Create new</a>
+{% endblock %}

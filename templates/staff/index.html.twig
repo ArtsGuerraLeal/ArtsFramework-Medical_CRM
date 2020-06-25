@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Staff index{% endblock %}
+
+{% block body %}
+<div class="app-page-title mb-1">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Staff List
+                <div class="page-title-subheading">Database of all the Staff
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        Staff</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+            <tr>
+
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Position</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for staff in staff %}
+            <tr>
+
+                <td>{{ staff.firstname }}</td>
+                <td>{{ staff.lastname }}</td>
+                <td>{{ staff.position }}</td>
+                <td>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('staff_show', {'id': staff.id}) }}">View</a>
+                    </div>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('staff_edit', {'id': staff.id}) }}">Edit</a>
+                    </div>
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated at {{ "now"|date("d-m-Y")}}</div>
+</div>
+
+    <a href="{{ path('staff_new') }}">Create new</a>
+{% endblock %}

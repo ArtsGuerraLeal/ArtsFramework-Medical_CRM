@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CompanyUsers index{% endblock %}
+
+{% block body %}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Company Users
+                    <div class="page-title-subheading">List of Users in the Company, authorized or unauthorized
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        Company Users</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Role</th>
+                <th>Register Date</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+
+                <td>{{ user.firstname }} {{  user.lastname }}</td>
+                <td>
+                    {% if user.roles[0] == 'ROLE_UNAUTHORIZED_USER'%}
+                        Unauthorized
+                    {% elseif user.roles[0] == 'ROLE_COMPANY_USER' or  user.roles[0] == 'ROLE_COMPANY_ADMIN'%}
+                        Authorized
+                    {% else %}
+                        Pending
+                    {% endif %}
+                </td>
+                <td>{% if user.roles[0] == 'ROLE_UNAUTHORIZED_USER'%}
+                        Pending
+                    {% elseif user.roles[0] == 'ROLE_COMPANY_USER'%}
+                        User
+                    {% elseif user.roles[0] == 'ROLE_COMPANY_ADMIN'%}
+                        Admin
+                    {% else %}
+                        Pending
+                    {% endif %}</td>
+
+                <td>{{ user.registerdate|date("m/d/Y") }}</td>
+
+                <td>
+                    <a href="{{ path('company_users_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('company_users_edit', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+
+{% endblock %}

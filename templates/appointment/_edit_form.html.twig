@@ -1,0 +1,36 @@
+{{ form_start(form) }}
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Edit Appointment
+                <div class="page-title-subheading">Edit an appointment for a patient
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-card mb-3 card">
+    <div class="card-body">
+        <h5 class="card-title">Patient</h5>
+        {{ form_row(form.title) }}
+        <label>Begin at</label>
+        <div id="picker">{{  form_row(form.beginAt) }} </div>
+        <label>End at</label>
+        <div id="picker2">{{ form_row(form.endAt) }}</div>
+        {{ form_row(form.treatment) }}
+        {{ form_row(form.color) }}
+        <button class="btn btn-primary float-left">{{ button_label|default('Save') }}</button>
+    </div>
+</div>
+</div>
+
+
+{{ form_end(form) }}
+
+

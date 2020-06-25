@@ -1,0 +1,37 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+api_login_check:
+  path: /api/login_check
+state:
+  type: rest
+  resource: App\Controller\StateController
+  prefix: api
+address:
+  type: rest
+  resource: App\Controller\AddressController
+  prefix: api
+equipment:
+  type: rest
+  resource: App\Controller\EquipmentController
+  prefix: api
+treatment:
+  type: rest
+  resource: App\Controller\TreatmentController
+  prefix: api
+appointment:
+  type: rest
+  resource: App\Controller\AppointmentController
+  prefix: api
+patient:
+  type: rest
+  resource: App\Controller\PatientController
+  prefix: api
+2fa_login:
+  path: /2fa
+  controller: App\Controller\SecurityController::check2fa
+2fa_login_check:
+  path: /2fa_check
+
+
+

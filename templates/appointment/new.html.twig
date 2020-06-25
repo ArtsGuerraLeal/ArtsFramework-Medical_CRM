@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Appointment{% endblock %}
+
+{% block body %}
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment-with-locales.min.js"></script>
+
+    {{ include('appointment/_form.html.twig') }}
+    <a href="{{ path('appointment_index') }}">back to list</a>
+
+    <script type="text/javascript">
+        $(document).ready( function () {
+            $('#picker').dateTimePicker();
+
+            $('#picker2').dateTimePicker();
+        })
+    </script>
+
+{% endblock %}

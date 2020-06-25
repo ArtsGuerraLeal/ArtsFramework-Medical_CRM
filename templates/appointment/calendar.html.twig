@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-calendar-alt"></i>
+            Calendar</div>
+        <div class="card-body">
+            <div id="calendar-holder"></div>
+        </div>
+        <div class="card-footer small text-muted">Updated at {{ "now"|date("d-m-Y")}}</div>
+    </div>
+{% endblock %}
+
+
+

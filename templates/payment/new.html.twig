@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payments{% endblock %}
+
+{% block body %}
+        <link rel="stylesheet" href="{{ asset('css/normalize.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/global.css') }}" />
+
+        {{ include('payment/_form.html.twig') }}
+
+        <script src="https://js.stripe.com/v3/"></script>
+
+
+        <script type="text/javascript">
+                var stripe = Stripe('pk_test_93HttH8banovfqTSiF8XG0I200BhANxI2C');
+                var elements = stripe.elements();
+
+
+                function stripePaymentMethodHandler(result, email) {
+                        if (result.error) {
+                                // Show error in payment form
+                        } else {
+                                document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', JSON.stringify(result));
+                                form.submit()
+                        }
+                }
+
+                var style = {
+                        base: {
+                                color: "#32325d",
+                                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                                fontSmoothing: "antialiased",
+                                fontSize: "16px",
+                                "::placeholder": {
+                                        color: "#aab7c4"
+                                }
+                        },
+                        invalid: {
+                                color: "#fa755a",
+                                iconColor: "#fa755a"
+                        }
+                };
+
+                var cardElement = elements.create("card", { style: style });
+                cardElement.mount("#card-element");
+
+                var form = document.getElementById('subscription-form');
+
+                form.addEventListener('submit', function(event) {
+                        // We don't want to let default form submission happen here,
+                        // which would refresh the page.
+                        event.preventDefault();
+
+                        stripe.createPaymentMethod({
+                                type: 'card',
+                                card: cardElement,
+                                billing_details: {
+                                        email: 'jenny.rosen@example.com',
+                                },
+                        }).then(stripePaymentMethodHandler);
+                });
+
+
+
+        </script>
+
+
+{% endblock %}
+
+
+
+

@@ -1,0 +1,38 @@
+
+{{ form_start(form) }}
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Fill Custom Form
+                <div class="page-title-subheading">Fill a custom form for a Patient
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-card mb-3 card">
+    <div class="card-body">
+
+        {% for row in form %}
+
+            {{ form_row(row) }}
+
+        {% endfor %}
+    </div>
+</div>
+
+
+
+{{ form_end(form) }}
+
+
+
+
+
+
+

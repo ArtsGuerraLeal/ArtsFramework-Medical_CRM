@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Equipment index{% endblock %}
+
+{% block body %}
+    <div class="app-page-title mb-1">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Equipment List
+                    <div class="page-title-subheading">Database of all the Equipment
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Patients</div>
+        <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+            <tr>
+                <th>Name</th>
+                <th>Cost</th>
+                <th>Purchased On</th>
+                <th>Last Used On</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for equipment in equipment %}
+            <tr>
+                <td>{{ equipment.name }}</td>
+                <td>${{ equipment.cost }}</td>
+                <td>{{ equipment.purchasedOn ? equipment.purchasedOn|date('Y-m-d') : '' }}</td>
+                <td>{{ equipment.lastUsedOn ? equipment.lastUsedOn|date('Y-m-d') : '' }}</td>
+                <td>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('equipment_show', {'id': equipment.id}) }}">Show</a>
+
+                    </div>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('equipment_edit', {'id': equipment.id}) }}">Edit</a>
+                    </div>
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+
+    <a href="{{ path('equipment_new')  }}">Create new</a>
+{% endblock %}

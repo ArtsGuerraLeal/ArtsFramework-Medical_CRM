@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% block stylesheets %}
+        <link href="./css/test.css" rel="stylesheet">
+        <link href="./css/sb-admin.css" rel="stylesheet">
+        <link href="./css/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    {% endblock %}
+</head>
+
+{% block body %}
+
+    <h1>{{ patient.firstName }} {{ patient.lastName }}</h1>
+    {% if patient.image != null %}
+    <img class="p-2" height="120px" width="120px"  src="{{ './uploads/' ~ patient.image }}" alt="">
+        {% else %}
+            <img class="p-2" height="120px" width="120px" src="./Assets/images/avatar1.png" alt="">
+
+    {% endif %}
+    <table class="table table-sm">
+        <tbody>
+        <tr>
+            <th>Patient Info</th>
+        </tr>
+        <tr>
+            <th>Id</th>
+            <td>{{ patient.id }}</td>
+
+            <th>Gender</th>
+            <td>{{ patient.gender }}</td>
+        </tr>
+
+        <tr>
+            <th>Birth Date</th>
+            <td>{{ patient.birthdate ? patient.birthdate|date('Y-m-d') : '' }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ patient.email }}</td>
+
+            <th>Phone</th>
+            <td>{{ patient.phone }}</td>
+
+            <th>Religion</th>
+            <td>{{ patient.religion}}</td>
+        </tr>
+
+        <tr>
+            <th>Address</th>
+        </tr>
+
+        {% for row in patient.address %}
+        <tr>
+            <th>Line 1</th>
+            <td>{{ row.line1 }}</td>
+            <th>Line 2</th>
+            <td class >{{ row.line2  }}</td>
+        </tr>
+        <tr>
+            <th>Postal Code</th>
+            <td> {{ row.postalCode }}</td>
+            <th>City</th>
+            <td>{{ row.city }}</td>
+            <th>State</th>
+            <td> {{ row.state  }}</td>
+        </tr>
+
+
+        {% endfor %}
+
+
+        <tr>
+            <th>Custom Data</th>
+        </tr>
+        {% for key, value in customdata %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+
+        {% endfor %}
+
+
+
+        </tbody>
+    </table>
+
+
+
+{% endblock %}

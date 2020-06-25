@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MaritalStatus index{% endblock %}
+
+{% block body %}
+    <h1>MaritalStatus index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for marital_status in marital_statuses %}
+            <tr>
+                <td>{{ marital_status.id }}</td>
+                <td>{{ marital_status.name }}</td>
+                <td>{{ marital_status.createdAt ? marital_status.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ marital_status.updatedAt ? marital_status.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('marital_status_show', {'id': marital_status.id}) }}">show</a>
+                    <a href="{{ path('marital_status_edit', {'id': marital_status.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('marital_status_new') }}">Create new</a>
+{% endblock %}

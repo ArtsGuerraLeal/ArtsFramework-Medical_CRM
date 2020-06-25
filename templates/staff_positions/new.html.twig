@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New StaffPositions{% endblock %}
+
+{% block body %}
+
+    {{ include('staff_positions/_form.html.twig') }}
+
+    <a href="{{ path('staff_positions_index') }}">back to list</a>
+{% endblock %}

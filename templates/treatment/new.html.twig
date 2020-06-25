@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Treatment{% endblock %}
+
+{% block body %}
+
+
+    {{ include('treatment/_form.html.twig') }}
+
+    <a href="{{ path('treatment_index') }}">back to list</a>
+{% endblock %}

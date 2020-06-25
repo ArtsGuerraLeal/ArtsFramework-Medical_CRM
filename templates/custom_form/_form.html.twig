@@ -1,0 +1,57 @@
+
+{{ form_start(form) }}
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Create Custom Form
+                <div class="page-title-subheading">Create custom fields
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main-card mb-3 card">
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2 my-2 text-muted">Name</h6>
+        {{ form_row(form.name) }}
+
+        <h6 class="card-subtitle mb-2 text-muted">Fields</h6>
+        <div class="col-sm-8 col-sm-offset-2" id="collection" data-prototype="{{ form_widget(form.customdata.vars.prototype)|e('html_attr') }}">
+            {% for row in form.customdata %}
+                <div class="card-warning">
+                    <div class="card-body">
+                        {{ form_row(row) }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {{ form_row(form.save) }}
+    </div>
+
+</div>
+
+{{ form_end(form) }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

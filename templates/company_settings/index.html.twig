@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Settings{% endblock %}
+
+{% block body %}
+
+
+    {{ form_start(form) }}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Company Settings
+                    <div class="page-title-subheading">Customize your companies options
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+
+            {% for row in form %}
+
+                {{ form_row(row) }}
+
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+    {{ form_end(form) }}
+
+
+
+
+
+
+
+
+
+{% endblock %}

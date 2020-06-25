@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Appointment{% endblock %}
+
+{% block body %}
+    <link href="{{ asset('css/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+
+    {{ include('patient/_appointment.html.twig') }}
+    <a href="{{ path('patient_index') }}">back to list</a>
+
+    <script src="{{ asset('jquery/jquery.min.js') }}"></script>
+
+
+    <script type="text/javascript">
+
+
+        $(function () {
+            $('#datetimepicker1').datetimepicker(
+                {
+                    startDate: '-1d',
+                    autoclose:true,
+                    todayHighlight: true,
+                    todayBtn: true,
+                    linkField: "datetimepicker2",
+                    linkFormat:"yyyy-mm-dd hh:ii"
+
+                });
+
+
+            $('#datetimepicker2').datetimepicker({
+                startDate: '-1d',
+                autoclose:true,
+                todayBtn: true,
+                todayHighlight: true
+            });
+        });
+
+
+
+    </script>
+
+{% endblock %}
+

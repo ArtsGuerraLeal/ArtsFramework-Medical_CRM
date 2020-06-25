@@ -1,0 +1,57 @@
+
+{{ form_start(form) }}
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Create a Followup Appointment
+                <div class="page-title-subheading">Add a new followup appointment
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-card mb-3 card">
+    <div class="card-body">
+
+
+        <label>Hora de Entrada</label>
+        <div class="input-group"><div class="input-group-prepend">
+                <span class="input-group-text">📅</span>
+            </div>
+            {{  form_widget(form.beginAt,{'type':'text','id':'datetimepicker1','class':'form-control'}) }}
+        </div>
+
+        <label>Hora de Salida</label>
+        <div class="input-group"><div class="input-group-prepend">
+                <span class="input-group-text">📅</span>
+            </div>
+            {{  form_widget(form.endAt,{'type':'text','id':'datetimepicker2','class':'form-control'}) }}
+        </div>
+
+
+        {{ form_row(form.color) }}
+
+        {% if app.user.company.googleJson != null %}
+            {{ form_row(form.calendar) }}
+
+        {% endif %}
+        {{ form_row(form.notes) }}
+        {{ form_row(form.staff) }}
+
+
+        {{ form_row(form.save) }}
+
+    </div>
+</div>
+
+{{ form_end(form) }}
+
+
+
+
+
