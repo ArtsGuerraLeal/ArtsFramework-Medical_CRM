@@ -32,7 +32,7 @@
 </head>
 
 <body>
-    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header closed-sidebar">
         <div class="app-header header-shadow bg-focus header-text-light">
             <div class="app-header__logo">
                 <div class="logo-src"></div>
@@ -460,6 +460,26 @@
                                         <i class="metismenu-icon pe-7s-rocket"></i>
                                         Dashboard
                                     </a>
+                                </li>
+
+                                <li>
+                                    <a href="">
+                                        <i class="metismenu-icon far fa-user"></i>
+                                        POS
+                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                    </a>
+                                    <ul>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ path('sale') }}">Hacer Venta</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="">Agregar Producto</a>
+                                        </li>
+                                        <div class="dropdown-divider"></div>
+                                        <li>
+                                            <a class="dropdown-item" href="">Test</a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                                 <li>

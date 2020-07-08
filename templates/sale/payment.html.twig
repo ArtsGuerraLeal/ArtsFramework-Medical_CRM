@@ -1,0 +1,252 @@
+{% extends 'base.html.twig' %}
+
+
+
+
+{% block title %}Hello SaleController!{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+    <div class ="row">
+        <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
+            <h1>Products</h1>
+            <div class ="row">
+                {% for payment in paymentMethods %}
+                    <div class="col-sm-3 my-1">
+                        <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
+                            <img  width="100%" height="100%" src="{{ asset('assets/images/avatar1.png') }}" data-id="{{ payment.id }}" data-name="{{ payment.name }}" class="img-responsive product_drag" />
+                            <h4 class="text-info">{{ payment.name }}</h4>
+                            <input id="amount" class="col-sm my-2" type="text">
+                            <div class="add-button">
+                                <button id="add_product" class="add_product btn btn-primary">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+
+                    <p>no records found</p>
+
+                {% endfor %}
+            </div>
+        </div>
+        <div style="width:30%;height:50%;border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding-left: 10px;" align="center">
+            <h1>Cart</h1>
+            <div align="center">
+                <div class="product_drag_area">Arrastra los productos aqui</div>
+            </div>
+            <div id="dragable_product_order">
+            </div>
+            <table id="cart" class="cart-table table table-bordered"  width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>Metodo de Pago</th>
+                    <th>Cantidad</th>
+
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td>Restante:</td>
+                    <td id="remaining">{{ sale.total }}</td>
+
+                </tr>
+                <tr>
+                    <td>Total:</td>
+                    <td id="total">{{ sale.total }}</td>
+
+                </tr>
+
+
+                </tbody>
+            </table>
+            <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(data){
+            $('.product_drag_area').on('dragover', function(){
+                $(this).addClass('product_drag_over');
+                return false;
+            });
+            $('.product_drag_area').on('dragleave', function(){
+                $(this).removeClass('product_drag_over');
+                return false;
+            });
+            $('.product_drag').on('dragstart', function(e){
+                e.originalEvent.dataTransfer.setData("id", $(this).data("id"));
+                e.originalEvent.dataTransfer.setData("name", $(this).data("name"));
+                e.originalEvent.dataTransfer.setData("price", $(this).data("price"));
+            });
+            $('.product_drag_area').on('drop', function(e){
+                e.preventDefault();
+                $(this).removeClass('product_drag_over');
+                var id = e.originalEvent.dataTransfer.getData('id');
+                var name = e.originalEvent.dataTransfer.getData('name');
+                var price = e.originalEvent.dataTransfer.getData('price');
+                var action = "add";
+                $.ajax({
+                    url:"action.php",
+                    method:"POST",
+                    data:{id:id, name:name, price:price, action:action},
+                    success:function(data){
+                        $('#dragable_product_order').html(data);
+                    }
+                })
+            });
+
+
+
+            $(document).on('click', '.remove_product', function(){
+                var quantity = $(this).parent().parent().children()[1].innerText;
+                var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+
+                console.log(prodPrice);
+
+                var total = document.querySelector('#total');
+                var subtotal = document.querySelector('#subtotal');
+                var tax = document.querySelector('#tax');
+
+                var i = $(this).parent().parent().index();
+                var table = $(this).parent().parent().parent();
+
+                if(quantity === "1"){
+                    $(this).parent().parent().remove();
+
+                }else{
+                    $(this).parent().parent().children()[1].innerText = quantity - 1;
+
+                    var price = parseFloat($(this).parent().parent().children()[2].innerText);
+                    $(this).parent().parent().children()[2].innerText = price - prodPrice;
+
+
+                }
+
+
+                total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
+                tax.innerText = ((parseFloat(tax.innerText) - (prodPrice *.16))).toFixed(2);
+                subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
+
+            });
+
+
+            $(document).on('click', '.add_product', function(){
+
+                var paymentName = $(this).parent().parent().children('img').attr('data-name');
+                var paymentID = $(this).parent().parent().children('img').attr('data-id');
+                var paymentAmount = $(this).parent().parent().children('input');
+
+                var remaining = document.querySelector('#remaining');
+
+                var cellVal = $(".cart-table tr td").filter(function() {
+                    return $(this).text() === paymentName;
+                });
+            if(parseFloat(remaining.innerText)>0 && paymentAmount.val() !== "") {
+                if (cellVal.text() === "") {
+                    if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
+                        $(".cart-table").prepend('<tr id="' + paymentID + '"><td>' + paymentName + '</td><td id="quantity">' + remaining.innerText + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    } else {
+
+                        $(".cart-table").prepend('<tr id="' + paymentID + '"><td>' + paymentName + '</td><td id="quantity">' + paymentAmount.val() + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    }
+                } else {
+                    var quantity = parseFloat(cellVal.parent().children()[1].innerText);
+                    if(parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)){
+                        cellVal.parent().children()[1].innerText = quantity + parseFloat(remaining.innerText);
+
+                    }else {
+                        cellVal.parent().children()[1].innerText = quantity + parseFloat(paymentAmount.val());
+                    }
+                }
+
+                if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
+                    remaining.innerText = (parseFloat(remaining.innerText) - parseFloat(remaining.innerText)).toFixed(2);
+                } else {
+                    remaining.innerText = (parseFloat(remaining.innerText) - parseFloat(paymentAmount.val())).toFixed(2);
+                }
+
+                }
+            });
+
+        });
+
+        function deleteRow(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById(".cart").deleteRow(i);
+        }
+
+        function payment() {
+            var row_count = $('#cart tr').length;
+            var remaining = document.querySelector('#remaining');
+
+            if(row_count > 3 && parseFloat(remaining.innerText)===0){
+
+                var payment_ids = [];
+                var amounts = [];
+                var saleID = {{ sale.id }};
+
+
+
+                $('#cart tr').each(function(index, tr) {
+
+                    if(index>0) {
+                        if(index < row_count-2) {
+                            var row = $(tr).closest('tr');
+                            var total = row.find('#quantity').text();
+
+
+                            // console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
+                            payment_ids.push(tr.id);
+                            amounts.push(total);
+
+
+
+                        }
+                    }
+
+                });
+
+
+
+                $.ajax({
+                    url:"{{ path('create_sale_payment') }}",
+                    type: "POST",
+                    data:{
+                        payments:payment_ids,
+                        amounts:amounts,
+                        saleID:{{ sale.id }}
+
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                    }
+
+                });
+
+                window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
+
+                window.location.replace("/sale");
+
+
+            }
+
+
+        }
+
+
+    </script>
+
+{% endblock %}

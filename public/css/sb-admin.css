@@ -10921,3 +10921,17 @@ body.sidebar-toggled footer.sticky-footer {
   width: 60px;
   height: 60px;
 }
+
+.product_drag_area{
+  width: 50%;
+  height:100% ;
+  border:2px dashed #ccc;
+  color:#ccc;
+  line-height:50px;
+  text-align:center;
+  font-size:24px;
+}
+.product_drag_over{
+  color:#000;
+  border-color:#000;
+}

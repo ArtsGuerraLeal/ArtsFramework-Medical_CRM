@@ -1,0 +1,261 @@
+{% extends 'base.html.twig' %}
+
+
+
+
+{% block title %}Hello SaleController!{% endblock %}
+
+{% block body %}
+
+
+    <div id="ParentContainer" class="container">
+        <div class ="row">
+            <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
+                <h1>Productos</h1>
+                <div class ="row">
+                {% for product in products %}
+                    <div class="col-sm-3 my-1">
+                        <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
+                            <img  width="100%" height="100%" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" class="img-responsive product_drag" />
+                            <h4 class="text-info">{{ product.name }}</h4>
+                            <h6 class="text-muted">Existencia: <p id="product-quantity">{{ product.quantity }}</p></h6>
+
+                            <h4 class="text-danger">${{ product.price }}</h4>
+
+                            <div class="add-button">
+                                <button id="add_product" class="add_product btn btn-primary">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+
+                    <p>no records found</p>
+
+                {% endfor %}
+                </div>
+            </div>
+            <div id="FixedDiv" class="sticky-top" style="width:30%;height:50%;border:1px solid #333;top:60px; background-color:#f1f1f1; border-radius:5px; padding-left: 10px;" align="center">
+                <h1>Carrito</h1>
+                <div align="center">
+                    <div class="product_drag_area">Arrastra los productos aqui</div>
+                </div>
+                <div id="dragable_product_order">
+                </div>
+                    <table id="cart" class="cart-table table table-bordered"  width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td id="subtotal">0</td>
+
+                            </tr>
+
+                            <tr>
+                                <td>IVA:</td>
+                                <td id="tax">0</td>
+
+                            </tr>
+                            <tr>
+                                <td>Total:</td>
+                                <td id="total">0</td>
+
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+                <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Pagar</button>
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+        <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(data){
+            $('.product_drag_area').on('dragover', function(){
+                $(this).addClass('product_drag_over');
+                return false;
+            });
+            $('.product_drag_area').on('dragleave', function(){
+                $(this).removeClass('product_drag_over');
+                return false;
+            });
+            $('.product_drag').on('dragstart', function(e){
+                e.originalEvent.dataTransfer.setData("id", $(this).data("id"));
+                e.originalEvent.dataTransfer.setData("name", $(this).data("name"));
+                e.originalEvent.dataTransfer.setData("price", $(this).data("price"));
+            });
+            $('.product_drag_area').on('drop', function(e){
+                e.preventDefault();
+                $(this).removeClass('product_drag_over');
+                var id = e.originalEvent.dataTransfer.getData('id');
+                var name = e.originalEvent.dataTransfer.getData('name');
+                var price = e.originalEvent.dataTransfer.getData('price');
+                var action = "add";
+                $.ajax({
+                    url:"action.php",
+                    method:"POST",
+                    data:{id:id, name:name, price:price, action:action},
+                    success:function(data){
+                        $('#dragable_product_order').html(data);
+                    }
+                })
+            });
+
+            $('#ParentContainer').scroll(function() {
+                $('#FixedDiv').css('top', $(this).scrollTop());
+            });
+
+            $(document).on('click', '.remove_product', function(){
+                var quantity = $(this).parent().parent().children()[1].innerText;
+                var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+
+                console.log(prodPrice);
+
+                var total = document.querySelector('#total');
+                var subtotal = document.querySelector('#subtotal');
+                var tax = document.querySelector('#tax');
+
+                var i = $(this).parent().parent().index();
+                var table = $(this).parent().parent().parent();
+
+                if(quantity === "1"){
+                    $(this).parent().parent().remove();
+
+                }else{
+                    $(this).parent().parent().children()[1].innerText = quantity - 1;
+
+                    var price = parseFloat($(this).parent().parent().children()[2].innerText);
+                    $(this).parent().parent().children()[2].innerText = price - prodPrice;
+
+
+                }
+
+
+                total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
+                tax.innerText = ((parseFloat(tax.innerText) - (prodPrice *.16))).toFixed(2);
+                subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
+
+            });
+
+
+            $(document).on('click', '.add_product', function(){
+                var prodName = $(this).parent().parent().children('img').attr('data-name');
+                var prodPrice = parseFloat($(this).parent().parent().children('img').attr('data-price'));
+                var prodID = $(this).parent().parent().children('img').attr('data-id');
+                var prod_quantity = $(this).parent().parent().find("#product-quantity");
+                console.log(prod_quantity[0].innerText);
+                prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText)-1;
+                var total = document.querySelector('#total');
+                var subtotal = document.querySelector('#subtotal');
+                var tax = document.querySelector('#tax');
+
+
+                var cellVal = $(".cart-table tr td").filter(function() {
+                    return $(this).text() === prodName;
+                });
+
+                if(cellVal.text() === ""){
+                    $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td>'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                }else{
+                    var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                    cellVal.parent().children()[1].innerText = quantity +1;
+
+                    var price = parseInt(cellVal.parent().children()[2].innerText);
+                    cellVal.parent().children()[2].innerText = price + prodPrice;
+                }
+
+
+                tax.innerText = ((parseFloat(total.innerText) + prodPrice)*.16).toFixed(2);
+                total.innerText = (parseFloat(total.innerText) + prodPrice).toFixed(2);
+
+                subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
+            });
+
+        });
+
+        function deleteRow(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById(".cart").deleteRow(i);
+        }
+
+        function payment() {
+            var row_count = $('#cart tr').length;;
+            if(row_count >4){
+
+                var product_ids = [];
+                var quantities = [];
+                var total,subtotal,tax;
+                var saleID = "1";
+
+                total = $('#cart tr').find('#total').text();
+                subtotal = $('#cart tr').find('#subtotal').text();
+                tax = $('#cart tr').find('#tax').text();
+
+                $('#cart tr').each(function(index, tr) {
+
+                    if(index>0) {
+                        if(index < row_count-3) {
+                            var row = $(tr).closest('tr');
+                            var quantity = row.find('#quantity').text();
+
+
+                            // console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
+                            product_ids.push(tr.id);
+                            quantities.push(quantity);
+
+
+
+                        }
+                    }
+
+                });
+
+                console.log(product_ids);
+                console.log(quantities);
+
+                $.ajax({
+                    url:"{{ path('create_sale') }}",
+                    type: "POST",
+                    data:{
+                        products:product_ids,
+                        quantity:quantities,
+                        total:total,
+                        subtotal:subtotal,
+                        tax:tax
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                        saleID = php_result.toString();
+                        window.location.replace(saleID+"/payment");
+
+                    }
+
+                });
+
+            }
+
+
+        }
+
+
+    </script>
+
+{% endblock %}
