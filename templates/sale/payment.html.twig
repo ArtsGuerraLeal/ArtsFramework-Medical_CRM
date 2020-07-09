@@ -112,33 +112,13 @@
 
             $(document).on('click', '.remove_product', function(){
                 var quantity = $(this).parent().parent().children()[1].innerText;
-                var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
-
-                console.log(prodPrice);
-
-                var total = document.querySelector('#total');
-                var subtotal = document.querySelector('#subtotal');
-                var tax = document.querySelector('#tax');
+                var remaining = document.querySelector('#remaining');
 
                 var i = $(this).parent().parent().index();
                 var table = $(this).parent().parent().parent();
 
-                if(quantity === "1"){
-                    $(this).parent().parent().remove();
-
-                }else{
-                    $(this).parent().parent().children()[1].innerText = quantity - 1;
-
-                    var price = parseFloat($(this).parent().parent().children()[2].innerText);
-                    $(this).parent().parent().children()[2].innerText = price - prodPrice;
-
-
-                }
-
-
-                total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
-                tax.innerText = ((parseFloat(tax.innerText) - (prodPrice *.16))).toFixed(2);
-                subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
+                $(this).parent().parent().remove();
+                remaining.innerText = (parseFloat(remaining.innerText) + parseFloat(quantity)).toFixed(2);
 
             });
 
