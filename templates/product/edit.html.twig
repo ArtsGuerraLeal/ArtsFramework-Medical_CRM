@@ -3,9 +3,21 @@
 {% block title %}Edit Product{% endblock %}
 
 {% block body %}
-    <h1>Edit Product</h1>
-
-    {{ include('product/_form.html.twig', {'button_label': 'Update'}) }}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Producto
+                    <div class="page-title-subheading">Editar un producto
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ include('product/_form.html.twig', {'button_label': 'Actializar'}) }}
 
     <a href="{{ path('product_index') }}">back to list</a>
 
