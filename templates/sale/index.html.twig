@@ -7,8 +7,12 @@
 
 {% block body %}
 
-
-    <div id="ParentContainer" class="container">
+    <div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        Catalogo</div>
+    <div class="card-body">
+    <div id="ParentContainer" class="container-fluid">
         <div class ="row">
             <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
                 <h1>Productos</h1>
@@ -16,12 +20,15 @@
                 {% for product in products %}
                     <div class="col-sm-3 my-1">
                         <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
-                            <img  width="100%" height="100%" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" class="img-responsive product_drag" />
+                            {%  if product.image != null %}
+                                <img class="img-fluid img-thumbnail rounded img-responsive product_drag" width="100%" height="100%" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"  />
+                            {% else %}
+                                <img class="img-fluid img-thumbnail rounded img-responsive product_drag" width="100%" height="100%" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"  />
+                            {% endif %}
+
                             <h4 class="text-info">{{ product.name }}</h4>
                             <h6 class="text-muted">Existencia: <p id="product-quantity">{{ product.quantity }}</p></h6>
-
                             <h4 class="text-danger">${{ product.price }}</h4>
-
                             <div class="add-button">
                                 <button id="add_product" class="add_product btn btn-primary">ADD</button>
                             </div>
@@ -56,18 +63,18 @@
 
                             <tr>
                                 <td>Subtotal:</td>
-                                <td id="subtotal">0</td>
+                                <td id="subtotal">0.00</td>
 
                             </tr>
 
                             <tr>
                                 <td>IVA:</td>
-                                <td id="tax">0</td>
+                                <td id="tax">0.00</td>
 
                             </tr>
                             <tr>
                                 <td>Total:</td>
-                                <td id="total">0</td>
+                                <td id="total">0.00</td>
 
                             </tr>
 
@@ -83,8 +90,8 @@
 
     </div>
 
-
-
+    </div>
+    </div>
         <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
 
     <script type="text/javascript">
@@ -127,8 +134,6 @@
                 var quantity = $(this).parent().parent().children()[1].innerText;
                 var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
 
-                console.log(prodPrice);
-
                 var total = document.querySelector('#total');
                 var subtotal = document.querySelector('#subtotal');
                 var tax = document.querySelector('#tax');
@@ -145,9 +150,7 @@
                     var price = parseFloat($(this).parent().parent().children()[2].innerText);
                     $(this).parent().parent().children()[2].innerText = price - prodPrice;
 
-
                 }
-
 
                 total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
                 tax.innerText = ((parseFloat(tax.innerText) - (prodPrice *.16))).toFixed(2);
@@ -157,6 +160,43 @@
 
 
             $(document).on('click', '.add_product', function(){
+                var cart = $('.cart-table');
+                var imgtodrag = $(this).parent().parent().children('img').eq(0);
+                if (imgtodrag) {
+                    var imgclone = imgtodrag.clone()
+                        .offset({
+                            top: imgtodrag.offset().top,
+                            left: imgtodrag.offset().left
+                        })
+                        .css({
+
+                            'position': 'absolute',
+                            'height': '150px',
+                            'width': '150px',
+                            'z-index': '100'
+                        })
+                        .appendTo($('body'))
+                        .animate({
+                            'top': cart.offset().top + 50,
+                            'left': cart.offset().left + 150,
+                            'width': 75,
+                            'height': 75
+                        }, 500, 'easeInOutExpo');
+
+                    setTimeout(function () {
+                        cart.effect("shake", {
+                            times: 1
+                        }, 200);
+                    }, 1500);
+
+                    imgclone.animate({
+                        'width': 0,
+                        'height': 0
+                    }, function () {
+                        $(this).detach()
+                    });
+                }
+
                 var prodName = $(this).parent().parent().children('img').attr('data-name');
                 var prodPrice = parseFloat($(this).parent().parent().children('img').attr('data-price'));
                 var prodID = $(this).parent().parent().children('img').attr('data-id');

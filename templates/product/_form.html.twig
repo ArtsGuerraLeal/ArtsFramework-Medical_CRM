@@ -5,8 +5,11 @@
 <div class="main-card mb-3 card">
     <div class="card-body">
         {{ form_row(form.name) }}
+        {{ form_row(form.category) }}
         {{ form_row(form.price) }}
         {{ form_row(form.quantity) }}
+        {{ form_row(form.attachment) }}
+        <div id="image-holder"></div>
         <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 
     </div>

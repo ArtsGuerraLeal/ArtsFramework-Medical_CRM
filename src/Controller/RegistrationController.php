@@ -49,6 +49,85 @@ class RegistrationController extends AbstractController
     }
 
     /**
+     * @Route("/{companyName}/register", name="register_provider")
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param CompanyRepository $companyRepository
+     * @param $companyName
+     * @return RedirectResponse|Response
+     * @throws \Stripe\Exception\ApiErrorException
+     */
+    public function registerAtCompany(Request $request,UserPasswordEncoderInterface $passwordEncoder, CompanyRepository $companyRepository,$companyName)
+    {
+        $company = $companyRepository->findOneBy(['name' => $companyName]);
+
+        Stripe::setApiKey('sk_test_HHOQhx8Nk5r0LJGDUaxYlfRK004xJe9Yiv');
+        $form = $this->createFormBuilder()
+            ->add('firstname', TextType::class)
+            ->add('lastname', TextType::class, ['label' => false])
+            ->add('username', TextType::class, ['label' => false])
+            ->add('email', EmailType::class, ['label' => false])
+            ->add('password',RepeatedType::class,[
+                'type' => PasswordType::class,
+                'required' => true,
+                'first_options'  => ['label' => 'Password'],
+                'second_options' => ['label' => 'Confirm Password']
+            ])
+            ->add('register',SubmitType::class,[
+                'attr' => [
+                    'class' => 'btn btn-primary btn-block'
+                ]
+            ])
+            ->getForm();
+
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $data = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $user = new User();
+            $user->setUsername($data['username']);
+            $user->setPassword(
+                $passwordEncoder->encodePassword($user,$data['password'])
+            );
+            $user->setFirstname($data['firstname']);
+            $user->setLastname($data['lastname']);
+            $user->setEmail($data['email']);
+
+            $user->setRegisterdate(new \DateTime('now',new \DateTimeZone('America/Mexico_City')));
+
+
+            if($company != null){
+                $user->setCompany($company);
+                $user->setRoles(['ROLE_UNAUTHORIZED_USER']);
+
+                $em->persist($user);
+                $em->flush();
+                return $this->redirect($this->generateUrl('app_login'));
+
+            }else{
+                $this->addFlash('error', 'Company doesnt exist');
+            }
+
+
+        }
+        if($company != null) {
+            return $this->render('registration/client_register.html.twig', [
+                'form' => $form->createView(),
+                'company' => $companyName
+            ]);
+        }else{
+            return $this->redirect($this->generateUrl('landing.page'));
+
+
+        }
+    }
+
+
+
+    /**
      * @Route("/register", name="register")
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder

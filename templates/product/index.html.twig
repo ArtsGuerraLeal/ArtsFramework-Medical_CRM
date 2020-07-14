@@ -20,26 +20,49 @@
     <div class="card mb-3">
         <div class="card-header">
             <i class="fas fa-table"></i>
-            Patients</div>
+            Catalogo</div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-striped " id="dataTable" >
         <thead>
         <tr>
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Acciones</th>
+                <th style="width:10%" >Imagen</th>
+                <th style="width:10%" >UPC</th>
+                <th style="width:10%" >SKU</th>
+                <th style="width:10%" >Nombre</th>
+                <th style="width:10%" >Precio</th>
+                <th style="width:10%">Cantidad</th>
+                <th style="width:10%" >Categoria</th>
+            <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
         {% for product in products %}
             <tr>
-                <td>{{ product.id }}</td>
+                {%  if product.image != null %}
+                    <td><img class="img-fluid img-thumbnail rounded mx-auto d-block" width="70px" height="70px" src="{{ '/uploads/' ~ product.image }}" />
+                    </td>
+
+                    {% else %}
+                        <td><img class="img-fluid img-thumbnail rounded mx-auto d-block" width="70px" height="70px" src="{{ asset('assets/images/product_placeholder.jpg') }}" />
+                        </td>
+
+                {% endif %}
+
                 <td>{{ product.name }}</td>
-                <td>{{ product.price }}</td>
+                <td> </td>
+                <td> </td>
+                <td>${{ product.price }} MXN</td>
                 <td>{{ product.quantity }}</td>
+
+                {%  if product.category  != null %}
+                    <td>{{ product.category.name }}</td>
+
+                {% else %}
+                    <td></td>
+
+                {% endif %}
+
                 <td>
                     <div class="btn btn-primary btn-sm">
                         <a class="text-white" href="{{ path('product_show', {'id': product.id}) }}">Detalles</a>

@@ -6,7 +6,7 @@
 parameters:
     locale: 'en'
     uploads_dir: '%kernel.project_dir%/public/uploads/'
-
+    private_uploads_dir: '%kernel.project_dir%/private/uploads/'
 services:
     # default configuration for services in *this* file
     _defaults:
