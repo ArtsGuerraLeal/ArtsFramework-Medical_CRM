@@ -81,6 +81,32 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /**@var UploadedFile $file */
+            $file = $request->files->get('product')['attachment'];
+                if($file){
+                    if($product->getImage() != null){
+                        $filename = $product->getImage();
+                        $file->move(
+                            $this->getParameter('uploads_dir'),
+                            $filename);
+                        $product->setImage($filename);
+
+                    }else{
+                        $filename = md5(uniqid()). '.' . $file->guessClientExtension();
+                        $file->move(
+                            $this->getParameter('uploads_dir'),
+                            $filename);
+                        $product->setImage($filename);
+
+                    }
+
+                }
+
+
+
+
+
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('product_index');
