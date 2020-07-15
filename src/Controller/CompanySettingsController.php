@@ -6,9 +6,11 @@ use App\Repository\CompanyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,11 +53,11 @@ class CompanySettingsController extends AbstractController
 
 
         $dataForm->add('setting1', TextType::class);
-        $dataForm->add('setting2', TextType::class);
-        $dataForm->add('setting3', TextType::class);
-        $dataForm->add('setting4', TextType::class);
-        $dataForm->add('setting5', TextType::class);
-        $dataForm->add('setting6', TextType::class);
+
+        $dataForm->add('attachment',FileType::class , [
+            'mapped' => false,
+            'required' => false,
+        ]);
 
         $dataForm ->add('save', SubmitType::class, ['label' => 'Save']);
 
@@ -65,6 +67,26 @@ class CompanySettingsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
+                /**@var UploadedFile $file */
+                $file = $request->files->get('form')['attachment'];
+                if($file){
+                    if($company->getImage() != null){
+                        $filename = $company->getImage();
+                        $file->move(
+                            $this->getParameter('uploads_dir'),
+                            $filename);
+                        $company->setImage($filename);
+
+                    }else{
+                        $filename = md5(uniqid()). '.' . $file->guessClientExtension();
+                        $file->move(
+                            $this->getParameter('uploads_dir'),
+                            $filename);
+                        $company->setImage($filename);
+
+                    }
+
+                }
 
                 $company->setSettings(array($jsonContent));
                 $entityManager->persist($user);

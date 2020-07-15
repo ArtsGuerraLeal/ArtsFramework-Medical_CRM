@@ -9,7 +9,18 @@
         {{ form_row(form.price) }}
         {{ form_row(form.quantity) }}
         {{ form_row(form.attachment) }}
-        <div id="image-holder"></div>
+        <div id="image-holder">
+            {%  if product.image != null %}
+                <img class="img-fluid img-thumbnail rounded my-3 " width="170px" height="170px" src="{{ '/uploads/' ~ product.image }}" />
+
+
+            {% else %}
+
+            <img class="img-fluid img-thumbnail rounded my-3" width="170px" height="170px" src="{{ asset('assets/images/product_placeholder.jpg') }}" />
+
+            {% endif %}
+
+        </div>
         <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 
     </div>

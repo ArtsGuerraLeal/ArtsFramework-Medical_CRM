@@ -447,8 +447,19 @@
                     <div class="scrollbar-sidebar">
                         <div class="app-sidebar__inner pt-1 pr-1 pb-1 pl-4.5">
                                 <p href="{{ path('home.index') }}" class="metismenu-icon my-2 font-weight-bold text-light" style="display: table;">
-                                    <img class="rounded-circle logo-pic bg-light " src={{ asset('img/clinimed.png') }} alt="">
+
+                                    {%  if app.user.company.image != null %}
+                                        <img class="rounded-circle logo-pic bg-light " src="{{ '/uploads/' ~ app.user.company.image }}" />
+
+                                    {% else %}
+                                        <img class="img-fluid img-thumbnail rounded" src="{{ asset('assets/images/avatar1.png') }}" />
+
+                                    {% endif %}
+
                                     {{app.user.company.name}}
+
+
+
                                 </p>
                             </div>
                         <div class="app-sidebar__inner">

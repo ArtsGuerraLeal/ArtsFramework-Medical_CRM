@@ -17,6 +17,7 @@
             </div>
         </div>
     </div>
+
     {{ include('product/_form.html.twig', {'button_label': 'Actializar'}) }}
 
     <a href="{{ path('product_index') }}">back to list</a>
@@ -37,7 +38,8 @@
                 reader.onload = function (e) {
                     $("<img />", {
                         "src": e.target.result,
-                        "class": "thumb-image"
+                        "class": "img-fluid img-thumbnail",
+                        "width": "170px"
                     }).appendTo(image_holder);
 
                 };
