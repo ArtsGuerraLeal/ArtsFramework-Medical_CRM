@@ -15,7 +15,7 @@
             }
         }
         #invoice-POS {
-            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0.7in -0.25in rgba(0, 0, 0, 0.5);
             padding: 2mm;
             margin: 0 auto;
             width: 44mm;
@@ -41,6 +41,11 @@
             font-weight: 300;
             line-height: 2em;
         }
+        #invoice-POS .timestamp {
+            color: grey ;
+            float: left;
+        }
+
         #invoice-POS p {
             font-size: .7em;
             color: black;
@@ -93,7 +98,7 @@
         }
         #invoice-POS .tabletitle {
             font-size: .7em;
-            background: #EEE;
+            background-color: #D5D5D5;
         }
 
         #invoice-POS .tabletotal {
@@ -121,6 +126,8 @@
             height: 80px;
         }
 
+
+
     </style>
 
     <script>
@@ -143,10 +150,12 @@
 <div id="invoice-POS">
 
     <center id="top">
+        <p class = "timestamp"> Fecha:  {{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</p>
+
         {%  if app.user.company.image != null %}
             <img class="rounded-circle logo-pic bg-light " src="{{ '/uploads/' ~ app.user.company.image }}" />
             <div class="info">
-                <h2>{{  app.user.company.name }}</h2>
+                <h2>{{  app.user.company.name }} Valle</h2>
             </div>
         {% else %}
             <img class="rounded-circle logo-pic bg-light " src="" />
@@ -173,6 +182,7 @@
     </div><!--End Invoice Mid-->
 
     <div id="bot">
+        <p>Cliente: {{ sale.client }}</p>
 
         <div id="table">
             <table>
