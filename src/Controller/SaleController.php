@@ -165,7 +165,7 @@ class SaleController extends AbstractController
             $sale->setClient($client);
         }
 
-       // $sale->setTime(new \DateTime());
+        $sale->setTime(new \DateTime());
 
 
 
