@@ -143,6 +143,7 @@ class SaleController extends AbstractController
             $tax = $request->request->get('tax');
             $products = $request->request->get('products');
             $quantity = $request->request->get('quantity');
+            $client = $request->request->get('client');
 
         }
         else {
@@ -157,7 +158,14 @@ class SaleController extends AbstractController
         $sale->setTotal($total);
         $sale->setSubtotal($subtotal);
         $sale->setTax($tax);
-        $sale->setClient("Test");
+
+        if($client == ""){
+            $sale->setClient("Publico en General");
+        }else{
+            $sale->setClient($client);
+        }
+
+        $sale->setTime(new \DateTime());
 
 
 

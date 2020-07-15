@@ -48,6 +48,11 @@ class Sale
      */
     private $tax;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $time;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -165,6 +170,18 @@ class Sale
     public function setTax(float $tax): self
     {
         $this->tax = $tax;
+
+        return $this;
+    }
+
+    public function getTime(): ?\DateTimeInterface
+    {
+        return $this->time;
+    }
+
+    public function setTime(?\DateTimeInterface $time): self
+    {
+        $this->time = $time;
 
         return $this;
     }
