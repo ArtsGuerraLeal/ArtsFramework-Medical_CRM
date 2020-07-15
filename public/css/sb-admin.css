@@ -10935,3 +10935,24 @@ body.sidebar-toggled footer.sticky-footer {
   color:#000;
   border-color:#000;
 }
+
+.filterDiv {
+  display: none; /* Hidden by default */
+}
+
+.show {
+  display: block;
+}
+
+.btn.active {
+  background-color: #666;
+  color: white;
+}
+
+.btn:hover {
+  background-color: #ddd;
+}
+
+.container {
+  overflow: hidden;
+}

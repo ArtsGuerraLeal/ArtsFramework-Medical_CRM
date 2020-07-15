@@ -7,6 +7,7 @@ use App\Entity\Payment;
 use App\Entity\PaymentMethod;
 use App\Entity\ProductSold;
 use App\Entity\Sale;
+use App\Repository\CategoryRepository;
 use App\Repository\PatientRepository;
 use App\Repository\PaymentMethodRepository;
 use App\Repository\ProductRepository;
@@ -43,19 +44,25 @@ class SaleController extends AbstractController
      */
     private $saleRepository;
 
+
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+
     private $security;
 
 
 
 
 
-    public function __construct(SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
+    public function __construct(CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->saleRepository = $saleRepository;
-
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -70,7 +77,8 @@ class SaleController extends AbstractController
 
         return $this->render('sale/index.html.twig', [
             'products' => $productRepository->findAll(),
-            'paymentMethods' => $this->paymentMethodRepository->findAll()
+            'paymentMethods' => $this->paymentMethodRepository->findAll(),
+            'categories' => $this->categoryRepository->findAll()
         ]);
 
     }
