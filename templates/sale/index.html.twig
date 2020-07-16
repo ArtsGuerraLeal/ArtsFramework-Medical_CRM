@@ -26,36 +26,35 @@
         <div class ="row">
             <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
                 <h1>Productos</h1>
-                <div class ="row">
-                {% for product in products %}
+                <div id="catalog" class ="row">
+                    {% for product in products %}
+
                     {%  if product.category != null %}
-                        <div class="col-sm-3 my-1 filterDiv {{ product.category.name }}">
+                    <div class="col-sm-3 my-1 filterDiv {{ product.category.name }}">
 
-                    {% else %}
-                            <div class="col-sm-3 my-1 filterDiv General">
+                        {% else %}
+                        <div class="col-sm-3 my-1 filterDiv General">
 
                             {% endif %}
-                        <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
-                            {%  if product.image != null %}
-                                <img class="img-fluid img-thumbnail rounded img-responsive product_drag" width="100%" height="100%" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"  />
-                            {% else %}
-                                <img class="img-fluid img-thumbnail rounded img-responsive product_drag" width="100%" height="100%" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"  />
-                            {% endif %}
+                            <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
+                                {%  if product.image != null %}
+                                    <img class="img-fluid img-thumbnail rounded img-responsive product_drag" style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"  />
+                                {% else %}
+                                    <img class="img-fluid img-thumbnail rounded img-responsive product_drag" style="    height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}"  />
+                                {% endif %}
 
-                            <h4 class="text-info">{{ product.name }}</h4>
-                            <h6 class="text-muted">Existencia: <p id="product-quantity">{{ product.quantity }}</p></h6>
-                            <h4 class="text-danger">${{ product.price }}</h4>
-                            <div class="add-button">
-                                <button id="add_product" class="add_product btn btn-primary">ADD</button>
+                                <h5 class="text-info">{{ product.name }}</h5>
+                                <h6 class="text-muted">Existencia: <p id="product-quantity">{{ product.quantity }}</p></h6>
+                                <h4 class="text-danger">${{ product.price }}</h4>
+                                <div class="add-button">
+                                    <button id="add_product" class="add_product btn btn-primary">ADD</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                {% else %}
 
-                    <p>no records found</p>
+                        {% endfor %}
 
-                {% endfor %}
                 </div>
             </div>
             <div id="FixedDiv" class="sticky-top mx-1 " style="width:29%;height:50%;border:1px solid #333;top:60px; background-color:#ffffff; border-radius:5px; padding-left: 10px;" align="center">

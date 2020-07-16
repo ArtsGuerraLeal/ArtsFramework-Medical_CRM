@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\PatientRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -30,10 +31,15 @@ class FetchController extends AbstractController
      */
     private $entityManager;
 
-    public function __construct(PatientRepository $patientRepository, EntityManagerInterface $entityManager,Security $security){
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    public function __construct(PatientRepository $patientRepository, EntityManagerInterface $entityManager,Security $security, ProductRepository $productRepository){
         $this->entityManager = $entityManager;
         $this->patientRepository = $patientRepository;
-
+        $this->productRepository = $productRepository;
         $this->security = $security;
 
     }
@@ -96,6 +102,35 @@ class FetchController extends AbstractController
 
         $response .= '}';
 
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/availableproducts", name="fetch_products", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     */
+    public function fetchProducts(Request $request, ProductRepository $repository):JsonResponse
+    {
+
+        if ($request->getMethod() == 'POST')
+        {
+
+
+        }
+        else {
+            die();
+        }
+
+        $results = $this->productRepository->findArray();
+
+        $response = json_encode($results);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);
