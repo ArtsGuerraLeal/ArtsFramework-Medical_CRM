@@ -54,7 +54,7 @@
                                 {% endif %}
 
 
-                                {%  if product.price != null %}
+                                {%  if product.price is not null %}
                                     <h4 class="text-danger">${{ product.price }}</h4>
                                 {% else %}
                                     <h5 class="text-danger">Precio Abierto</h5><input class="container-fluid rounded my-1" type="number" >
@@ -62,7 +62,7 @@
 
                                 <div class="add-button">
 
-                                    {%  if product.price != null %}
+                                    {%  if product.price is not null %}
                                         <button id="add_product" class="add_product btn btn-primary">Agregar</button>
                                     {% else %}
                                         <button id="add_service" class="add_service btn btn-primary">Agregar</button>
@@ -290,8 +290,10 @@
                 var prodPrice = parseFloat($(this).parent().parent().children('img').attr('data-price'));
                 var prodID = $(this).parent().parent().children('img').attr('data-id');
                 var prod_quantity = $(this).parent().parent().find("#product-quantity");
-                console.log(prod_quantity[0].innerText);
-                prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText)-1;
+                if(prod_quantity[0] !== undefined){
+                    prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText)-1;
+                }
+
                 var total = document.querySelector('#total');
                 var subtotal = document.querySelector('#subtotal');
                 var tax = document.querySelector('#tax');

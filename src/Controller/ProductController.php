@@ -79,6 +79,7 @@ class ProductController extends AbstractController
     public function edit(Request $request, Product $product): Response
     {
         $form = $this->createForm(ProductType::class, $product);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -99,14 +100,8 @@ class ProductController extends AbstractController
                             $this->getParameter('uploads_dir'),
                             $filename);
                         $product->setImage($filename);
-
                     }
-
                 }
-
-
-
-
 
             $this->getDoctrine()->getManager()->flush();
 
