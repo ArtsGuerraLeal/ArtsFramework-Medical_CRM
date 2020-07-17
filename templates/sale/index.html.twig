@@ -234,13 +234,17 @@
 
                 if(quantity === "1"){
                     $(this).parent().parent().remove();
-                    productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
 
+                    if(productCard[0] !== undefined){
+                        productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
+                    }
 
                 }else{
                     $(this).parent().parent().children()[1].innerText = quantity - 1;
-                    productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
 
+                    if(productCard[0] !== undefined){
+                        productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
+                    }
                     var price = parseFloat($(this).parent().parent().children()[2].innerText);
                     $(this).parent().parent().children()[2].innerText = price - prodPrice;
 
