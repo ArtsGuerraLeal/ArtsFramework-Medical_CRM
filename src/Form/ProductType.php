@@ -34,7 +34,9 @@ class ProductType extends AbstractType
     {
         $builder
             ->add('name', TextType::class)
-            ->add('price',NumberType::class)
+            ->add('price',NumberType::class,[
+                'required' => false
+            ])
             ->add('category',EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => function(Category $category) {
@@ -45,7 +47,9 @@ class ProductType extends AbstractType
                 'required'=>false,
                 'label'=>'Categoria'
             ])
-            ->add('quantity',NumberType::class)
+            ->add('quantity',NumberType::class,[
+                'required' => false
+            ])
             ->add('attachment',FileType::class , [
                 'mapped' => false,
                 'required' => false,

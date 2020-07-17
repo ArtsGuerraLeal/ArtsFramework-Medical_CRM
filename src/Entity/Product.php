@@ -24,12 +24,12 @@ class Product
     private $name;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     private $price;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $quantity;
 
@@ -47,6 +47,16 @@ class Product
      * @ORM\OneToMany(targetEntity="App\Entity\ProductSold", mappedBy="product")
      */
     private $productSolds;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isTaxable;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isActive;
 
     public function __construct()
     {
@@ -145,6 +155,30 @@ class Product
                 $productSold->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsTaxable(): ?bool
+    {
+        return $this->isTaxable;
+    }
+
+    public function setIsTaxable(?bool $isTaxable): self
+    {
+        $this->isTaxable = $isTaxable;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

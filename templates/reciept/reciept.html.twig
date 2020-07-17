@@ -200,7 +200,14 @@
                             </p>
                         </td>
                         <td class="tableitem"><p class="itemtext">{{ product.amount }}</p></td>
-                        <td class="tableitem"><p class="itemtext">${{ product.amount * product.product.price }}</p></td>
+
+                        {% if product.product.price is null %}
+                            <td class="tableitem"><p class="itemtext">${{ product.amount * product.price }}</p></td>
+
+                        {% else %}
+                                <td class="tableitem"><p class="itemtext">${{ product.amount * product.product.price }}</p></td>
+
+                        {% endif %}
 
                     </tr>
                 {% endfor %}

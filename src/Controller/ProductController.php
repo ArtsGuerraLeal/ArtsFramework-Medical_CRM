@@ -50,8 +50,9 @@ class ProductController extends AbstractController
                 $product->setImage($filename);
             }
 
-            $entityManager->persist($product);
-            $entityManager->flush();
+
+           $entityManager->persist($product);
+           $entityManager->flush();
 
             return $this->redirectToRoute('product_index');
         }

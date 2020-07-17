@@ -144,7 +144,7 @@ class SaleController extends AbstractController
             $products = $request->request->get('products');
             $quantity = $request->request->get('quantity');
             $client = $request->request->get('client');
-
+            $price = $request->request->get('price');
         }
         else {
             die();
@@ -177,10 +177,16 @@ class SaleController extends AbstractController
         foreach ($products as $prod ){
             $product = $this->productRepository->findOneBy(['id'=>$prod]);
             $productSold = new ProductSold();
-            $product->setQuantity($product->getQuantity()-$quantity[$count]);
+
+            if($product->getQuantity() != null){
+                $product->setQuantity($product->getQuantity()-$quantity[$count]);
+            }
+
             $productSold->setProduct($product);
             $productSold->setAmount($quantity[$count]);
             $productSold->setSale($sale);
+            $productSold->setPrice($price[$count]);
+
             $em->persist($productSold);
 
             $em->persist($product);

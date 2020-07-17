@@ -44,10 +44,32 @@
                                 {% endif %}
 
                                 <h5 class="text-info">{{ product.name }}</h5>
-                                <h6 class="text-muted">Existencia: <p id="product-quantity">{{ product.quantity }}</p></h6>
-                                <h4 class="text-danger">${{ product.price }}</h4>
+
+                                {%  if product.quantity is not null %}
+                                    <h6 class="text-muted">Existencia: <p id="product-quantity">{{ product.quantity }}</p></h6>
+                                {% else %}
+                                    <br>
+
+
+                                {% endif %}
+
+
+                                {%  if product.price != null %}
+                                    <h4 class="text-danger">${{ product.price }}</h4>
+                                {% else %}
+                                    <h5 class="text-danger">Precio Abierto</h5><input class="container-fluid rounded my-1" type="number" >
+                                {% endif %}
+
                                 <div class="add-button">
-                                    <button id="add_product" class="add_product btn btn-primary">ADD</button>
+
+                                    {%  if product.price != null %}
+                                        <button id="add_product" class="add_product btn btn-primary">Agregar</button>
+                                    {% else %}
+                                        <button id="add_service" class="add_service btn btn-primary">Agregar</button>
+                                    {% endif %}
+
+
+
                                 </div>
                             </div>
                         </div>
@@ -200,6 +222,8 @@
             $(document).on('click', '.remove_product', function(){
                 var quantity = $(this).parent().parent().children()[1].innerText;
                 var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+                var prodID = $(this).parent().parent().attr('id');
+                var productCard = $("img[data-id='" + prodID +"']").parent().children('h6').children('p');
 
                 var total = document.querySelector('#total');
                 var subtotal = document.querySelector('#subtotal');
@@ -210,9 +234,12 @@
 
                 if(quantity === "1"){
                     $(this).parent().parent().remove();
+                    productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
+
 
                 }else{
                     $(this).parent().parent().children()[1].innerText = quantity - 1;
+                    productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
 
                     var price = parseFloat($(this).parent().parent().children()[2].innerText);
                     $(this).parent().parent().children()[2].innerText = price - prodPrice;
@@ -224,7 +251,6 @@
                 subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
 
             });
-
 
             $(document).on('click', '.add_product', function(){
                 var cart = $('.cart-table');
@@ -250,11 +276,7 @@
                             'height': 75
                         }, 500, 'easeInOutExpo');
 
-                    setTimeout(function () {
-                        cart.effect("shake", {
-                            times: 1
-                        }, 200);
-                    }, 1500);
+
 
                     imgclone.animate({
                         'width': 0,
@@ -280,7 +302,7 @@
                 });
 
                 if(cellVal.text() === ""){
-                    $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td>'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
                 }else{
                     var quantity = parseInt(cellVal.parent().children()[1].innerText);
                     cellVal.parent().children()[1].innerText = quantity +1;
@@ -296,7 +318,87 @@
                 subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
             });
 
+
+            $(document).on('click', '.add_service', function(){
+                var prodPrice = parseFloat($(this).parent().parent().children('input').val());
+
+                if(!isNaN(prodPrice)){
+                    var cart = $('.cart-table');
+                    var imgtodrag = $(this).parent().parent().children('img').eq(0);
+                    if (imgtodrag) {
+                        var imgclone = imgtodrag.clone()
+                            .offset({
+                                top: imgtodrag.offset().top,
+                                left: imgtodrag.offset().left
+                            })
+                            .css({
+
+                                'position': 'absolute',
+                                'height': '150px',
+                                'width': '150px',
+                                'z-index': '100'
+                            })
+                            .appendTo($('body'))
+                            .animate({
+                                'top': cart.offset().top + 50,
+                                'left': cart.offset().left + 150,
+                                'width': 75,
+                                'height': 75
+                            }, 500, 'easeInOutExpo');
+
+
+
+                        imgclone.animate({
+                            'width': 0,
+                            'height': 0
+                        }, function () {
+                            $(this).detach()
+                        });
+                    }
+
+                    var prodName = $(this).parent().parent().children('img').attr('data-name');
+
+                    var prod_quantity = $(this).parent().parent().find("#product-quantity");
+
+                    var prodID = $(this).parent().parent().children('img').attr('data-id');
+
+                    if(prod_quantity[0] !== undefined){
+                        prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText)-1;
+                    }
+
+
+                    var total = document.querySelector('#total');
+                    var subtotal = document.querySelector('#subtotal');
+                    var tax = document.querySelector('#tax');
+
+
+                    var cellName = $(".cart-table tr td").filter(function() {
+                        return $(this).text() === prodName;
+                    });
+
+                    var cellPrice = $(".cart-table tr td").filter(function() {
+                        return $(this).text() === prodPrice;
+                    });
+
+                    if(cellName.text() === ""){
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    }else{
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    }
+
+
+                    tax.innerText = ((parseFloat(total.innerText) + prodPrice)*.16).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + prodPrice).toFixed(2);
+
+                    subtotal.innerText = (total.innerText - tax.innerText).toFixed(2);
+                }
+
+            });
+
         });
+
+
+
 
         function deleteRow(r) {
             var i = r.parentNode.parentNode.rowIndex;
@@ -309,12 +411,13 @@
 
                 var product_ids = [];
                 var quantities = [];
+                var prices = [];
                 var total,subtotal,tax;
-                var saleID = "1";
+                var saleID;
                 var client_name;
 
                 client_name = $('#client_name').val();
-                    total = $('#cart tr').find('#total').text();
+                total = $('#cart tr').find('#total').text();
                 subtotal = $('#cart tr').find('#subtotal').text();
                 tax = $('#cart tr').find('#tax').text();
 
@@ -324,11 +427,13 @@
                         if(index < row_count-3) {
                             var row = $(tr).closest('tr');
                             var quantity = row.find('#quantity').text();
+                            var price = row.find('#price').text();
 
 
-                            // console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
+                          //   console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
                             product_ids.push(tr.id);
                             quantities.push(quantity);
+                            prices.push(price);
 
 
 
@@ -346,7 +451,9 @@
                         total:total,
                         subtotal:subtotal,
                         tax:tax,
-                        client:client_name
+                        client:client_name,
+                        price:prices
+
                     },
                     success:function (php_result) {
                         console.log(php_result);
