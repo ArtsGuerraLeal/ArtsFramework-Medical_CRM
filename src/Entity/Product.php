@@ -58,6 +58,11 @@ class Product
      */
     private $isActive;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isMultiple;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
@@ -179,6 +184,18 @@ class Product
     public function setIsActive(?bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getIsMultiple(): ?bool
+    {
+        return $this->isMultiple;
+    }
+
+    public function setIsMultiple(?bool $isMultiple): self
+    {
+        $this->isMultiple = $isMultiple;
 
         return $this;
     }

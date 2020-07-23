@@ -53,6 +53,11 @@ class Sale
      */
     private $time;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $commission;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -182,6 +187,18 @@ class Sale
     public function setTime(?\DateTimeInterface $time): self
     {
         $this->time = $time;
+
+        return $this;
+    }
+
+    public function getCommission(): ?float
+    {
+        return $this->commission;
+    }
+
+    public function setCommission(?float $commission): self
+    {
+        $this->commission = $commission;
 
         return $this;
     }

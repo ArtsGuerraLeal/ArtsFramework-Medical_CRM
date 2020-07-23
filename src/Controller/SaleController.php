@@ -185,8 +185,17 @@ class SaleController extends AbstractController
             $productSold->setProduct($product);
             $productSold->setAmount($quantity[$count]);
             $productSold->setSale($sale);
-            $productSold->setPrice($price[$count]);
 
+            if($product->getPrice()==0){
+                $productSold->setPrice($price[$count]);
+            }else{
+            if($product->getPrice()/$quantity[$count]==$price[$count]){
+                $productSold->setPrice($price[$count]);
+            }else{
+                $productSold->setPrice($product->getPrice()*$quantity[$count]);
+                $productSold->setDiscount(($product->getPrice()*$quantity[$count]) - $price[$count]);
+                }
+            }
             $em->persist($productSold);
 
             $em->persist($product);
@@ -219,6 +228,7 @@ class SaleController extends AbstractController
             $payments = $request->request->get('payments');
             $amounts = $request->request->get('amounts');
             $saleID = $request->request->get('saleID');
+            $commission = $request->request->get('commission');
         }
         else {
             die();
@@ -240,14 +250,18 @@ class SaleController extends AbstractController
             $payment->setSale($sale);
 
             $em->persist($payment);
+
+
             $em->flush();
 
             $count++;
         }
+        $sale->setCommission($commission);
+        $em->persist($sale);
+        $em->flush();
 
 
-
-        $response = "success!";
+        $response = "1";
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);

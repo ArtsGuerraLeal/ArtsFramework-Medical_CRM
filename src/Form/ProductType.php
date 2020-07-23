@@ -7,6 +7,7 @@ use App\Entity\Product;
 use App\Repository\CategoryRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -33,9 +34,18 @@ class ProductType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class,[
+                'label'=>'Nombre'
+
+            ])
             ->add('price',NumberType::class,[
-                'required' => false
+                'required' => false,
+                'label'=>'Precio'
+
+            ])
+            ->add('isTaxable',CheckboxType::class,[
+                'required' => false,
+                'label'=>'Incluye IVA?'
             ])
             ->add('category',EntityType::class, [
                 'class' => Category::class,
@@ -48,11 +58,14 @@ class ProductType extends AbstractType
                 'label'=>'Categoria'
             ])
             ->add('quantity',NumberType::class,[
-                'required' => false
+                'required' => false,
+                'label'=>'Cantidad'
             ])
             ->add('attachment',FileType::class , [
                 'mapped' => false,
                 'required' => false,
+                'label'=>'Foto'
+
             ])
         ;
     }

@@ -17,7 +17,7 @@
                         <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
                             <img  width="100%" height="100%" src="{{ asset('assets/images/avatar1.png') }}" data-id="{{ payment.id }}" data-name="{{ payment.name }}" class="img-responsive product_drag" />
                             <h4 class="text-info">{{ payment.name }}</h4>
-                            <input id="amount" class="col-sm my-2" type="text">
+                            <input id="amount" class="col-sm my-2" type="number">
                             <div class="add-button">
                                 <button id="add_product" class="add_product btn btn-primary">ADD</button>
                             </div>
@@ -63,8 +63,23 @@
 
                 </tbody>
             </table>
-            <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
+            <div class="row">
+                <div class="col-sm-4">
+                    <p class="my-1">Commision %</p>
+                </div>
+                <div class="col-sm-4">
+                    <label class="switch">
+                        <input id="commission_switch" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
 
+                <div class="col-sm-3">
+                        <input id="commision_text" class="container-fluid rounded my-1" style="display:none" type="number">
+                </div>
+
+            </div>
+            <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
         </div>
 
 
@@ -78,37 +93,28 @@
 
     <script type="text/javascript">
         $(document).ready(function(data){
-            $('.product_drag_area').on('dragover', function(){
-                $(this).addClass('product_drag_over');
-                return false;
-            });
-            $('.product_drag_area').on('dragleave', function(){
-                $(this).removeClass('product_drag_over');
-                return false;
-            });
-            $('.product_drag').on('dragstart', function(e){
-                e.originalEvent.dataTransfer.setData("id", $(this).data("id"));
-                e.originalEvent.dataTransfer.setData("name", $(this).data("name"));
-                e.originalEvent.dataTransfer.setData("price", $(this).data("price"));
-            });
-            $('.product_drag_area').on('drop', function(e){
-                e.preventDefault();
-                $(this).removeClass('product_drag_over');
-                var id = e.originalEvent.dataTransfer.getData('id');
-                var name = e.originalEvent.dataTransfer.getData('name');
-                var price = e.originalEvent.dataTransfer.getData('price');
-                var action = "add";
-                $.ajax({
-                    url:"action.php",
-                    method:"POST",
-                    data:{id:id, name:name, price:price, action:action},
-                    success:function(data){
-                        $('#dragable_product_order').html(data);
-                    }
-                })
-            });
+            var originalTotal = document.querySelector('#total').innerText;
 
 
+            $('#commission_switch').click(function() {
+                var total = document.querySelector('#total');
+                var remaining = document.querySelector('#remaining');
+
+                $("#commision_text").toggle(this.checked);
+                total.innerText = originalTotal;
+                remaining.innerText = originalTotal;
+
+            });
+
+            $("#commision_text").change(function(){
+                var remaining = document.querySelector('#remaining');
+                var total = document.querySelector('#total');
+
+                remaining.innerText = (parseFloat(originalTotal) + (parseFloat(originalTotal) * ($(this).val()/100))).toFixed(2);
+                total.innerText = (parseFloat(originalTotal) + (parseFloat(originalTotal) * ($(this).val()/100))).toFixed(2);
+
+
+            });
 
             $(document).on('click', '.remove_product', function(){
                 var quantity = $(this).parent().parent().children()[1].innerText;
@@ -119,6 +125,8 @@
 
                 $(this).parent().parent().remove();
                 remaining.innerText = (parseFloat(remaining.innerText) + parseFloat(quantity)).toFixed(2);
+
+
 
             });
 
@@ -177,9 +185,11 @@
                 var payment_ids = [];
                 var amounts = [];
                 var saleID = {{ sale.id }};
+                var commissionAmount = $('#commision_text').val();
 
-
-
+                if (commissionAmount===""){
+                    commissionAmount = 0;
+                }
                 $('#cart tr').each(function(index, tr) {
 
                     if(index>0) {
@@ -191,8 +201,6 @@
                             // console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
                             payment_ids.push(tr.id);
                             amounts.push(total);
-
-
 
                         }
                     }
@@ -207,18 +215,23 @@
                     data:{
                         payments:payment_ids,
                         amounts:amounts,
-                        saleID:{{ sale.id }}
+                        saleID:{{ sale.id }},
+                        commission:parseFloat(commissionAmount)
 
                     },
                     success:function (php_result) {
                         console.log(php_result);
+
                     }
 
                 });
+                setTimeout(function(){
+                    window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
+                    window.location.replace("/sale");
+                    }, 250);
 
-                window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
 
-                window.location.replace("/sale");
+
 
 
             }

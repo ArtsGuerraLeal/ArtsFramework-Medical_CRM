@@ -18,7 +18,7 @@
             box-shadow: 0 0 0.7in -0.25in rgba(0, 0, 0, 0.5);
             padding: 2mm;
             margin: 0 auto;
-            width: 44mm;
+            width: 53mm;
             background: #FFF;
         }
         #invoice-POS ::selection {
@@ -112,8 +112,17 @@
         #invoice-POS .item {
             width: 24mm;
         }
+
+        #invoice-POS .Space {
+            width: 24mm;
+        }
         #invoice-POS .itemtext {
             font-size: .7em;
+        }
+
+        #invoice-POS .discounttext {
+            font-size: .6em;
+            line-height: 0em;
         }
         #invoice-POS #legalcopy {
             margin-top: 5mm;
@@ -194,18 +203,30 @@
 
                 {% for product in products %}
                     <tr class="service">
-                        <td class="tableitem"><p class="itemtext">{{ product.product.name }}
+                        <td class="tableitem"><p class="itemtext">{{ product.product.name }}</p>
+                            {% if product.discount is not null %}
+                            <p class="discounttext">Descuento $-{{ product.discount }}</p>
+                            {% endif %}
 
-
-                            </p>
                         </td>
                         <td class="tableitem"><p class="itemtext">{{ product.amount }}</p></td>
 
                         {% if product.product.price is null %}
-                            <td class="tableitem"><p class="itemtext">${{ product.amount * product.price }}</p></td>
+                            {% if product.discount is not null %}
+                                <td class="tableitem"><p class="itemtext">${{ (product.amount * product.price) }}</p></td>
+                                {% else %}
+                                    <td class="tableitem"><p class="itemtext">${{ product.amount * product.price }}</p></td>
+
+                            {% endif %}
 
                         {% else %}
+                            {% if product.discount is not null %}
+                                <td class="tableitem"><p class="itemtext">${{ (product.amount * product.product.price) -product.discount}}</p></td>
+                            {% else %}
                                 <td class="tableitem"><p class="itemtext">${{ product.amount * product.product.price }}</p></td>
+
+                            {% endif %}
+
 
                         {% endif %}
 
@@ -213,22 +234,40 @@
                 {% endfor %}
 
                 <tr class="tabletotal">
-                    <td></td>
+                    <td class="Space"></td>
                     <td class="Rate"><h2>Subtotal</h2></td>
                     <td class="payment"><h2>${{ sale.subtotal }}</h2></td>
                 </tr>
 
                 <tr class="tabletotal">
-                    <td></td>
+                    <td class="Space"></td>
                     <td class="Rate"><h2>IVA</h2></td>
                     <td class="payment"><h2>${{ sale.tax }}</h2></td>
                 </tr>
 
+                {% if sale.commission > 0 %}
                 <tr class="tabletotal">
-                    <td></td>
-                    <td class="Rate"><h2>Total</h2></td>
-                    <td class="payment"><h2>${{ sale.total }}</h2></td>
+                    <td class="Space"></td>
+                    <td class="Rate"><h2>Commision</h2></td>
+                    <td class="payment"><h2>${{(sale.total * (1+(sale.commission/100))) - sale.total}}</h2></td>
                 </tr>
+
+                    <tr class="tabletotal">
+                        <td class="Space"></td>
+                        <td class="Rate"><h2>Total</h2></td>
+                        <td class="payment"><h2>${{ sale.total * (1+(sale.commission/100))}}</h2></td>
+                    </tr>
+
+                    {% else %}
+                        <tr class="tabletotal">
+                            <td class="Space"></td>
+                            <td class="Rate"><h2>Total</h2></td>
+                            <td class="payment"><h2>${{ sale.total}}</h2></td>
+                        </tr>
+                {% endif %}
+
+
+
 
             </table>
         </div><!--End Table-->
