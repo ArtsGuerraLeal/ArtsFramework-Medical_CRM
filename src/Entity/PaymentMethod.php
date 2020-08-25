@@ -28,6 +28,11 @@ class PaymentMethod
      */
     private $payments;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $commissionAmount;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -77,6 +82,18 @@ class PaymentMethod
                 $payment->setType(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCommissionAmount(): ?float
+    {
+        return $this->commissionAmount;
+    }
+
+    public function setCommissionAmount(?float $commissionAmount): self
+    {
+        $this->commissionAmount = $commissionAmount;
 
         return $this;
     }

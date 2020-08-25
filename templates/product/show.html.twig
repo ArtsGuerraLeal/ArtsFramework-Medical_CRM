@@ -25,10 +25,149 @@
             </tr>
         </tbody>
     </table>
-
+    <button class="btn btn-primary" onclick="printPNG( '000{{ product.id }}','{{ product.name }}','${{ product.price }}')">Print</button>
     <a href="{{ path('product_index') }}">back to list</a>
 
     <a href="{{ path('product_edit', {'id': product.id}) }}">edit</a>
 
     {{ include('product/_delete_form.html.twig') }}
+
+
+    <script src="{{ asset('js/DYMO.Label.Framework.3.0.js') }}"></script>
+
+    <script type="text/javascript">
+        function getImageLabelXml() {
+
+            var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
+<DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
+  <PaperOrientation>Landscape</PaperOrientation>\
+  <Id>Small30336</Id>\
+  <PaperName>30336 1 in x 2-1/8 in</PaperName>\
+  <DrawCommands>\
+    <RoundRectangle X="0" Y="0" Width="1440" Height="3060" Rx="180" Ry="180"/>\
+  </DrawCommands>\
+  <ObjectInfo>\
+    <BarcodeObject>\
+      <Name>BARCODE</Name>\
+      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
+      <BackColor Alpha="255" Red="255" Green="255" Blue="255"/>\
+      <LinkedObjectName></LinkedObjectName>\
+      <Rotation>Rotation0</Rotation>\
+      <IsMirrored>False</IsMirrored>\
+      <IsVariable>False</IsVariable>\
+      <Text>12345</Text>\
+      <Type>Code39</Type>\
+      <Size>Medium</Size>\
+      <TextPosition>Bottom</TextPosition>\
+      <TextFont Family="Helvetica" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
+      <CheckSumFont Family="Helvetica" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
+      <TextEmbedding>None</TextEmbedding>\
+      <ECLevel>0</ECLevel>\
+      <HorizontalAlignment>Center</HorizontalAlignment>\
+      <QuietZonesPadding Left="0" Right="0" Top="0" Bottom="0"/>\
+    </BarcodeObject>\
+    <Bounds X="129.5999" Y="758.4" Width="2846.4" Height="600"/>\
+  </ObjectInfo>\
+  <ObjectInfo>\
+    <TextObject>\
+      <Name>PRICE</Name>\
+      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
+      <BackColor Alpha="0" Red="255" Green="255" Blue="255"/>\
+      <LinkedObjectName></LinkedObjectName>\
+      <Rotation>Rotation0</Rotation>\
+      <IsMirrored>False</IsMirrored>\
+      <IsVariable>False</IsVariable>\
+      <HorizontalAlignment>Center</HorizontalAlignment>\
+      <VerticalAlignment>Middle</VerticalAlignment>\
+      <TextFitMode>ShrinkToFit</TextFitMode>\
+      <UseFullFontHeight>True</UseFullFontHeight>\
+      <Verticalized>False</Verticalized>\
+      <StyledText>\
+        <Element>\
+          <String>Price</String>\
+          <Attributes>\
+            <Font Family="Helvetica" Size="13" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
+            <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
+          </Attributes>\
+        </Element>\
+      </StyledText>\
+    </TextObject>\
+    <Bounds X="129.5999" Y="437.5999" Width="2846.4" Height="299.6875"/>\
+  </ObjectInfo>\
+  <ObjectInfo>\
+    <TextObject>\
+      <Name>NAME</Name>\
+      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
+      <BackColor Alpha="0" Red="255" Green="255" Blue="255"/>\
+      <LinkedObjectName></LinkedObjectName>\
+      <Rotation>Rotation0</Rotation>\
+      <IsMirrored>False</IsMirrored>\
+      <IsVariable>False</IsVariable>\
+      <HorizontalAlignment>Center</HorizontalAlignment>\
+      <VerticalAlignment>Middle</VerticalAlignment>\
+      <TextFitMode>ShrinkToFit</TextFitMode>\
+      <UseFullFontHeight>True</UseFullFontHeight>\
+      <Verticalized>False</Verticalized>\
+      <StyledText>\
+        <Element>\
+          <String>Name</String>\
+          <Attributes>\
+            <Font Family="Helvetica" Size="13" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
+            <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
+          </Attributes>\
+        </Element>\
+      </StyledText>\
+    </TextObject>\
+    <Bounds X="129.5999" Y="114.9437" Width="2846.4" Height="299.6875"/>\
+  </ObjectInfo>\
+</DieCutLabel>';
+
+            return labelXml;
+        }
+
+        function printPNG(upc,name,price)
+        {
+            try
+            {
+                if (!this.printer){
+                    this.loadPrinter();
+                    if(!this.printer)
+                        throw "No DYMO printers are installed. Install DYMO printers.";
+                }
+                var printer = this.printer.modelName;
+                var params = dymo.label.framework.createLabelWriterPrintParamsXml({copies:1});
+                // create label from XML file
+                var stampi = dymo.label.framework.openLabelXml(this.getImageLabelXml());
+
+
+                // overwrite image "Image" from XML label with loaded image
+                stampi.setObjectText('BARCODE', upc);
+                stampi.setObjectText('NAME', name);
+                stampi.setObjectText('PRICE', price);
+
+
+                // print it
+                stampi.print(printer,params);
+
+            }
+            catch(e)
+            {
+                alert(e.message || e, false);
+            }
+        }
+
+        function loadPrinter()
+        {
+            var printers = dymo.label.framework.getLabelWriterPrinters();
+            if (printers.length == 0)
+            {
+                alert("No DYMO printers are installed. Install DYMO printers.");
+                return;
+            }
+            // assuming there is only one printer
+            this.printer = printers[0];
+        }
+
+    </script>
+
 {% endblock %}

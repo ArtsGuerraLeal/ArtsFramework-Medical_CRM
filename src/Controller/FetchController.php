@@ -110,34 +110,7 @@ class FetchController extends AbstractController
 
     }
 
-    /**
-     * @Route("/availableproducts", name="fetch_products", methods={"POST"})
-     * @param Request $request
-     * @param ProductRepository $repository
-     * @return JsonResponse
-     */
-    public function fetchProducts(Request $request, ProductRepository $repository):JsonResponse
-    {
 
-        if ($request->getMethod() == 'POST')
-        {
-
-
-        }
-        else {
-            die();
-        }
-
-        $results = $this->productRepository->findArray();
-
-        $response = json_encode($results);
-
-        $returnResponse = new JsonResponse();
-        $returnResponse->setjson($response);
-
-        return $returnResponse;
-
-    }
 
 
 

@@ -13,6 +13,7 @@ use App\Repository\PaymentMethodRepository;
 use App\Repository\ProductRepository;
 use App\Repository\SaleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -131,7 +132,7 @@ class SaleController extends AbstractController
      * @Route("/create", name="create_sale", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(Request $request):JsonResponse
     {
@@ -218,7 +219,7 @@ class SaleController extends AbstractController
      * @Route("/createpayment", name="create_sale_payment", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPayment(Request $request):JsonResponse
     {
@@ -256,12 +257,43 @@ class SaleController extends AbstractController
 
             $count++;
         }
+
         $sale->setCommission($commission);
         $em->persist($sale);
         $em->flush();
 
 
         $response = "1";
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/fetchproduct", name="fetch_product", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchProduct(Request $request, ProductRepository $repository):JsonResponse
+    {
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('id');
+        }
+        else {
+            die();
+        }
+
+        $results = $this->productRepository->findOneBy(['id'=>$id]);
+
+        $response = '{"id":"'.$results->getId().'","name":"'.$results->getName().'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);

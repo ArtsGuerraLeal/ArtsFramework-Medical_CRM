@@ -26,6 +26,14 @@
         <div class ="row">
             <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
                 <h1>Productos</h1>
+
+
+                <div class="search-button input-group">
+                    <input id="product_search" class="form-control rounded my-1" type="text" placeholder="Codigo de Barras">
+                    <button id="search_product" onclick="" class="mx-1 search_product btn btn-primary">Agregar</button>
+                </div>
+
+
                 <div id="catalog" class ="row">
                     {% for product in products %}
 
@@ -47,47 +55,34 @@
 
                                 {%  if product.quantity is not null %}
                                     <h6 class="text-muted">Existencia: <p class="my-0"id="product-quantity">{{ product.quantity }}</p></h6>
-
-
-
-
+                                {% else %}
+                                    <h6 class="text-muted">Existencia Ilimitada <p class="my-0"id="product-quantity">999</p></h6>
                                 {% endif %}
 
 
                                 {%  if product.price is not null %}
                                     <h4 class="text-danger">${{ product.price }}</h4>
                                 {% else %}
-                                    <h5 class="text-danger">Precio Abierto</h5><input id="product_price" class="container-fluid rounded my-1" type="number" >
-                                {% endif %}
+                                <div class="add-button input-group">
+                                    <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
+                                </div>
+                                    {% endif %}
 
-                                {%  if product.isMultiple is not null %}
-                                    <div class="row">
-                                        <div class="col-sm-1"><p class="my-1">#</p></div>
-                                        <div class="col-sm-8"><input id="product_amount" class="container-fluid rounded my-1" type="number" pattern="[0-9]">
-                                        </div>
-
-                                    </div>
-                                {% endif %}
-
-                                <div class="add-button">
+                                <div class="add-button input-group">
                                     {%  if product.price is not null %}
-                                        <button id="add_product" class="add_product btn btn-sm btn-primary">Agregar</button>
-                                        {%  if product.isMultiple is not null %}
-                                            <button id="add_multiple_product" class="add_multiple_product btn btn-sm btn-primary">Agregar #</button>
 
-                                        {% endif %}
+                                        <button id="add_product" class="mx-1 add_product btn btn-sm btn-primary">Agregar</button>
+                                        <input id="product_amount" class="form-control rounded my-1" type="number" pattern="[0-9]" value="1">
+
                                     {% else %}
-                                        <button id="add_service" class="add_service btn btn-sm btn-primary">Agregar</button>
-                                        {%  if product.isMultiple is not null %}
-                                            <button id="add_multiple_service" class="add_multiple_service btn btn-sm btn-primary">Agregar #</button>
 
-                                        {% endif %}
+                                        <button id="add_service" class="mx-auto add_service btn btn-primary my-2">Agregar</button>
 
                                     {% endif %}
 
-
-
                                 </div>
+
+
                             </div>
                         </div>
 
@@ -148,6 +143,21 @@
         <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
 
     <script>
+        var input = document.getElementById("product_search");
+        input.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                search(input.value);
+                input.value = '';
+
+            }
+        });
+    </script>
+
+    <script>
+
+
+
         filterSelection("all");
         function filterSelection(c) {
             var x, i;
@@ -344,6 +354,8 @@
             });
 
             $(document).on('click', '.add_product', function(){
+                var prodAmount = parseInt($(this).parent().parent().find("#product_amount").val());
+
                 var cart = $('.cart-table');
                 var imgtodrag = $(this).parent().parent().children('img').eq(0);
                 if (imgtodrag) {
@@ -384,7 +396,7 @@
 
                 var prod_quantity = $(this).parent().parent().find("#product-quantity");
                 if(prod_quantity[0] !== undefined){
-                    prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText)-1;
+                    prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText) - prodAmount;
                 }
 
                 var total = document.querySelector('#total');
@@ -395,25 +407,32 @@
                 var cellVal = $(".cart-table tr td").filter(function() {
                     return $(this).text() === prodName;
                 });
-
                 if(cellVal.text() === ""){
-                    $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div>    <div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                    if(prodAmount ===1){
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                    }else{
+
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                    }
+
                 }else{
                     var quantity = parseInt(cellVal.parent().children()[1].innerText);
-                    cellVal.parent().children()[1].innerText = quantity +1;
+                    cellVal.parent().children()[1].innerText = quantity + prodAmount;
 
                     var price = parseInt(cellVal.parent().children()[2].innerText);
-                    cellVal.parent().children()[2].innerText = price + prodPrice;
+                    cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                 }
 
                 if(prodTaxable ==="1"){
-                    tax.innerText = (parseFloat(tax.innerText) + (prodPrice*.16)).toFixed(2);
-                    total.innerText = (parseFloat(total.innerText) + prodPrice).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice - (prodPrice*.16)) ).toFixed(2);
+                    tax.innerText = (parseFloat(tax.innerText) + ((prodPrice * prodAmount)*.16)).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + ((prodPrice * prodAmount) - ((prodPrice * prodAmount)*.16)) ).toFixed(2);
 
                 }else{
-                    total.innerText = (parseFloat(total.innerText) + prodPrice).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + prodPrice).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(2);
 
                 }
 
@@ -508,7 +527,7 @@
 
 
             $(document).on('click', '.add_service', function(){
-                var prodPrice = parseFloat($(this).parent().parent().children('input').val());
+                var prodPrice = parseFloat($(this).parent().parent().children().children('input').val());
 
                 if(!isNaN(prodPrice)){
                     var cart = $('.cart-table');
@@ -592,7 +611,86 @@
 
         });
 
+        function search(product_id) {
 
+            $.ajax({
+                url:"{{ path('fetch_product') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    id:product_id,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+                    console.log(obj.name);
+
+                    if(obj.price !== "") {
+                        var prodAmount = 1;
+                        var cart = $('.cart-table');
+                        var prodName = obj.name;
+                        var prodPrice = parseFloat(obj.price);
+
+                        var prodID = obj.id;
+                        var prodTaxable = obj.tax.toString();
+
+                        var prod_quantity = $(this).parent().parent().find("#product-quantity");
+                        if (prod_quantity[0] !== undefined) {
+                            prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText) - prodAmount;
+                        }
+
+                        var total = document.querySelector('#total');
+                        var subtotal = document.querySelector('#subtotal');
+                        var tax = document.querySelector('#tax');
+
+
+                        var cellVal = $(".cart-table tr td").filter(function () {
+                            return $(this).text() === prodName;
+                        });
+                        if (cellVal.text() === "") {
+                            if (prodAmount === 1) {
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            } else {
+
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            }
+
+                        } else {
+                            var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                            cellVal.parent().children()[1].innerText = quantity + prodAmount;
+
+                            var price = parseInt(cellVal.parent().children()[2].innerText);
+                            cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
+                        }
+
+                        if (prodTaxable === "1") {
+                            tax.innerText = (parseFloat(tax.innerText) + ((prodPrice * prodAmount) * .16)).toFixed(2);
+                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) + ((prodPrice * prodAmount) - ((prodPrice * prodAmount) * .16))).toFixed(2);
+
+                        } else {
+                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(2);
+
+                        }
+
+
+                    }
+
+
+
+
+
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        }
 
 
         function deleteRow(r) {

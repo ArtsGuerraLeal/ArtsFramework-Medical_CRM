@@ -15,7 +15,7 @@
                 {% for payment in paymentMethods %}
                     <div class="col-sm-3 my-1">
                         <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
-                            <img  width="100%" height="100%" src="{{ asset('assets/images/avatar1.png') }}" data-id="{{ payment.id }}" data-name="{{ payment.name }}" class="img-responsive product_drag" />
+                            <img  width="100%" height="100%" src="{{ asset('assets/images/avatar1.png') }}" data-id="{{ payment.id }}" data-name="{{ payment.name }}" data-commission="{{ payment.commissionAmount }}" class="img-responsive product_drag" />
                             <h4 class="text-info">{{ payment.name }}</h4>
                             <input id="amount" class="col-sm my-2" type="number">
                             <div class="add-button">
@@ -57,6 +57,7 @@
                 <tr>
                     <td>Total:</td>
                     <td id="total">{{ sale.total }}</td>
+                    <input type="hidden" id="orignalTotal" value="{{ sale.total }}">
 
                 </tr>
 
@@ -82,9 +83,6 @@
             <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
         </div>
 
-
-
-
     </div>
 
 
@@ -93,7 +91,7 @@
 
     <script type="text/javascript">
         $(document).ready(function(data){
-            var originalTotal = document.querySelector('#total').innerText;
+            const originalTotal = document.querySelector('#total').innerText;
 
 
             $('#commission_switch').click(function() {
@@ -135,20 +133,29 @@
 
                 var paymentName = $(this).parent().parent().children('img').attr('data-name');
                 var paymentID = $(this).parent().parent().children('img').attr('data-id');
+                var paymentCommission = parseFloat($(this).parent().parent().children('img').attr('data-commission'));
+
                 var paymentAmount = $(this).parent().parent().children('input');
+                var payment = parseFloat(paymentAmount.val());
 
                 var remaining = document.querySelector('#remaining');
+                var total = document.querySelector('#total');
 
                 var cellVal = $(".cart-table tr td").filter(function() {
                     return $(this).text() === paymentName;
                 });
-            if(parseFloat(remaining.innerText)>0 && paymentAmount.val() !== "") {
+
+                if(paymentCommission > 0){
+                    payment = paymentAmount.val()*(1+(paymentCommission/100));
+                }
+
+            if(parseFloat(remaining.innerText) > 0 && paymentAmount.val() !== "") {
                 if (cellVal.text() === "") {
                     if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
                         $(".cart-table").prepend('<tr id="' + paymentID + '"><td>' + paymentName + '</td><td id="quantity">' + remaining.innerText + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
                     } else {
 
-                        $(".cart-table").prepend('<tr id="' + paymentID + '"><td>' + paymentName + '</td><td id="quantity">' + paymentAmount.val() + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="' + paymentID + '"><td>' + paymentName + '</td><td id="quantity">' + payment + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
                     }
                 } else {
                     var quantity = parseFloat(cellVal.parent().children()[1].innerText);
@@ -160,6 +167,11 @@
                     }
                 }
 
+                if(paymentCommission > 0){
+
+                    total.innerText = parseFloat(total.innerText) + (paymentAmount.val()*(1+(paymentCommission/100))) - paymentAmount.val();
+                }
+
                 if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
                     remaining.innerText = (parseFloat(remaining.innerText) - parseFloat(remaining.innerText)).toFixed(2);
                 } else {
@@ -168,7 +180,6 @@
 
                 }
             });
-
         });
 
         function deleteRow(r) {
@@ -176,7 +187,10 @@
             document.getElementById(".cart").deleteRow(i);
         }
 
+
+
         function payment() {
+
             var row_count = $('#cart tr').length;
             var remaining = document.querySelector('#remaining');
 
@@ -186,10 +200,17 @@
                 var amounts = [];
                 var saleID = {{ sale.id }};
                 var commissionAmount = $('#commision_text').val();
+                var payment_total = parseFloat(document.querySelector('#total').innerHTML);
+                var originalTotal = parseFloat(document.querySelector('#orignalTotal').value);
 
                 if (commissionAmount===""){
                     commissionAmount = 0;
                 }
+
+                if(originalTotal < payment_total){
+                    commissionAmount = payment_total - originalTotal;
+                }
+
                 $('#cart tr').each(function(index, tr) {
 
                     if(index>0) {
@@ -206,8 +227,6 @@
                     }
 
                 });
-
-
 
                 $.ajax({
                     url:"{{ path('create_sale_payment') }}",
@@ -228,8 +247,7 @@
                 setTimeout(function(){
                     window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
                     window.location.replace("/sale");
-                    }, 250);
-
+                }, 250);
 
 
 
@@ -238,6 +256,7 @@
 
 
         }
+
 
 
     </script>

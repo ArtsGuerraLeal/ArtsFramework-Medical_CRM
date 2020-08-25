@@ -249,13 +249,13 @@
                 <tr class="tabletotal">
                     <td class="Space"></td>
                     <td class="Rate"><h2>Commision</h2></td>
-                    <td class="payment"><h2>${{(sale.total * (1+(sale.commission/100))) - sale.total}}</h2></td>
+                    <td class="payment"><h2>${{ sale.commission }}</h2></td>
                 </tr>
 
                     <tr class="tabletotal">
                         <td class="Space"></td>
                         <td class="Rate"><h2>Total</h2></td>
-                        <td class="payment"><h2>${{ sale.total * (1+(sale.commission/100))}}</h2></td>
+                        <td class="payment"><h2>${{ sale.total + sale.commission }}</h2></td>
                     </tr>
 
                     {% else %}
