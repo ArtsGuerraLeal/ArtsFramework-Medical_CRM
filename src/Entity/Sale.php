@@ -58,10 +58,23 @@ class Sale
      */
     private $commission;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CreditSale", mappedBy="sale")
+     */
+    private $creditSales;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Discount", mappedBy="sale")
+     */
+    private $discounts;
+
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
         $this->payments = new ArrayCollection();
+        $this->creditSales = new ArrayCollection();
+        $this->discounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -202,4 +215,66 @@ class Sale
 
         return $this;
     }
+
+    /**
+     * @return Collection|CreditSale[]
+     */
+    public function getCreditSales(): Collection
+    {
+        return $this->creditSales;
+    }
+
+    public function addCreditSale(CreditSale $creditSale): self
+    {
+        if (!$this->creditSales->contains($creditSale)) {
+            $this->creditSales[] = $creditSale;
+            $creditSale->setSale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreditSale(CreditSale $creditSale): self
+    {
+        if ($this->creditSales->contains($creditSale)) {
+            $this->creditSales->removeElement($creditSale);
+            // set the owning side to null (unless already changed)
+            if ($creditSale->getSale() === $this) {
+                $creditSale->setSale(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection|Discount[]
+     */
+    public function getDiscounts(): Collection
+    {
+        return $this->discounts;
+    }
+
+    public function addDiscount(Discount $discount): self
+    {
+        if (!$this->discounts->contains($discount)) {
+            $this->discounts[] = $discount;
+            $discount->setSale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscount(Discount $discount): self
+    {
+        if ($this->discounts->contains($discount)) {
+            $this->discounts->removeElement($discount);
+            // set the owning side to null (unless already changed)
+            if ($discount->getSale() === $this) {
+                $discount->setSale(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

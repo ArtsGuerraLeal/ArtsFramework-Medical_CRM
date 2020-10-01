@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Discount;
 use App\Entity\Patient;
 use App\Entity\Payment;
 use App\Entity\PaymentMethod;
 use App\Entity\ProductSold;
 use App\Entity\Sale;
 use App\Repository\CategoryRepository;
+use App\Repository\DiscountRepository;
 use App\Repository\PatientRepository;
 use App\Repository\PaymentMethodRepository;
 use App\Repository\ProductRepository;
@@ -45,6 +47,10 @@ class SaleController extends AbstractController
      */
     private $saleRepository;
 
+    /**
+     * @var DiscountRepository
+     */
+    private $discountRepository;
 
     /**
      * @var CategoryRepository
@@ -57,13 +63,14 @@ class SaleController extends AbstractController
 
 
 
-    public function __construct(CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
+    public function __construct(DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->saleRepository = $saleRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->discountRepository = $discountRepository;
     }
 
     /**
@@ -95,6 +102,7 @@ class SaleController extends AbstractController
 
         $user = $this->security->getUser();
         $sale = $this->saleRepository->findOneBy(['id'=>$id]);
+        //$discount = $this->discountRepository->findBy(['sale'=>$id]);
 
         if ($this->container->has('profiler'))
         {
@@ -103,7 +111,8 @@ class SaleController extends AbstractController
         return $this->render('reciept/reciept.html.twig', [
             'sale' => $sale,
             'products' => $sale->getProducts(),
-            'payments'=>$sale->getPayments()
+            'payments'=>$sale->getPayments(),
+            'discounts'=>$sale->getDiscounts()
         ]);
 
     }
@@ -146,6 +155,11 @@ class SaleController extends AbstractController
             $quantity = $request->request->get('quantity');
             $client = $request->request->get('client');
             $price = $request->request->get('price');
+
+            $discounts = $request->request->get('discountId');
+            $reason = $request->request->get('reason');
+            $discountAmount = $request->request->get('discount');
+
         }
         else {
             die();
@@ -194,7 +208,23 @@ class SaleController extends AbstractController
                 $productSold->setPrice($price[$count]);
             }else{
                 $productSold->setPrice($product->getPrice()*$quantity[$count]);
-                $productSold->setDiscount(($product->getPrice()*$quantity[$count]) - $price[$count]);
+                $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+
+                $discountCount = 0;
+                foreach ($discounts as $discount){
+
+                    if($discount == $prod){
+                        $productDiscount = new Discount();
+                        $productDiscount->setProductSold($productSold);
+                        $productDiscount->setName($reason[$discountCount]);
+                        $productDiscount->setAmount($discountAmount[$discountCount]);
+                        $productDiscount->setSale($sale);
+                        $em->persist($productDiscount);
+                    }
+                    $discountCount++;
+
+                }
+
                 }
             }
             $em->persist($productSold);

@@ -118,6 +118,11 @@ class Company
      */
     private $StripeId;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Client", mappedBy="company")
+     */
+    private $clients;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -130,6 +135,7 @@ class Company
         $this->staff = new ArrayCollection();
         $this->staffPositions = new ArrayCollection();
         $this->customForms = new ArrayCollection();
+        $this->clients = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -568,6 +574,37 @@ class Company
     public function setStripeId(?string $StripeId): self
     {
         $this->StripeId = $StripeId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Client[]
+     */
+    public function getClients(): Collection
+    {
+        return $this->clients;
+    }
+
+    public function addClient(Client $client): self
+    {
+        if (!$this->clients->contains($client)) {
+            $this->clients[] = $client;
+            $client->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClient(Client $client): self
+    {
+        if ($this->clients->contains($client)) {
+            $this->clients->removeElement($client);
+            // set the owning side to null (unless already changed)
+            if ($client->getCompany() === $this) {
+                $client->setCompany(null);
+            }
+        }
 
         return $this;
     }

@@ -101,6 +101,12 @@
             background-color: #D5D5D5;
         }
 
+        #invoice-POS .paymentmethod {
+            font-size: .7em;
+            text-align: left;
+
+        }
+
         #invoice-POS .tabletotal {
             font-size: .8em;
         }
@@ -158,10 +164,14 @@
 
 <div id="invoice-POS">
 
+    <p class="timestamp">{{sale.id}}</p><br>
     <center id="top">
         <p class = "timestamp"> Fecha:  {{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</p>
 
+
+
         {%  if app.user.company.image != null %}
+
             <img class="rounded-circle logo-pic bg-light " src="{{ '/uploads/' ~ app.user.company.image }}" />
             <div class="info">
                 <h2>{{  app.user.company.name }} Valle</h2>
@@ -205,7 +215,13 @@
                     <tr class="service">
                         <td class="tableitem"><p class="itemtext">{{ product.product.name }}</p>
                             {% if product.discount is not null %}
-                            <p class="discounttext">Descuento $-{{ product.discount }}</p>
+
+                                {% for discount in discounts %}
+                                    {% if product.id == discount.productSold.id %}
+                                    <p class="discounttext">{{ discount.name}} $-{{ discount.amount }}</p>
+                                    {% endif %}
+                                {% endfor %}
+
                             {% endif %}
 
                         </td>
@@ -269,11 +285,22 @@
 
 
 
+
+
             </table>
         </div><!--End Table-->
 
+
+            <div id="bot" class="info">
+                  <h2 class="service"> Metodos de Pago</h2>
+                {% for payment in payments %}
+                        <h2  class="paymentmethod">{{ payment.type.name }}  ${{ payment.amount }}</h2>
+                {% endfor %}
+            </div>
+
+
         <div id="legalcopy">
-            <p class="legal "><strong>Muchas Gracias Por Su Compra!</strong>
+            <p class="legal "><strong>Exelencia y Calidad en Medicina Estetica</strong>
             </p>
         </div>
 

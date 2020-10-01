@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -42,6 +44,16 @@ class ProductSold
      * @ORM\Column(type="float", nullable=true)
      */
     private $discount;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Discount", mappedBy="productSold")
+     */
+    private $discounts;
+
+    public function __construct()
+    {
+        $this->discounts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,6 +116,37 @@ class ProductSold
     public function setDiscount(?float $discount): self
     {
         $this->discount = $discount;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Discount[]
+     */
+    public function getDiscounts(): Collection
+    {
+        return $this->discounts;
+    }
+
+    public function addDiscount(Discount $discount): self
+    {
+        if (!$this->discounts->contains($discount)) {
+            $this->discounts[] = $discount;
+            $discount->setProductSold($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscount(Discount $discount): self
+    {
+        if ($this->discounts->contains($discount)) {
+            $this->discounts->removeElement($discount);
+            // set the owning side to null (unless already changed)
+            if ($discount->getProductSold() === $this) {
+                $discount->setProductSold(null);
+            }
+        }
 
         return $this;
     }

@@ -33,9 +33,20 @@ class PaymentMethod
      */
     private $commissionAmount;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CreditPayment", mappedBy="type")
+     */
+    private $creditPayments;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $image;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
+        $this->creditPayments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,6 +105,49 @@ class PaymentMethod
     public function setCommissionAmount(?float $commissionAmount): self
     {
         $this->commissionAmount = $commissionAmount;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CreditPayment[]
+     */
+    public function getCreditPayments(): Collection
+    {
+        return $this->creditPayments;
+    }
+
+    public function addCreditPayment(CreditPayment $creditPayment): self
+    {
+        if (!$this->creditPayments->contains($creditPayment)) {
+            $this->creditPayments[] = $creditPayment;
+            $creditPayment->setType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreditPayment(CreditPayment $creditPayment): self
+    {
+        if ($this->creditPayments->contains($creditPayment)) {
+            $this->creditPayments->removeElement($creditPayment);
+            // set the owning side to null (unless already changed)
+            if ($creditPayment->getType() === $this) {
+                $creditPayment->setType(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }
