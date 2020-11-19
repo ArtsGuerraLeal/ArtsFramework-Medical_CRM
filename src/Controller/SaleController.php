@@ -15,6 +15,8 @@ use App\Repository\PaymentMethodRepository;
 use App\Repository\ProductRepository;
 use App\Repository\SaleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -92,6 +94,40 @@ class SaleController extends AbstractController
     }
 
     /**
+     * @Route("/discountfix", name="sale_discount_fix", methods={"GET"})
+     * @param SaleRepository $saleRepository
+     * @return JsonResponse
+     */
+    public function FixDiscounts(SaleRepository $saleRepository) : JsonResponse
+    {
+
+        $user = $this->security->getUser();
+        $sales = $this->saleRepository->findByCompany($user->getCompany());
+        $em = $this->getDoctrine()->getManager();
+        foreach($sales as $sale){
+           $total_discount = 0;
+           $discounts = $sale->getDiscounts();
+
+            foreach($discounts as $discount) {
+
+                $total_discount = $total_discount + $discount->getAmount();
+
+            }
+
+            $sale->setDiscount($total_discount);
+            $em->persist($sale);
+            $em->flush();
+
+        }
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson("{1}");
+
+        return $returnResponse;
+
+    }
+
+
+    /**
      * @Route("/{id}/reciept", name="reciept", methods={"GET"})
      * @param SaleRepository $saleRepository
      * @param $id
@@ -145,7 +181,7 @@ class SaleController extends AbstractController
      */
     public function create(Request $request):JsonResponse
     {
-
+        $totalDiscount = 0;
         if ($request->getMethod() == 'POST')
         {
             $total = $request->request->get('total');
@@ -204,29 +240,33 @@ class SaleController extends AbstractController
             if($product->getPrice()==0){
                 $productSold->setPrice($price[$count]);
             }else{
-            if($product->getPrice()/$quantity[$count]==$price[$count]){
-                $productSold->setPrice($price[$count]);
-            }else{
-                $productSold->setPrice($product->getPrice()*$quantity[$count]);
-                $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+                if($product->getPrice()*$quantity[$count]== $price[$count]){
+                    $productSold->setPrice($price[$count]);
+                }else{
+                    $productSold->setPrice($product->getPrice()*$quantity[$count]);
+                    $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
 
-                $discountCount = 0;
-                foreach ($discounts as $discount){
+                    $discountCount = 0;
 
-                    if($discount == $prod){
-                        $productDiscount = new Discount();
-                        $productDiscount->setProductSold($productSold);
-                        $productDiscount->setName($reason[$discountCount]);
-                        $productDiscount->setAmount($discountAmount[$discountCount]);
-                        $productDiscount->setSale($sale);
-                        $em->persist($productDiscount);
+                    foreach ($discounts as $discount){
+
+                        if($discount == $prod){
+                            $productDiscount = new Discount();
+                            $productDiscount->setProductSold($productSold);
+                            $productDiscount->setName($reason[$discountCount]);
+                            $productDiscount->setAmount($discountAmount[$discountCount]);
+                            $productDiscount->setSale($sale);
+                            $totalDiscount = $totalDiscount + $discountAmount[$discountCount];
+                            $em->persist($productDiscount);
+                        }
+                        $discountCount++;
+
+                        }
+                    $sale->setDiscount($totalDiscount);
                     }
-                    $discountCount++;
-
-                }
-
-                }
             }
+
+            $em->persist($sale);
             $em->persist($productSold);
 
             $em->persist($product);
@@ -289,6 +329,8 @@ class SaleController extends AbstractController
         }
 
         $sale->setCommission($commission);
+        $sale->setIsPaid(true);
+        $sale->setCompany($this->security->getUser()->getCompany());
         $em->persist($sale);
         $em->flush();
 
@@ -298,6 +340,52 @@ class SaleController extends AbstractController
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);
 
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/fetchproducts", name="fetch_products", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function fetchProducts(Request $request, ProductRepository $repository):JsonResponse
+    {
+        if ($request->getMethod() == 'POST')
+        {
+            $start = $request->request->get('start');
+            $length = $request->request->get('length');
+
+        }
+        else {
+            die();
+        }
+
+
+        $user = $this->security->getUser();
+        $results = $this->productRepository->findDataTable($start, $length,$user->getCompany());
+        $total_objects_count = $this->productRepository->countElements($user->getCompany());
+
+        $objects = $results["results"];
+
+
+        $filtered_objects_count = $results["countResult"];
+
+
+        $response = '{"recordsTotal": '.$total_objects_count.',"recordsFiltered": '.$filtered_objects_count.',"data": ';
+
+
+
+        $response .= json_encode($objects);
+
+        $response .= '}';
+
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson(json_encode($objects));
         return $returnResponse;
 
     }

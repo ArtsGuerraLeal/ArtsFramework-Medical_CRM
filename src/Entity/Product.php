@@ -63,9 +63,18 @@ class Product
      */
     private $isMultiple;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="products")
+     */
+    private $company;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
+    }
+
+    public function __toString() {
+        return $this->name;
     }
 
     public function getId(): ?int
@@ -196,6 +205,18 @@ class Product
     public function setIsMultiple(?bool $isMultiple): self
     {
         $this->isMultiple = $isMultiple;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): self
+    {
+        $this->company = $company;
 
         return $this;
     }

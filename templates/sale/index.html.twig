@@ -278,7 +278,35 @@
         //$(window).on('load', function() {
            // $('#myModal').modal('handleUpdate');
         //});
+        /*
+        $(document).ready(function(data){
 
+            console.log("HI");
+
+            $.ajax({
+                url:"{{ path('fetch_products') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    start:0,
+                    length:10
+                },
+                success:function (php_result) {
+                    if(php_result !== '[]') {
+
+                        console.log(php_result);
+
+                    }else{
+                        console.log("No results");
+
+                    }
+                }
+            });
+
+
+        });
+
+       */
 
 
         $('#myModal').on('hide.bs.modal', function (e) {

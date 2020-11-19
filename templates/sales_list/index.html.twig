@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sales index{% endblock %}
+
+{% block body %}
+    <div class="app-page-title mb-1">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Catalogo
+                    <div class="page-title-subheading">Catalogo de Ventas
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Catalogo</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped " id="dataTable" >
+                    <thead>
+                    <tr>
+                        <th style="width:10%" >ID</th>
+                        <th style="width:10%" >Estatus de Pago</th>
+                        <th style="width:10%" >Cliente</th>
+
+                        <th style="width:10%" >Total</th>
+                        <th style="width:10%" >Comisión</th>
+                        <th style="width:10%">Fecha</th>
+                        <th style="width:10%">Acciones</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.id }}</td>
+
+                            {% if sale.isPaid == 1 %}
+                            <td style="color: #0ba360">Pagado</td>
+                            {% else %}
+                                <td style="color: #a71d2a">No Pagado</td>
+
+                            {% endif %}
+                            <td>{{ sale.client }} </td>
+                            <td>${{ sale.total + sale.commission }} MXN</td>
+                            <td>${{ sale.commission}} MXN</td>
+                            <td>{{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</td>
+                            <td>
+                                <div class="btn btn-primary btn-sm">
+                                    <a class="text-white" href="{{ path('sales_list_show', {'id': sale.id}) }}">Detalles</a>
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="btn btn-primary ">
+                <a class="text-white" href="{{ path('product_new') }}">Nuevo Producto</a>
+            </div>
+        </div>
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+    </div>
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+    $('#dataTable').DataTable( {
+        "order": [[ 0, "desc" ]]
+    } );
+
+    });
+
+
+</script>
+{% endblock %}
+

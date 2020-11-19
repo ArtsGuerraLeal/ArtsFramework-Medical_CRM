@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\AppointmentRepository;
+use App\Repository\SaleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,10 +30,17 @@ class HomeController extends AbstractController
 
     private $security;
 
+    /**
+     * @var SaleRepository
+     */
+    private $saleRepository;
 
-    public function __construct(AppointmentRepository $appointmentRepository, EntityManagerInterface $entityManager,Security $security){
+
+    public function __construct(SaleRepository $saleRepository, AppointmentRepository $appointmentRepository, EntityManagerInterface $entityManager,Security $security){
         $this->entityManager = $entityManager;
         $this->appointmentRepository = $appointmentRepository;
+        $this->saleRepository = $saleRepository;
+
         $this->security = $security;
 
     }
@@ -51,6 +59,21 @@ class HomeController extends AbstractController
             'appointments' => $appointmentRepository->findByCompany($user->getCompany()),
         ]);
 
+    }
+
+    /**
+     * @Route("/sales", name="sales_dashboard", methods={"GET"})
+     * @param SaleRepository $saleRepository
+     * @return Response
+     */
+    public function SaleDashboard(SaleRepository $saleRepository): Response
+    {
+        $user = $this->security->getUser();
+
+        return $this->render('home/SalesDashboard.html.twig', [
+            'controller_name' => 'HomeController',
+            'sales' => $saleRepository->findByCompany($user->getCompany()),
+        ]);
 
     }
 

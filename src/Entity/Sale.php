@@ -68,6 +68,26 @@ class Sale
      */
     private $discounts;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isPaid;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="sales")
+     */
+    private $company;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sales")
+     */
+    private $user;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $discount;
+
 
     public function __construct()
     {
@@ -276,5 +296,55 @@ class Sale
 
         return $this;
     }
+
+    public function getIsPaid(): ?bool
+    {
+        return $this->isPaid;
+    }
+
+    public function setIsPaid(?bool $isPaid): self
+    {
+        $this->isPaid = $isPaid;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): self
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getDiscount(): ?float
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(?float $discount): self
+    {
+        $this->discount = $discount;
+
+        return $this;
+    }
+
+
 
 }

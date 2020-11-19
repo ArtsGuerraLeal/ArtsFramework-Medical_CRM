@@ -43,6 +43,11 @@ class PaymentMethod
      */
     private $image;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\company", inversedBy="paymentMethods")
+     */
+    private $company;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -148,6 +153,18 @@ class PaymentMethod
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getCompany(): ?company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?company $company): self
+    {
+        $this->company = $company;
 
         return $this;
     }

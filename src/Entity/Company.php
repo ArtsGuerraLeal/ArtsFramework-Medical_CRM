@@ -123,6 +123,43 @@ class Company
      */
     private $clients;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Sale", mappedBy="company")
+     */
+    private $sales;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="company")
+     */
+    private $products;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ProductSold", mappedBy="company")
+     */
+    private $productSolds;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="company")
+     */
+    private $payments;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Discount", mappedBy="company")
+     */
+    private $discounts;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PaymentMethod", mappedBy="company")
+     */
+    private $paymentMethods;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="company")
+     */
+    private $categories;
+
+
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -136,6 +173,13 @@ class Company
         $this->staffPositions = new ArrayCollection();
         $this->customForms = new ArrayCollection();
         $this->clients = new ArrayCollection();
+        $this->sales = new ArrayCollection();
+        $this->products = new ArrayCollection();
+        $this->productSolds = new ArrayCollection();
+        $this->payments = new ArrayCollection();
+        $this->discounts = new ArrayCollection();
+        $this->paymentMethods = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -608,6 +652,225 @@ class Company
 
         return $this;
     }
+
+    /**
+     * @return Collection|Sale[]
+     */
+    public function getSales(): Collection
+    {
+        return $this->sales;
+    }
+
+    public function addSale(Sale $sale): self
+    {
+        if (!$this->sales->contains($sale)) {
+            $this->sales[] = $sale;
+            $sale->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSale(Sale $sale): self
+    {
+        if ($this->sales->contains($sale)) {
+            $this->sales->removeElement($sale);
+            // set the owning side to null (unless already changed)
+            if ($sale->getCompany() === $this) {
+                $sale->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+            $product->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        if ($this->products->contains($product)) {
+            $this->products->removeElement($product);
+            // set the owning side to null (unless already changed)
+            if ($product->getCompany() === $this) {
+                $product->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductSold[]
+     */
+    public function getProductSolds(): Collection
+    {
+        return $this->productSolds;
+    }
+
+    public function addProductSold(ProductSold $productSold): self
+    {
+        if (!$this->productSolds->contains($productSold)) {
+            $this->productSolds[] = $productSold;
+            $productSold->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductSold(ProductSold $productSold): self
+    {
+        if ($this->productSolds->contains($productSold)) {
+            $this->productSolds->removeElement($productSold);
+            // set the owning side to null (unless already changed)
+            if ($productSold->getCompany() === $this) {
+                $productSold->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Payment[]
+     */
+    public function getPayments(): Collection
+    {
+        return $this->payments;
+    }
+
+    public function addPayment(Payment $payment): self
+    {
+        if (!$this->payments->contains($payment)) {
+            $this->payments[] = $payment;
+            $payment->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removePayment(Payment $payment): self
+    {
+        if ($this->payments->contains($payment)) {
+            $this->payments->removeElement($payment);
+            // set the owning side to null (unless already changed)
+            if ($payment->getCompany() === $this) {
+                $payment->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Discount[]
+     */
+    public function getDiscounts(): Collection
+    {
+        return $this->discounts;
+    }
+
+    public function addDiscount(Discount $discount): self
+    {
+        if (!$this->discounts->contains($discount)) {
+            $this->discounts[] = $discount;
+            $discount->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscount(Discount $discount): self
+    {
+        if ($this->discounts->contains($discount)) {
+            $this->discounts->removeElement($discount);
+            // set the owning side to null (unless already changed)
+            if ($discount->getCompany() === $this) {
+                $discount->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PaymentMethod[]
+     */
+    public function getPaymentMethods(): Collection
+    {
+        return $this->paymentMethods;
+    }
+
+    public function addPaymentMethod(PaymentMethod $paymentMethod): self
+    {
+        if (!$this->paymentMethods->contains($paymentMethod)) {
+            $this->paymentMethods[] = $paymentMethod;
+            $paymentMethod->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removePaymentMethod(PaymentMethod $paymentMethod): self
+    {
+        if ($this->paymentMethods->contains($paymentMethod)) {
+            $this->paymentMethods->removeElement($paymentMethod);
+            // set the owning side to null (unless already changed)
+            if ($paymentMethod->getCompany() === $this) {
+                $paymentMethod->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+            // set the owning side to null (unless already changed)
+            if ($category->getCompany() === $this) {
+                $category->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 
   
 

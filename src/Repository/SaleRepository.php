@@ -19,6 +19,22 @@ class SaleRepository extends ServiceEntityRepository
         parent::__construct($registry, Sale::class);
     }
 
+    /**
+     * @param $companyId
+     * @return Sale[] Returns an array of Appointment objects
+     */
+
+    public function findByCompany($companyId)
+    {
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->setParameter('val', $companyId)
+            ->orderBy('sale.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return Sale[] Returns an array of Sale objects
     //  */

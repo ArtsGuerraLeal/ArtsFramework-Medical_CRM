@@ -50,6 +50,11 @@ class ProductSold
      */
     private $discounts;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="productSolds")
+     */
+    private $company;
+
     public function __construct()
     {
         $this->discounts = new ArrayCollection();
@@ -147,6 +152,18 @@ class ProductSold
                 $discount->setProductSold(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): self
+    {
+        $this->company = $company;
 
         return $this;
     }

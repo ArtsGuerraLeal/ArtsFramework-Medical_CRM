@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sale {{ sale.id }}{% endblock %}
+
+{% block body %}
+    <h1>Product</h1>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped " id="dataTable" >
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ sale.id }}</td>
+            </tr>
+            <tr>
+                <th>Cliente</th>
+                <td>{{ sale.client }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ sale.total }}</td>
+            </tr>
+
+            {% for product in sale.products %}
+            <tr>
+                <th>Product</th>
+                <td>{{ product.product.name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <a href="{{ path('sales_list') }}">back to list</a>
+
+
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
+
+
+
+{% endblock %}

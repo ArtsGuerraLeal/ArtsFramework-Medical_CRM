@@ -8,6 +8,7 @@ framework:
     session:
         enabled: true
         handler_id: 'session.handler.native_file'
+        cookie_lifetime: 172800
         cookie_secure: auto
         cookie_samesite: lax
     #esi: true

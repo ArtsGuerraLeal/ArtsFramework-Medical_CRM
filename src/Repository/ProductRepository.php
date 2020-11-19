@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 /**
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
@@ -29,6 +31,69 @@ class ProductRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult()
             ;
+    }
+
+    public function countElements($companyId)
+    {
+        try {
+            return $this->createQueryBuilder('product')
+                ->select("count(product.id)")
+                ->where('product.company = :val')
+                ->setParameter('val', $companyId)
+                ->orderBy('product.id', 'ASC')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException $e) {
+        } catch (NonUniqueResultException $e) {
+        }
+    }
+
+    /**
+     * @param $start
+     * @param $length
+     * @param $companyId
+     * @return Product[] Returns an array of product objects
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function findDataTable($start, $length,$companyId)
+    {
+
+        $query = $this->createQueryBuilder('product');
+        $countQuery = $this->createQueryBuilder('product');
+
+        $countQuery->select('COUNT(product)');
+
+        $query->select('product.id')
+            ->addSelect('product.name')
+            ->addSelect('product.price')
+            ->addSelect('product.quantity')
+            ->addSelect('category.name as category_name')
+            ->addSelect('product.image')
+            ->addSelect('product.isTaxable')
+            ->addSelect('product.isActive')
+            ->addSelect('product.isMultiple')
+            ->where('product.company = :val')
+            ->leftJoin('product.category', 'category');
+
+
+
+
+        $query
+            ->setParameter('val', $companyId)
+            ->setFirstResult($start)
+            ->setMaxResults($length)
+            ->orderBy('product.id', 'ASC');
+
+        $results = $query->getQuery()->getArrayResult();
+        $countResult = $countQuery->getQuery()->getSingleScalarResult();
+
+        return array(
+            "results" 		=> $results,
+            "countResult"	=> $countResult
+        );
+
+
     }
 
     // /**

@@ -37,6 +37,11 @@ class Discount
      */
     private $sale;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="discounts")
+     */
+    private $company;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +91,18 @@ class Discount
     public function setSale(?Sale $sale): self
     {
         $this->sale = $sale;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): self
+    {
+        $this->company = $company;
 
         return $this;
     }
