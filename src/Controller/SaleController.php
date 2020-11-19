@@ -217,7 +217,8 @@ class SaleController extends AbstractController
         }
 
         $sale->setTime(new \DateTime());
-
+        $sale->setUser($this->security->getUser());
+        $sale->setCompany($this->security->getUser()->getCompany());
 
 
         $em->persist($sale);
@@ -245,6 +246,7 @@ class SaleController extends AbstractController
                 }else{
                     $productSold->setPrice($product->getPrice()*$quantity[$count]);
                     $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+                    $productSold->setCompany($this->security->getUser()->getCompany());
 
                     $discountCount = 0;
 
@@ -255,6 +257,8 @@ class SaleController extends AbstractController
                             $productDiscount->setProductSold($productSold);
                             $productDiscount->setName($reason[$discountCount]);
                             $productDiscount->setAmount($discountAmount[$discountCount]);
+                            $productDiscount->setCompany($this->security->getUser()->getCompany());
+
                             $productDiscount->setSale($sale);
                             $totalDiscount = $totalDiscount + $discountAmount[$discountCount];
                             $em->persist($productDiscount);
@@ -319,6 +323,7 @@ class SaleController extends AbstractController
             $payment->setType($paymentMethod);
             $payment->setAmount($amounts[$count]);
             $payment->setSale($sale);
+            $payment->setCompany($this->security->getUser()->getCompany());
 
             $em->persist($payment);
 
@@ -330,7 +335,6 @@ class SaleController extends AbstractController
 
         $sale->setCommission($commission);
         $sale->setIsPaid(true);
-        $sale->setCompany($this->security->getUser()->getCompany());
         $em->persist($sale);
         $em->flush();
 
