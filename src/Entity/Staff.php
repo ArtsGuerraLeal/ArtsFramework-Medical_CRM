@@ -46,11 +46,17 @@ class Staff
      */
     private $appointments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\SimpleAppointment", mappedBy="staff")
+     */
+    private $simpleAppointments;
+
 
 
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
+        $this->simpleAppointments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -136,6 +142,37 @@ class Staff
             // set the owning side to null (unless already changed)
             if ($appointment->getStaff() === $this) {
                 $appointment->setStaff(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SimpleAppointment[]
+     */
+    public function getSimpleAppointments(): Collection
+    {
+        return $this->simpleAppointments;
+    }
+
+    public function addSimpleAppointment(SimpleAppointment $simpleAppointment): self
+    {
+        if (!$this->simpleAppointments->contains($simpleAppointment)) {
+            $this->simpleAppointments[] = $simpleAppointment;
+            $simpleAppointment->setStaff($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSimpleAppointment(SimpleAppointment $simpleAppointment): self
+    {
+        if ($this->simpleAppointments->contains($simpleAppointment)) {
+            $this->simpleAppointments->removeElement($simpleAppointment);
+            // set the owning side to null (unless already changed)
+            if ($simpleAppointment->getStaff() === $this) {
+                $simpleAppointment->setStaff(null);
             }
         }
 

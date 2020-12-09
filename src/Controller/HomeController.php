@@ -54,6 +54,8 @@ class HomeController extends AbstractController
     {
         $user = $this->security->getUser();
 
+        if($user->getRoles())
+
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'appointments' => $appointmentRepository->findByCompany($user->getCompany()),

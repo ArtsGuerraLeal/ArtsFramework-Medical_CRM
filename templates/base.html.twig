@@ -107,6 +107,12 @@
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                         </a>
                                         <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+
+                                            {% for user in app.user.company.user %}
+                                                <button type="button" tabindex="0" class="dropdown-item"><a href="{{ path('app_switch_user', {'username': (user.username)}) }}">{{ user.username }}</a></button>
+                                            {% endfor %}
+                                            <button type="button" tabindex="0" class="dropdown-item"><a href="?_switch_user=_exit">Switch</a></button>
+
                                             <button type="button" tabindex="0" class="dropdown-item">User Account</button>
                                             <button type="button" tabindex="0" class="dropdown-item">Settings</button>
                                             <h6 tabindex="-1" class="dropdown-header">Header</h6>
@@ -485,6 +491,9 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item" href="{{ path('product_index') }}">Catalogo</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ path('simple_appointment_new') }}">Nueva Cita</a>
                                         </li>
                                         <div class="dropdown-divider"></div>
                                         <li>

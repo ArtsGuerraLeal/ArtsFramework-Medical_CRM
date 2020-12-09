@@ -34,9 +34,15 @@ class Client
      */
     private $creditSales;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Quote", mappedBy="client")
+     */
+    private $quotes;
+
     public function __construct()
     {
         $this->creditSales = new ArrayCollection();
+        $this->quotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -93,6 +99,37 @@ class Client
             // set the owning side to null (unless already changed)
             if ($creditSale->getClient() === $this) {
                 $creditSale->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Quote[]
+     */
+    public function getQuotes(): Collection
+    {
+        return $this->quotes;
+    }
+
+    public function addQuote(Quote $quote): self
+    {
+        if (!$this->quotes->contains($quote)) {
+            $this->quotes[] = $quote;
+            $quote->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuote(Quote $quote): self
+    {
+        if ($this->quotes->contains($quote)) {
+            $this->quotes->removeElement($quote);
+            // set the owning side to null (unless already changed)
+            if ($quote->getClient() === $this) {
+                $quote->setClient(null);
             }
         }
 

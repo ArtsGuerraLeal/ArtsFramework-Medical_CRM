@@ -75,6 +75,8 @@ class SaleController extends AbstractController
         $this->discountRepository = $discountRepository;
     }
 
+
+
     /**
      * @Route("/", name="sale", methods={"GET"})
      * @param ProductRepository $productRepository
@@ -86,6 +88,24 @@ class SaleController extends AbstractController
         $user = $this->security->getUser();
 
         return $this->render('sale/index.html.twig', [
+            'products' => $productRepository->findAll(),
+            'paymentMethods' => $this->paymentMethodRepository->findAll(),
+            'categories' => $this->categoryRepository->findAll()
+        ]);
+
+    }
+
+    /**
+     * @Route("/test", name="sale_test", methods={"GET"})
+     * @param ProductRepository $productRepository
+     * @return Response
+     */
+    public function test(ProductRepository $productRepository): Response
+    {
+
+        $user = $this->security->getUser();
+
+        return $this->render('sale/index_test.html.twig', [
             'products' => $productRepository->findAll(),
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
             'categories' => $this->categoryRepository->findAll()

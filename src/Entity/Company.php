@@ -158,6 +158,16 @@ class Company
      */
     private $categories;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Quote", mappedBy="company")
+     */
+    private $quotes;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ProductQuote", mappedBy="company")
+     */
+    private $productQuotes;
+
 
 
     public function __construct()
@@ -180,6 +190,8 @@ class Company
         $this->discounts = new ArrayCollection();
         $this->paymentMethods = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->quotes = new ArrayCollection();
+        $this->productQuotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -864,6 +876,68 @@ class Company
             // set the owning side to null (unless already changed)
             if ($category->getCompany() === $this) {
                 $category->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Quote[]
+     */
+    public function getQuotes(): Collection
+    {
+        return $this->quotes;
+    }
+
+    public function addQuote(Quote $quote): self
+    {
+        if (!$this->quotes->contains($quote)) {
+            $this->quotes[] = $quote;
+            $quote->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuote(Quote $quote): self
+    {
+        if ($this->quotes->contains($quote)) {
+            $this->quotes->removeElement($quote);
+            // set the owning side to null (unless already changed)
+            if ($quote->getCompany() === $this) {
+                $quote->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductQuote[]
+     */
+    public function getProductQuotes(): Collection
+    {
+        return $this->productQuotes;
+    }
+
+    public function addProductQuote(ProductQuote $productQuote): self
+    {
+        if (!$this->productQuotes->contains($productQuote)) {
+            $this->productQuotes[] = $productQuote;
+            $productQuote->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductQuote(ProductQuote $productQuote): self
+    {
+        if ($this->productQuotes->contains($productQuote)) {
+            $this->productQuotes->removeElement($productQuote);
+            // set the owning side to null (unless already changed)
+            if ($productQuote->getCompany() === $this) {
+                $productQuote->setCompany(null);
             }
         }
 

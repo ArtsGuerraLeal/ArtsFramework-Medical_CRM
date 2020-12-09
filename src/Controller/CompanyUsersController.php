@@ -37,7 +37,7 @@ class CompanyUsersController extends AbstractController
      */
     public function index(UserRepository $userRepository): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
+        //$this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
 
         $user = $this->security->getUser();
         return $this->render('company_users/index.html.twig', [
@@ -50,7 +50,6 @@ class CompanyUsersController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
 
         $companyUser = new CompanyUsers();
         $form = $this->createForm(CompanyUsersType::class, $companyUser);
@@ -75,7 +74,6 @@ class CompanyUsersController extends AbstractController
      */
     public function show(User $user): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
 
         return $this->render('company_users/show.html.twig', [
             'company_user' => $user,
@@ -89,7 +87,7 @@ class CompanyUsersController extends AbstractController
      */
     public function authorize(User $user): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
+        //$this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
 
         $user->setRoles(["ROLE_COMPANY_USER"]);
         $entityManager = $this->getDoctrine()->getManager();
@@ -104,7 +102,6 @@ class CompanyUsersController extends AbstractController
      */
     public function edit(Request $request, CompanyUsers $companyUser): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
 
         $form = $this->createForm(CompanyUsersType::class, $companyUser);
         $form->handleRequest($request);
@@ -126,7 +123,6 @@ class CompanyUsersController extends AbstractController
      */
     public function delete(Request $request, CompanyUsers $companyUser): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_COMPANY_ADMIN');
 
         if ($this->isCsrfTokenValid('delete'.$companyUser->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();

@@ -78,9 +78,15 @@ class User implements UserInterface, TwoFactorInterface
      */
     private $sales;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Quote", mappedBy="user")
+     */
+    private $quotes;
+
     public function __construct()
     {
         $this->sales = new ArrayCollection();
+        $this->quotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -283,6 +289,37 @@ class User implements UserInterface, TwoFactorInterface
             // set the owning side to null (unless already changed)
             if ($sale->getUser() === $this) {
                 $sale->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Quote[]
+     */
+    public function getQuotes(): Collection
+    {
+        return $this->quotes;
+    }
+
+    public function addQuote(Quote $quote): self
+    {
+        if (!$this->quotes->contains($quote)) {
+            $this->quotes[] = $quote;
+            $quote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuote(Quote $quote): self
+    {
+        if ($this->quotes->contains($quote)) {
+            $this->quotes->removeElement($quote);
+            // set the owning side to null (unless already changed)
+            if ($quote->getUser() === $this) {
+                $quote->setUser(null);
             }
         }
 

@@ -50,9 +50,15 @@ class Treatment
      */
     private $appointments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\SimpleAppointment", mappedBy="treatment")
+     */
+    private $simpleAppointments;
+
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
+        $this->simpleAppointments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -148,6 +154,37 @@ class Treatment
     public function setTimeToComplete(int $timeToComplete): self
     {
         $this->timeToComplete = $timeToComplete;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SimpleAppointment[]
+     */
+    public function getSimpleAppointments(): Collection
+    {
+        return $this->simpleAppointments;
+    }
+
+    public function addSimpleAppointment(SimpleAppointment $simpleAppointment): self
+    {
+        if (!$this->simpleAppointments->contains($simpleAppointment)) {
+            $this->simpleAppointments[] = $simpleAppointment;
+            $simpleAppointment->setTreatment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSimpleAppointment(SimpleAppointment $simpleAppointment): self
+    {
+        if ($this->simpleAppointments->contains($simpleAppointment)) {
+            $this->simpleAppointments->removeElement($simpleAppointment);
+            // set the owning side to null (unless already changed)
+            if ($simpleAppointment->getTreatment() === $this) {
+                $simpleAppointment->setTreatment(null);
+            }
+        }
 
         return $this;
     }

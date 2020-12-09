@@ -1,4 +1,6 @@
 security:
+    access_denied_url: /sale
+
     encoders:
         App\Entity\User:
             algorithm: auto
@@ -29,6 +31,7 @@ security:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
         main:
+            switch_user: true
             anonymous: true
             guard:
                 authenticators:
@@ -53,8 +56,14 @@ security:
     access_control:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/users,       roles: [ROLE_COMPANY_ADMIN,IS_AUTHENTICATED_FULLY] }
-        - { path: ^/dashboard,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/users,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/settings,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/staff,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/staffpositions,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/treatment,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/equipment,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/patient,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/dashboard,       roles: ROLE_COMPANY_ADMIN }
         - { path: ^/logout, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }

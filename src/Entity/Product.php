@@ -68,9 +68,15 @@ class Product
      */
     private $company;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ProductQuote", mappedBy="product")
+     */
+    private $productQuotes;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
+        $this->productQuotes = new ArrayCollection();
     }
 
     public function __toString() {
@@ -217,6 +223,37 @@ class Product
     public function setCompany(?Company $company): self
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductQuote[]
+     */
+    public function getProductQuotes(): Collection
+    {
+        return $this->productQuotes;
+    }
+
+    public function addProductQuote(ProductQuote $productQuote): self
+    {
+        if (!$this->productQuotes->contains($productQuote)) {
+            $this->productQuotes[] = $productQuote;
+            $productQuote->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductQuote(ProductQuote $productQuote): self
+    {
+        if ($this->productQuotes->contains($productQuote)) {
+            $this->productQuotes->removeElement($productQuote);
+            // set the owning side to null (unless already changed)
+            if ($productQuote->getProduct() === $this) {
+                $productQuote->setProduct(null);
+            }
+        }
 
         return $this;
     }

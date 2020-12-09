@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New SimpleAppointment{% endblock %}
+
+{% block body %}
+    <h1>Create new SimpleAppointment</h1>
+
+    {{ include('simple_appointment/_form.html.twig') }}
+
+    <a href="{{ path('simple_appointment_index') }}">back to list</a>
+{% endblock %}
