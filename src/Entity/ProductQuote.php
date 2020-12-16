@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -39,7 +41,7 @@ class ProductQuote
     private $price;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     private $discount;
 
@@ -48,6 +50,16 @@ class ProductQuote
      * @ORM\JoinColumn(nullable=false)
      */
     private $company;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Discount", mappedBy="productQuote")
+     */
+    private $discounts;
+
+    public function __construct()
+    {
+        $this->discounts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -122,6 +134,37 @@ class ProductQuote
     public function setCompany(?Company $company): self
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Discount[]
+     */
+    public function getDiscounts(): Collection
+    {
+        return $this->discounts;
+    }
+
+    public function addDiscount(Discount $discount): self
+    {
+        if (!$this->discounts->contains($discount)) {
+            $this->discounts[] = $discount;
+            $discount->setProductQuote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscount(Discount $discount): self
+    {
+        if ($this->discounts->contains($discount)) {
+            $this->discounts->removeElement($discount);
+            // set the owning side to null (unless already changed)
+            if ($discount->getProductQuote() === $this) {
+                $discount->setProductQuote(null);
+            }
+        }
 
         return $this;
     }

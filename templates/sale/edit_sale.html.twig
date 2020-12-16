@@ -1,19 +1,13 @@
 {% extends 'base.html.twig' %}
 
-
-
-
 {% block title %}Modulo de Venta{% endblock %}
 
 {% block body %}
-
-
 
     <div class="card mb-3">
     <div class="card-header">
         <i class="fas fa-table"></i>
         Catalogo
-
     </div>
 
     <div class="card-body">
@@ -30,7 +24,6 @@
         <div class ="row">
             <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
                 <h1>Productos</h1>
-
 
                 <div class="search-button input-group">
                     <input id="product_search" class="form-control rounded my-1" type="text" placeholder="Codigo de Barras">
@@ -104,7 +97,7 @@
                     <table id="cart" class="cart-table table " style="overflow-y:scroll;height:330px;display:block;" >
                         <p>Cliente<p/>
                         <div class="input-group mb-3">
-                            <input type="text" id="client_name" class="form-control" placeholder="Nombre">
+                            <input type="text" id="client_name" class="form-control" placeholder="Nombre" value="{{ sale.client }}">
                             <div class="input-group-append">
                                 <button class="myBtn btn btn-primary mr-1 myBtn" id="myBtn" type="button" data-toggle="modal" data-target="#myModal">Buscar</button>
                             </div>
@@ -121,20 +114,25 @@
                         </thead>
                         <tbody>
 
+                        {% for prodsold in productsold %}
+
+                            <tr id="{{ prodsold.product.id }}"><td >{{ prodsold.product.name }}</td><td id="quantity">{{ prodsold.amount }}</td><td id="price">{{ prodsold.price - prodsold.discount }}</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>
+                        {% endfor %}
+
                             <tr>
                                 <td>Subtotal:</td>
-                                <td id="subtotal">0.00</td>
+                                <td id="subtotal">{{ sale.subtotal }}</td>
 
                             </tr>
 
                             <tr>
                                 <td>IVA:</td>
-                                <td id="tax">0.00</td>
+                                <td id="tax">{{ sale.tax }}</td>
 
                             </tr>
                             <tr>
                                 <td>Total:</td>
-                                <td id="total">0.00</td>
+                                <td id="total">{{ sale.total }}</td>
 
                             </tr>
 
@@ -152,7 +150,10 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% for discount in discounts %}
 
+                        <tr id="{{ discount.productSold.product.id }}"><td>{{ discount.productSold.product.name }}</td><td id="discount_reason">{{ discount.name }}</td><td id="price">{{ discount.amount }}</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>
+                    {% endfor %}
 
                     </tbody>
                 </table>
@@ -218,8 +219,6 @@
     </script>
 
     <script>
-
-
         filterSelection("all");
         function filterSelection(c) {
             var x, i;
@@ -271,9 +270,12 @@
 
     </script>
 
-
-
     <script type="text/javascript">
+
+        $(document).ready(function(data){
+
+
+        });
 
         //$(window).on('load', function() {
            // $('#myModal').modal('handleUpdate');
@@ -349,39 +351,6 @@
 
             $('#ParentContainer').scroll(function() {
                 $('#FixedDiv').css('top', $(this).scrollTop());
-            });
-
-            $(document).on('click', '.remove_discount', function(){
-            var prodID = $(this).parent().parent().attr('id');
-            var discount = parseFloat($(this).parent().parent().children()[2].innerText);
-            var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
-            var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
-
-            var total = document.querySelector('#total');
-            var subtotal = document.querySelector('#subtotal');
-            var tax = document.querySelector('#tax');
-
-            var cellVal = $(".cart-table tr td").filter(function() {
-                return $(this).text() === prodName;
-            });
-
-            if(cellVal.text() !== ""){
-               var price = parseFloat(cellVal.parent().children()[2].innerText);
-               cellVal.parent().children()[2].innerText = (price + discount);
-
-            }
-
-                if(prodTaxable ==="1"){
-                    tax.innerText = (parseFloat(tax.innerText) + (discount * .16)).toFixed(2);
-                    total.innerText = (parseFloat(total.innerText) + discount).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount - (discount*.16)) ).toFixed(2);
-                }else{
-                    total.innerText = (parseFloat(total.innerText) + (discount)).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount)).toFixed(2);
-                }
-
-            $(this).parent().parent().remove();
-
             });
 
             $(document).on('click', '.remove_all', function(){
@@ -474,7 +443,7 @@
                 var discount_cart = $('.cart-discount');
 
                 if (discount!=null && $.isNumeric(discount) && discount < price){
-                    $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
+                    $('.cart-discount > tbody:last-child').prepend('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
                     $(this).parent().parent().children()[2].innerText = price - discount;
 
                     if(prodTaxable ==="1"){
@@ -494,8 +463,29 @@
                 var quantity = $(this).parent().parent().children()[1].innerText;
                 var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
                 var prodID = $(this).parent().parent().attr('id');
+
+                var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
+
                 var productCard = $("img[data-id='" + prodID +"']").parent().children('h6').children('p');
                 var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
+
+                var discount_cart = $('.cart-discount');
+                var discountAmount = 0;
+                var cellVal = $(".cart-discount tr td").filter(function() {
+                    return $(this).text() === prodName;
+                });
+                
+                if(cellVal.text() !== ""){
+                discountAmount = parseFloat(cellVal.parent().children()[2].innerText);
+                var newProdPrice = prodPrice + discountAmount/parseInt(quantity);
+                console.log("Discount amt: " + discountAmount);
+                console.log("Prod price: " + newProdPrice);
+                console.log("Prod price: " + prodPrice);
+
+                cellVal.parent().remove();
+                $(this).parent().parent().children()[2].innerText = newProdPrice * parseInt(quantity);
+                prodPrice = newProdPrice;
+            }
 
                 var total = document.querySelector('#total');
                 var subtotal = document.querySelector('#subtotal');
@@ -520,19 +510,77 @@
                     var price = parseFloat($(this).parent().parent().children()[2].innerText);
                     $(this).parent().parent().children()[2].innerText = price - prodPrice;
 
+                    if(discountAmount===0){
+                    prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+                    }else{
+                    prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+                    prodPrice = newProdPrice;
+                    }
+
+
                 }
 
 
 
                 if(prodTaxable ==="1"){
+                    if(discountAmount===0){
                     tax.innerText = (parseFloat(tax.innerText) - (prodPrice*.16)).toFixed(2);
-                    total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice - (prodPrice*.16)) ).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) - prodPrice ).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice - (prodPrice*.16))  ).toFixed(2);
+                    
+                    }else{
+                    tax.innerText = (parseFloat(tax.innerText) - (prodPrice*.16) + (discountAmount*.16)).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + discountAmount - prodPrice).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice - (prodPrice*.16)) + (discountAmount - (discountAmount*.16))).toFixed(2);
+                    }
+                    
                 }else{
+
+                    if(discountAmount===0){
                     total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
                     subtotal.innerText = (parseFloat(subtotal.innerText) - prodPrice).toFixed(2);
+                    }else{
+                    total.innerText = (parseFloat(total.innerText) + discountAmount - prodPrice).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + discountAmount - prodPrice).toFixed(2);    
+                    }
+                    
 
                 }
+
+
+            });
+
+            $(document).on('click', '.remove_discount', function(){
+            var prodID = $(this).parent().parent().attr('id');
+            var discount = parseFloat($(this).parent().parent().children()[2].innerText);
+            var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
+            var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
+
+            var total = document.querySelector('#total');
+            var subtotal = document.querySelector('#subtotal');
+            var tax = document.querySelector('#tax');
+
+            var cellVal = $(".cart-table tr td").filter(function() {
+                return $(this).text() === prodName;
+            });
+
+            if(cellVal.text() !== ""){
+               var price = parseFloat(cellVal.parent().children()[2].innerText);
+               cellVal.parent().children()[2].innerText = (price + discount);
+
+            }
+
+                if(prodTaxable ==="1"){
+                    tax.innerText = (parseFloat(tax.innerText) + (discount * .16)).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + discount).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount - (discount*.16)) ).toFixed(2);
+                }else{
+                    total.innerText = (parseFloat(total.innerText) + (discount)).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount)).toFixed(2);
+                }
+
+            $(this).parent().parent().remove();
+
 
 
             });
@@ -936,7 +984,7 @@
                 }
 
                 $.ajax({
-                    url:"{{ path('create_sale') }}",
+                    url:"{{ path('sale_edit2') }}",
                     type: "POST",
                     data:{
                         products:product_ids,
@@ -948,7 +996,8 @@
                         price:prices,
                         discountId:discount_product_ids,
                         reason:reasons,
-                        discount:discounts
+                        discount:discounts,
+                        saleID:{{ sale.id }}
 
                     },
                     success:function (php_result) {

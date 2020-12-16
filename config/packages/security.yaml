@@ -57,6 +57,9 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/users,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/sales,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/product,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/appointment,       roles: ROLE_COMPANY_ADMIN }
         - { path: ^/settings,       roles: ROLE_COMPANY_ADMIN }
         - { path: ^/staff,       roles: ROLE_COMPANY_ADMIN }
         - { path: ^/staffpositions,       roles: ROLE_COMPANY_ADMIN }

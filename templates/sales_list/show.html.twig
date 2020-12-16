@@ -20,6 +20,16 @@
                 <td>{{ sale.total }}</td>
             </tr>
 
+            <tr>
+                <th>Fecha</th>
+                <td>{{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</td>
+            </tr>
+
+            <tr>
+                <th>Vendedor</th>
+                <td>{{ sale.user.firstname ~ " " ~ sale.user.lastname }}</td>
+            </tr>
+
             {% for product in sale.products %}
             <tr>
                 <th>Product</th>

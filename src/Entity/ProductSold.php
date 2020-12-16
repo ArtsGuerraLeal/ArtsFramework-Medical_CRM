@@ -55,6 +55,11 @@ class ProductSold
      */
     private $company;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $discountReason;
+
     public function __construct()
     {
         $this->discounts = new ArrayCollection();
@@ -164,6 +169,18 @@ class ProductSold
     public function setCompany(?Company $company): self
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getDiscountReason(): ?string
+    {
+        return $this->discountReason;
+    }
+
+    public function setDiscountReason(?string $discountReason): self
+    {
+        $this->discountReason = $discountReason;
 
         return $this;
     }

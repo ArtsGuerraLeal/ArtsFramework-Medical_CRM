@@ -13,6 +13,7 @@ use App\Repository\DiscountRepository;
 use App\Repository\PatientRepository;
 use App\Repository\PaymentMethodRepository;
 use App\Repository\ProductRepository;
+use App\Repository\ProductSoldRepository;
 use App\Repository\SaleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -60,12 +61,13 @@ class SaleController extends AbstractController
     private $categoryRepository;
 
     private $security;
+    /**
+     * @var ProductSoldRepository
+     */
+    private $productSoldRepository;
 
 
-
-
-
-    public function __construct(DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
+    public function __construct(ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
@@ -73,6 +75,7 @@ class SaleController extends AbstractController
         $this->saleRepository = $saleRepository;
         $this->categoryRepository = $categoryRepository;
         $this->discountRepository = $discountRepository;
+        $this->productSoldRepository = $productSoldRepository;
     }
 
 
@@ -89,6 +92,29 @@ class SaleController extends AbstractController
 
         return $this->render('sale/index.html.twig', [
             'products' => $productRepository->findAll(),
+            'paymentMethods' => $this->paymentMethodRepository->findAll(),
+            'categories' => $this->categoryRepository->findAll()
+        ]);
+
+    }
+
+    /**
+     * @Route("/{id}", name="unpaid_sale_edit", methods={"GET"})
+     * @param ProductRepository $productRepository
+     * @return Response
+     */
+    public function EditSale(ProductRepository $productRepository,$id): Response
+    {
+
+        $user = $this->security->getUser();
+        $sale = $this->saleRepository->findOneBy(['id'=>$id]);
+
+        return $this->render('sale/edit_sale.html.twig', [
+            'products' => $productRepository->findAll(),
+            'sale' => $sale,
+            'productsold' => $sale->getProducts(),
+            'payments'=>$sale->getPayments(),
+            'discounts'=>$sale->getDiscounts(),
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
             'categories' => $this->categoryRepository->findAll()
         ]);
@@ -276,6 +302,8 @@ class SaleController extends AbstractController
                             $productDiscount = new Discount();
                             $productDiscount->setProductSold($productSold);
                             $productDiscount->setName($reason[$discountCount]);
+                            $productSold->setDiscountReason($reason[$discountCount]);
+
                             $productDiscount->setAmount($discountAmount[$discountCount]);
                             $productDiscount->setCompany($this->security->getUser()->getCompany());
 
@@ -288,6 +316,213 @@ class SaleController extends AbstractController
                         }
                     $sale->setDiscount($totalDiscount);
                     }
+            }
+
+            $em->persist($sale);
+            $em->persist($productSold);
+
+            $em->persist($product);
+
+            $count++;
+        }
+        $em->flush();
+
+
+        $response = $sale->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/edit", name="sale_edit", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function edit(Request $request):JsonResponse
+    {
+        $totalDiscount = 0;
+        if ($request->getMethod() == 'POST')
+        {
+            $total = $request->request->get('total');
+            $subtotal = $request->request->get('subtotal');
+            $tax = $request->request->get('tax');
+            $products = $request->request->get('products');
+            $quantity = $request->request->get('quantity');
+            $client = $request->request->get('client');
+            $price = $request->request->get('price');
+            $discounts = $request->request->get('discountId');
+            $reason = $request->request->get('reason');
+            $discountAmount = $request->request->get('discount');
+            $saleId = $request->request->get('saleID');
+
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sale = $this->saleRepository->findOneBy(['id'=>$saleId]);
+
+        $sale->setTotal($total);
+        $sale->setSubtotal($subtotal);
+        $sale->setTax($tax);
+
+        if($client == ""){
+            $sale->setClient("Publico en General");
+        }else{
+            $sale->setClient($client);
+        }
+
+        $sale->setTime(new \DateTime());
+        $sale->setUser($this->security->getUser());
+        $sale->setCompany($this->security->getUser()->getCompany());
+
+
+
+        $productsSold = $this->productSoldRepository->findBy(['sale'=>$saleId]);
+        $count = 0;
+
+        foreach ($productsSold as $productSold){
+            if($productSold->getProduct()->getId()){
+
+
+            }
+
+        $productSold->setAmount($quantity[$count]);
+        $productSold->setPrice($price[$count]);
+       // $productSold->setDiscount($quantity[$count]);
+        $em->persist($productSold);
+        $em->flush();
+
+        $count++;
+        }
+
+        $em->persist($sale);
+        $em->flush();
+
+        $response = $sale->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/edit2", name="sale_edit2", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function edit2(Request $request):JsonResponse
+    {
+        $totalDiscount = 0;
+        if ($request->getMethod() == 'POST')
+        {
+            $total = $request->request->get('total');
+            $subtotal = $request->request->get('subtotal');
+            $tax = $request->request->get('tax');
+            $products = $request->request->get('products');
+            $quantity = $request->request->get('quantity');
+            $client = $request->request->get('client');
+            $price = $request->request->get('price');
+            $discounts = $request->request->get('discountId');
+            $reason = $request->request->get('reason');
+            $discountAmount = $request->request->get('discount');
+            $saleId = $request->request->get('saleID');
+
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sale = $this->saleRepository->findOneBy(['id'=>$saleId]);
+
+        $sale->setTotal($total);
+        $sale->setSubtotal($subtotal);
+        $sale->setTax($tax);
+
+        if($client == ""){
+            $sale->setClient("Publico en General");
+        }else{
+            $sale->setClient($client);
+        }
+
+        $sale->setTime(new \DateTime());
+        $sale->setUser($this->security->getUser());
+
+        $em->persist($sale);
+        $em->flush();
+
+        $productsSold = $this->productSoldRepository->findBy(['sale'=>$saleId]);
+        $discountsGet = $this->discountRepository->findBy(['sale'=>$saleId]);
+
+        $count = 0;
+
+        foreach ($discountsGet as $discount){
+            $em->remove($discount);
+            $em->flush();
+        }
+
+        foreach ($productsSold as $productSold){
+            $em->remove($productSold);
+            $em->flush();
+        }
+
+        foreach ($products as $prod){
+            $product = $this->productRepository->findOneBy(['id'=>$prod]);
+            $productSold = new ProductSold();
+
+            if($product->getQuantity() != null){
+                $product->setQuantity($product->getQuantity()-$quantity[$count]);
+            }
+
+            $productSold->setProduct($product);
+            $productSold->setAmount($quantity[$count]);
+            $productSold->setSale($sale);
+
+            if($product->getPrice()==0){
+                $productSold->setPrice($price[$count]);
+            }else{
+                if($product->getPrice()*$quantity[$count]== $price[$count]){
+                    $productSold->setPrice($price[$count]);
+                }else{
+                    $productSold->setPrice($product->getPrice()*$quantity[$count]);
+                    $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+                    $productSold->setCompany($this->security->getUser()->getCompany());
+
+                    $discountCount = 0;
+
+                    foreach ($discounts as $discount){
+
+                        if($discount == $prod){
+                            $productDiscount = new Discount();
+                            $productDiscount->setProductSold($productSold);
+                            $productDiscount->setName($reason[$discountCount]);
+                            $productDiscount->setAmount($discountAmount[$discountCount]);
+                            $productDiscount->setCompany($this->security->getUser()->getCompany());
+
+                            $productDiscount->setSale($sale);
+                            $totalDiscount = $totalDiscount + $discountAmount[$discountCount];
+                            $em->persist($productDiscount);
+                            
+                        }
+                        $discountCount++;
+
+                    }
+                    $sale->setDiscount($totalDiscount);
+                }
             }
 
             $em->persist($sale);

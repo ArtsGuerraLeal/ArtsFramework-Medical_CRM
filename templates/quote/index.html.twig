@@ -1,19 +1,13 @@
 {% extends 'base.html.twig' %}
 
-
-
-
-{% block title %}Modulo de Venta{% endblock %}
+{% block title %}Modulo de Cotizaciones{% endblock %}
 
 {% block body %}
-
-
 
     <div class="card mb-3">
     <div class="card-header">
         <i class="fas fa-table"></i>
         Catalogo
-
     </div>
 
     <div class="card-body">
@@ -69,10 +63,10 @@
                                 {%  if product.price is not null %}
                                     <h4 class="text-danger">${{ product.price }}</h4>
                                 {% else %}
-                                <div class="add-button input-group">
-                                    <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
-                                </div>
-                                    {% endif %}
+                                    <div class="add-button input-group">
+                                        <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
+                                    </div>
+                                {% endif %}
 
                                 <div class="add-button input-group">
                                     {%  if product.price is not null %}
@@ -95,12 +89,12 @@
 
                         {% endfor %}
 
+                    </div>
                 </div>
-            </div>
-            <div id="FixedDiv" class="sticky-top mx-1 " style="width:29%;height:50%;border:1px solid #333;top:60px; background-color:#ffffff; border-radius:5px; padding-left: 10px;" align="center">
-                <h5>Carrito</h5>
-                <div id="dragable_product_order">
-                </div>
+                <div id="FixedDiv" class="sticky-top mx-1 " style="width:29%;height:50%;border:1px solid #333;top:60px; background-color:#ffffff; border-radius:5px; padding-left: 10px;" align="center">
+                    <h5>Carrito</h5>
+                    <div id="dragable_product_order">
+                    </div>
                     <table id="cart" class="cart-table table " style="overflow-y:scroll;height:330px;display:block;" >
                         <p>Cliente<p/>
                         <div class="input-group mb-3">
@@ -121,49 +115,49 @@
                         </thead>
                         <tbody>
 
-                            <tr>
-                                <td>Subtotal:</td>
-                                <td id="subtotal">0.00</td>
+                        <tr>
+                            <td>Subtotal:</td>
+                            <td id="subtotal">0.00</td>
 
-                            </tr>
+                        </tr>
 
-                            <tr>
-                                <td>IVA:</td>
-                                <td id="tax">0.00</td>
+                        <tr>
+                            <td>IVA:</td>
+                            <td id="tax">0.00</td>
 
-                            </tr>
-                            <tr>
-                                <td>Total:</td>
-                                <td id="total">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Total:</td>
+                            <td id="total">0.00</td>
 
-                            </tr>
+                        </tr>
 
                         </tbody>
                     </table>
 
 
-                <table id="cart-discount" class="cart-discount table" style="overflow-y:scroll;height:130px;display:block;"  >
-                    <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Razon</th>
-                        <th>Descuento</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                    <table id="cart-discount" class="cart-discount table" style="overflow-y:scroll;height:130px;display:block;"  >
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Razon</th>
+                            <th>Descuento</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
 
-                <button type='submit' onclick="payment(this)" class='payment-button btn btn-primary my-2 '>Pagar</button>
+                    <button type='submit' onclick="payment(this)" class='payment-button btn btn-primary my-2 '>Confirmar</button>
+
+                </div>
 
             </div>
 
-    </div>
-
-    </div>
+        </div>
     </div>
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" >
@@ -276,7 +270,7 @@
     <script type="text/javascript">
 
         //$(window).on('load', function() {
-           // $('#myModal').modal('handleUpdate');
+        // $('#myModal').modal('handleUpdate');
         //});
         /*
         $(document).ready(function(data){
@@ -310,7 +304,7 @@
 
 
         $('#myModal').on('hide.bs.modal', function (e) {
-         //   $('#myModal').modal('handleUpdate');
+            //   $('#myModal').modal('handleUpdate');
             $("#clients-table > tbody").empty();
 
         });
@@ -351,39 +345,6 @@
                 $('#FixedDiv').css('top', $(this).scrollTop());
             });
 
-            $(document).on('click', '.remove_discount', function(){
-            var prodID = $(this).parent().parent().attr('id');
-            var discount = parseFloat($(this).parent().parent().children()[2].innerText);
-            var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
-            var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
-
-            var total = document.querySelector('#total');
-            var subtotal = document.querySelector('#subtotal');
-            var tax = document.querySelector('#tax');
-
-            var cellVal = $(".cart-table tr td").filter(function() {
-                return $(this).text() === prodName;
-            });
-
-            if(cellVal.text() !== ""){
-               var price = parseFloat(cellVal.parent().children()[2].innerText);
-               cellVal.parent().children()[2].innerText = (price + discount);
-
-            }
-
-                if(prodTaxable ==="1"){
-                    tax.innerText = (parseFloat(tax.innerText) + (discount * .16)).toFixed(2);
-                    total.innerText = (parseFloat(total.innerText) + discount).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount - (discount*.16)) ).toFixed(2);
-                }else{
-                    total.innerText = (parseFloat(total.innerText) + (discount)).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount)).toFixed(2);
-                }
-
-            $(this).parent().parent().remove();
-
-            });
-
             $(document).on('click', '.remove_all', function(){
                 var quantity = $(this).parent().parent().children()[1].innerText;
                 var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
@@ -398,9 +359,9 @@
                 var i = $(this).parent().parent().index();
                 var table = $(this).parent().parent().parent();
 
-                    if(productCard[0] !== undefined){
-                        productCard[0].innerText = parseFloat(productCard[0].innerText) + parseInt(quantity);
-                    }
+                if(productCard[0] !== undefined){
+                    productCard[0].innerText = parseFloat(productCard[0].innerText) + parseInt(quantity);
+                }
 
                 if(prodTaxable ==="1"){
                     tax.innerText = (parseFloat(tax.innerText) - ((prodPrice * parseInt(quantity)) *.16)).toFixed(2);
@@ -902,7 +863,7 @@
                             var row = $(tr).closest('tr');
                             var quantity = row.find('#quantity').text();
                             var price = row.find('#price').text();
-                          //   console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
+                            //   console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
                             product_ids.push(tr.id);
                             quantities.push(quantity);
                             prices.push(price);
@@ -923,7 +884,7 @@
                                 var row = $(tr).closest('tr');
                                 var reason = row.find('#discount_reason').text();
                                 var price = row.find('#price').text();
-                                   console.log("Index: "+index +" Id: "+tr.id+" Reason: " + reason +" price: " + price);
+                                console.log("Index: "+index +" Id: "+tr.id+" Reason: " + reason +" price: " + price);
 
                                 discount_product_ids.push(tr.id);
                                 reasons.push(reason);
@@ -936,7 +897,7 @@
                 }
 
                 $.ajax({
-                    url:"{{ path('create_sale') }}",
+                    url:"{{ path('create_quote') }}",
                     type: "POST",
                     data:{
                         products:product_ids,
@@ -954,7 +915,7 @@
                     success:function (php_result) {
                         console.log(php_result);
                         saleID = php_result.toString();
-                        window.location.replace(saleID+"/payment");
+                        window.location.replace(saleID+"/reciept");
 
                     }
 

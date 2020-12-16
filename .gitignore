@@ -15,3 +15,5 @@
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 /public/json/ArtsComp/57.json
+.DS_Store
+

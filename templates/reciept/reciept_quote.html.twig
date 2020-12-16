@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico" />
     <link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111" />
-    <title>{{ sale.id }}</title>
+    <title>{{ quote.id }}</title>
 
     <style>
         @media print {
@@ -164,9 +164,9 @@
 
 <div id="invoice-POS">
 
-    <p class="timestamp">{{sale.id}}</p><br>
+    <p class="timestamp">{{quote.id}}</p><br>
     <center id="top">
-        <p class = "timestamp"> Fecha:  {{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</p>
+        <p class = "timestamp"> Fecha:  {{ quote.time ? quote.time|date('d-m-Y H:i:s') : '' }}</p>
 
 
 
@@ -203,7 +203,7 @@
     </div><!--End Invoice Mid-->
 
     <div id="bot">
-        <p>Cliente: {{ sale.client }}</p>
+        <p>Cliente: {{ quote.client.name }}</p>
 
         <div id="table">
             <table>
@@ -219,7 +219,7 @@
                             {% if product.discount is not null %}
 
                                 {% for discount in discounts %}
-                                    {% if product.id == discount.productSold.id %}
+                                    {% if product.id == discount.productQuote.id %}
                                     <p class="discounttext">{{ discount.name}} $-{{ discount.amount }}</p>
                                     {% endif %}
                                 {% endfor %}
@@ -239,7 +239,7 @@
 
                         {% else %}
                             {% if product.discount is not null %}
-                                <td class="tableitem"><p class="itemtext">${{ (product.amount * product.product.price) -product.discount}}</p></td>
+                                <td class="tableitem"><p class="itemtext">${{ (product.amount * product.product.price) - product.discount}}</p></td>
                             {% else %}
                                 <td class="tableitem"><p class="itemtext">${{ product.amount * product.product.price }}</p></td>
 
@@ -254,35 +254,22 @@
                 <tr class="tabletotal">
                     <td class="Space"></td>
                     <td class="Rate"><h2>Subtotal</h2></td>
-                    <td class="payment"><h2>${{ sale.subtotal }}</h2></td>
+                    <td class="payment"><h2>${{ quote.subtotal }}</h2></td>
                 </tr>
 
                 <tr class="tabletotal">
                     <td class="Space"></td>
                     <td class="Rate"><h2>IVA</h2></td>
-                    <td class="payment"><h2>${{ sale.tax }}</h2></td>
+                    <td class="payment"><h2>${{ quote.tax }}</h2></td>
                 </tr>
 
-                {% if sale.commission > 0 %}
-                <tr class="tabletotal">
-                    <td class="Space"></td>
-                    <td class="Rate"><h2>Commision</h2></td>
-                    <td class="payment"><h2>${{ sale.commission }}</h2></td>
-                </tr>
 
-                    <tr class="tabletotal">
-                        <td class="Space"></td>
-                        <td class="Rate"><h2>Total</h2></td>
-                        <td class="payment"><h2>${{ sale.total + sale.commission }}</h2></td>
-                    </tr>
-
-                    {% else %}
                         <tr class="tabletotal">
                             <td class="Space"></td>
                             <td class="Rate"><h2>Total</h2></td>
-                            <td class="payment"><h2>${{ sale.total}}</h2></td>
+                            <td class="payment"><h2>${{ quote.total}}</h2></td>
                         </tr>
-                {% endif %}
+
 
 
 
@@ -294,10 +281,8 @@
 
 
             <div id="bot" class="info">
-                  <h2 class="service"> Metodos de Pago</h2>
-                {% for payment in payments %}
-                        <h2  class="paymentmethod">{{ payment.type.name }}  ${{ payment.amount }}</h2>
-                {% endfor %}
+                  <h2 class="service"> Descuentos</h2>
+
                 {% for discount in discounts %}
                         <h2  class="paymentmethod">{{ discount.name }}  $-{{ discount.amount }}</h2>
 
@@ -306,7 +291,7 @@
 
 
         <div id="legalcopy">
-            <p class="legal "><strong>Exelencia y Calidad en Medicina Estetica</strong>
+            <p class="legal "><strong>Exelencia y Calidad</strong>
             </p>
         </div>
 

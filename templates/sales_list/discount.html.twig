@@ -27,6 +27,8 @@
                     <thead>
                     <tr>
                         <th style="width:10%" >ID</th>
+                        <th style="width:10%" >Fecha</th>
+
                         <th style="width:10%" >Estatus de Pago</th>
                         <th style="width:10%" >Total Venta</th>
                         <th style="width:10%" >Descuento</th>
@@ -44,6 +46,8 @@
 
                         <tr>
                             <td>{{ sale.id }}</td>
+                            <td>{{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</td>
+
                             {% if sale.isPaid == 1 %}
                             <td style="color: #0ba360">Pagado</td>
                             {% else %}

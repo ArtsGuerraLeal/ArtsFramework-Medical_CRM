@@ -56,7 +56,7 @@ class Quote
     private $user;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     private $discount;
 
@@ -65,9 +65,15 @@ class Quote
      */
     private $productQuotes;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Discount", mappedBy="quote")
+     */
+    private $discounts;
+
     public function __construct()
     {
         $this->productQuotes = new ArrayCollection();
+        $this->discounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -196,6 +202,37 @@ class Quote
             // set the owning side to null (unless already changed)
             if ($productQuote->getQuote() === $this) {
                 $productQuote->setQuote(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Discount[]
+     */
+    public function getDiscounts(): Collection
+    {
+        return $this->discounts;
+    }
+
+    public function addDiscount(Discount $discount): self
+    {
+        if (!$this->discounts->contains($discount)) {
+            $this->discounts[] = $discount;
+            $discount->setQuote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscount(Discount $discount): self
+    {
+        if ($this->discounts->contains($discount)) {
+            $this->discounts->removeElement($discount);
+            // set the owning side to null (unless already changed)
+            if ($discount->getQuote() === $this) {
+                $discount->setQuote(null);
             }
         }
 

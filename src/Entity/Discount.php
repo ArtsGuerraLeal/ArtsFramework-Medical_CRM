@@ -33,7 +33,6 @@ class Discount
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Sale", inversedBy="discounts")
-     * @ORM\JoinColumn(nullable=false)
      */
     private $sale;
 
@@ -41,6 +40,16 @@ class Discount
      * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="discounts")
      */
     private $company;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Quote", inversedBy="discounts")
+     */
+    private $quote;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ProductQuote", inversedBy="discounts")
+     */
+    private $productQuote;
 
     public function getId(): ?int
     {
@@ -103,6 +112,30 @@ class Discount
     public function setCompany(?Company $company): self
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getQuote(): ?Quote
+    {
+        return $this->quote;
+    }
+
+    public function setQuote(?Quote $quote): self
+    {
+        $this->quote = $quote;
+
+        return $this;
+    }
+
+    public function getProductQuote(): ?ProductQuote
+    {
+        return $this->productQuote;
+    }
+
+    public function setProductQuote(?ProductQuote $productQuote): self
+    {
+        $this->productQuote = $productQuote;
 
         return $this;
     }
