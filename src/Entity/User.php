@@ -83,6 +83,11 @@ class User implements UserInterface, TwoFactorInterface
      */
     private $quotes;
 
+    /**
+     * @ORM\Column(type="string", length=6, nullable=true)
+     */
+    private $pin;
+
     public function __construct()
     {
         $this->sales = new ArrayCollection();
@@ -322,6 +327,18 @@ class User implements UserInterface, TwoFactorInterface
                 $quote->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPin(): ?string
+    {
+        return $this->pin;
+    }
+
+    public function setPin(?string $pin): self
+    {
+        $this->pin = $pin;
 
         return $this;
     }

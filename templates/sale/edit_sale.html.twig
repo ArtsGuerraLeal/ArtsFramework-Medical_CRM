@@ -462,6 +462,8 @@
             $(document).on('click', '.remove_product', function(){
                 var quantity = $(this).parent().parent().children()[1].innerText;
                 var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+                console.log(prodPrice);
+
                 var prodID = $(this).parent().parent().attr('id');
 
                 var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
@@ -471,6 +473,7 @@
 
                 var discount_cart = $('.cart-discount');
                 var discountAmount = 0;
+
                 var cellVal = $(".cart-discount tr td").filter(function() {
                     return $(this).text() === prodName;
                 });
@@ -502,6 +505,14 @@
                     }
 
                 }else{
+                     if(discountAmount===0){
+                    prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+                    }else{
+                    prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
+                    prodPrice = newProdPrice;
+                    
+                    }
+                    
                     $(this).parent().parent().children()[1].innerText = quantity - 1;
 
                     if(productCard[0] !== undefined){
@@ -510,18 +521,13 @@
                     var price = parseFloat($(this).parent().parent().children()[2].innerText);
                     $(this).parent().parent().children()[2].innerText = price - prodPrice;
 
-                    if(discountAmount===0){
-                    prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
-                    }else{
-                    prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
-                    prodPrice = newProdPrice;
-                    }
+                   
 
 
                 }
 
 
-
+                
                 if(prodTaxable ==="1"){
                     if(discountAmount===0){
                     tax.innerText = (parseFloat(tax.innerText) - (prodPrice*.16)).toFixed(2);

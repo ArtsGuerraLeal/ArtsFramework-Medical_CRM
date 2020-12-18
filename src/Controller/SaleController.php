@@ -2,29 +2,31 @@
 
 namespace App\Controller;
 
-use App\Entity\Discount;
+use Exception;
+use App\Entity\Sale;
 use App\Entity\Patient;
 use App\Entity\Payment;
-use App\Entity\PaymentMethod;
+use App\Entity\Discount;
 use App\Entity\ProductSold;
-use App\Entity\Sale;
+use App\Entity\PaymentMethod;
+use App\Repository\SaleRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\NoResultException;
+use App\Repository\PatientRepository;
+use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\DiscountRepository;
-use App\Repository\PatientRepository;
-use App\Repository\PaymentMethodRepository;
-use App\Repository\ProductRepository;
-use App\Repository\ProductSoldRepository;
-use App\Repository\SaleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ProductSoldRepository;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
-use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\PaymentMethodRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/sale")
@@ -65,9 +67,16 @@ class SaleController extends AbstractController
      * @var ProductSoldRepository
      */
     private $productSoldRepository;
+    
+     /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    private $session;
 
 
-    public function __construct(ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
+    public function __construct(UserRepository $userRepository, ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security,SessionInterface $session){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
@@ -76,6 +85,10 @@ class SaleController extends AbstractController
         $this->categoryRepository = $categoryRepository;
         $this->discountRepository = $discountRepository;
         $this->productSoldRepository = $productSoldRepository;
+        $this->userRepository = $userRepository;
+
+        $this->session = $session;
+
     }
 
 
@@ -90,10 +103,12 @@ class SaleController extends AbstractController
 
         $user = $this->security->getUser();
 
+       
+
         return $this->render('sale/index.html.twig', [
             'products' => $productRepository->findAll(),
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findAll()
+            'categories' => $this->categoryRepository->findAll() 
         ]);
 
     }
@@ -263,9 +278,15 @@ class SaleController extends AbstractController
         }
 
         $sale->setTime(new \DateTime());
-        $sale->setUser($this->security->getUser());
+        
+        $user = $this->userRepository->findOneByCompanyUsername($this->security->getUser()->getCompany(),$this->session->get('session-user'));
+       
+        if($user != null){
+            $sale->setUser($user);
+        }else{
+            $sale->setUser($this->security->getUser());
+        }
         $sale->setCompany($this->security->getUser()->getCompany());
-
 
         $em->persist($sale);
         $em->flush();

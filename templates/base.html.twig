@@ -109,21 +109,15 @@
                                         <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
 
                                             {% for user in app.user.company.user %}
-                                                <button type="button" tabindex="0" class="dropdown-item"><a href="{{ path('app_switch_user', {'username': (user.username)}) }}">{{ user.username }}</a></button>
+                                                <button type="button" tabindex="0" onclick="userswap('{{ user.username }}')" class="dropdown-item switch-user"><a >{{ user.username }}</a></button>
                                             {% endfor %}
-                                            <button type="button" tabindex="0" class="dropdown-item"><a href="?_switch_user=_exit">Switch</a></button>
-
-                                            <button type="button" tabindex="0" class="dropdown-item">User Account</button>
-                                            <button type="button" tabindex="0" class="dropdown-item">Settings</button>
-                                            <h6 tabindex="-1" class="dropdown-header">Header</h6>
-                                            <button type="button" tabindex="0" class="dropdown-item">Actions</button>
-                                            <div tabindex="-1" class="dropdown-divider"></div>
+                                          
                                             <button type="button" tabindex="0" class="dropdown-item"><a href="{{ path('app_logout') }}">Log Out</a></button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="widget-content-left  ml-3 header-user-info">
-                                    <div class="widget-heading">
+                                    <div class="widget-heading" id="user-profile">
                                         {{app.user.firstname}} {{app.user.lastname}}
                                     </div>
                                     <div class="widget-subheading">
@@ -724,7 +718,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@4.1.0/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.1.0/main.min.js"></script>
 <script type="text/javascript" src="{{ asset('assets/scripts/main.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
 
 <!-- Core plugin JavaScript-->
 
@@ -735,11 +729,49 @@
 
 <script type="text/javascript">
 
+    $(document).ready(function() {
+        $.ajax({
+                    url:"{{ path('get_user_switch') }}",
+                    type: "POST",
+                    dataType: "text",
+                    success:function (php_result) {
+                        var obj = jQuery.parseJSON(php_result);
+                        console.log(obj);
+                        var databox = document.querySelector('#user-profile');
+                        databox.innerText = obj.firstName + " " + obj.lastName;
+                    }
 
+                });
 
+    
 
+    } );
 
+            function userswap(newUser){
+                 var pinNum = prompt("Introduce tu PIN", "");
 
+                $.ajax({
+                    url:"{{ path('switch_user') }}",
+                    type: "POST",
+                    dataType: "text",
+                    data:{
+                        username:newUser,
+                        pin:pinNum
+                    },
+                    success:function (php_result) {
+                        var obj = jQuery.parseJSON(php_result);
+                        console.log(obj);
+                        if(obj.id !== "-1"){
+                        var databox = document.querySelector('#user-profile');
+                        databox.innerText = obj.firstName + " " + obj.lastName;
+                        }
+                    
+                    }
+
+                });
+
+            }
+            
 
     $(document).ready(function() {
         $('#dataTable').DataTable();

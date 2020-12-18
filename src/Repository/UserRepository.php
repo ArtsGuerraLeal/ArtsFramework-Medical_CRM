@@ -34,6 +34,26 @@ class UserRepository extends ServiceEntityRepository
             ;
     }
 
+
+    /**
+     * @param $companyId
+     * @param $username
+     * @return User
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanyUsername($companyId,$username)
+    {
+        return $this->createQueryBuilder('user')
+            ->andWhere('user.company = :company')
+            ->andWhere('user.username = :username')
+            ->setParameter('company', $companyId)
+            ->setParameter('username', $username)
+            ->orderBy('user.username', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+    
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
