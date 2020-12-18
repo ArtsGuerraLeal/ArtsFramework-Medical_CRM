@@ -3,14 +3,15 @@
 
 
 
-{% block title %}Hello SaleController!{% endblock %}
+{% block title %}Pago de Venta{% endblock %}
 
 {% block body %}
-
+<a class="btn btn-primary my-2" href ="../{{sale.id}}/">Editar Venta</a>
     <div class="container">
     <div class ="row">
         <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
             <h1>Products</h1>
+            
             <div class ="row">
                 {% for payment in paymentMethods %}
                     <div class="col-sm-3 my-1">
@@ -33,9 +34,7 @@
         </div>
         <div style="width:30%;height:50%;border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding-left: 10px;" align="center">
             <h1>Cart</h1>
-            <div align="center">
-                <div class="product_drag_area">Arrastra los productos aqui</div>
-            </div>
+         
             <div id="dragable_product_order">
             </div>
             <table id="cart" class="cart-table table table-bordered"  width="100%" cellspacing="0">
