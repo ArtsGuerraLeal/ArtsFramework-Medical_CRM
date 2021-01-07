@@ -84,9 +84,14 @@
                 stampi.setObjectText('PRICE', price);
 
                 var imagePath = imgPath;
+
+                var ext = imagePath.split('.').pop();
+                
+
                 toDataURL(imagePath, function(data) {
-                    data = data.replace('data:image/png;base64,', '');
+                    data = data.replace('data:image/'+ext+';base64,', '');
                     stampi.setObjectText("GRAPHIC", data);
+                  //  console.log(ext);
                     stampi.print(printer,params);
                     });
 
