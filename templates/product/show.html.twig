@@ -1,36 +1,55 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block title %}Product{% endblock %}
 
 {% block body %}
-    <h1>Product</h1>
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Catalogo
+    </div>
+    
+        <div class="card-body">
+            <h1>{{ product.name }}</h1><button class="btn btn-primary" onclick="printPNG( '{{ product.upc }}','{{ product.name }}','${{ product.price }}','{{ '/uploads/' ~ product.image }}')">Print</button>
 
-    <table class="table">
+
+        <table class="table table-bordered table-striped " id="zero_config" >
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ product.id }}</td>
+                <th>UPC</th>
+                <td>{{ product.upc }}</td>
             </tr>
             <tr>
-                <th>Name</th>
-                <td>{{ product.name }}</td>
+                <th>SKU</th>
+                <td>{{ product.sku }}</td>
             </tr>
             <tr>
-                <th>Price</th>
+                <th>Precio</th>
                 <td>{{ product.price }}</td>
             </tr>
+             <tr>
+                <th>Costo</th>
+                <td>{{ product.cost }}</td>
+            </tr>
             <tr>
-                <th>Quantity</th>
+                <th>Existencia</th>
                 <td>{{ product.quantity }}</td>
             </tr>
         </tbody>
     </table>
-    <button class="btn btn-primary" onclick="printPNG( '000{{ product.id }}','{{ product.name }}','${{ product.price }}')">Print</button>
-    <a href="{{ path('product_index') }}">back to list</a>
+    <img class="img-thumbnail rounded  d-block" width="70px" height="70px" style="height:70px" src="{{ '/uploads/' ~ product.image }} " />
 
-    <a href="{{ path('product_edit', {'id': product.id}) }}">edit</a>
+    <a href="{{ path('product_index') }}">Catalogo</a>
+
+    <a href="{{ path('product_edit', {'id': product.id}) }}">Editar</a>
 
     {{ include('product/_delete_form.html.twig') }}
+        </div>
+
+        
+</div>
+
+
+    
+    
 
     <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
     <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
@@ -38,95 +57,12 @@
 
     <script type="text/javascript">
         function getImageLabelXml() {
-
-            var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
-<DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
-  <PaperOrientation>Landscape</PaperOrientation>\
-  <Id>Small30336</Id>\
-  <PaperName>30336 1 in x 2-1/8 in</PaperName>\
-  <DrawCommands>\
-    <RoundRectangle X="0" Y="0" Width="1440" Height="3060" Rx="180" Ry="180"/>\
-  </DrawCommands>\
-  <ObjectInfo>\
-    <BarcodeObject>\
-      <Name>BARCODE</Name>\
-      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
-      <BackColor Alpha="255" Red="255" Green="255" Blue="255"/>\
-      <LinkedObjectName></LinkedObjectName>\
-      <Rotation>Rotation0</Rotation>\
-      <IsMirrored>False</IsMirrored>\
-      <IsVariable>False</IsVariable>\
-      <Text>12345</Text>\
-      <Type>Code39</Type>\
-      <Size>Medium</Size>\
-      <TextPosition>Bottom</TextPosition>\
-      <TextFont Family="Helvetica" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
-      <CheckSumFont Family="Helvetica" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
-      <TextEmbedding>None</TextEmbedding>\
-      <ECLevel>0</ECLevel>\
-      <HorizontalAlignment>Center</HorizontalAlignment>\
-      <QuietZonesPadding Left="0" Right="0" Top="0" Bottom="0"/>\
-    </BarcodeObject>\
-    <Bounds X="129.5999" Y="758.4" Width="2846.4" Height="600"/>\
-  </ObjectInfo>\
-  <ObjectInfo>\
-    <TextObject>\
-      <Name>PRICE</Name>\
-      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
-      <BackColor Alpha="0" Red="255" Green="255" Blue="255"/>\
-      <LinkedObjectName></LinkedObjectName>\
-      <Rotation>Rotation0</Rotation>\
-      <IsMirrored>False</IsMirrored>\
-      <IsVariable>False</IsVariable>\
-      <HorizontalAlignment>Center</HorizontalAlignment>\
-      <VerticalAlignment>Middle</VerticalAlignment>\
-      <TextFitMode>ShrinkToFit</TextFitMode>\
-      <UseFullFontHeight>True</UseFullFontHeight>\
-      <Verticalized>False</Verticalized>\
-      <StyledText>\
-        <Element>\
-          <String>Price</String>\
-          <Attributes>\
-            <Font Family="Helvetica" Size="13" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
-            <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
-          </Attributes>\
-        </Element>\
-      </StyledText>\
-    </TextObject>\
-    <Bounds X="129.5999" Y="437.5999" Width="2846.4" Height="299.6875"/>\
-  </ObjectInfo>\
-  <ObjectInfo>\
-    <TextObject>\
-      <Name>NAME</Name>\
-      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
-      <BackColor Alpha="0" Red="255" Green="255" Blue="255"/>\
-      <LinkedObjectName></LinkedObjectName>\
-      <Rotation>Rotation0</Rotation>\
-      <IsMirrored>False</IsMirrored>\
-      <IsVariable>False</IsVariable>\
-      <HorizontalAlignment>Center</HorizontalAlignment>\
-      <VerticalAlignment>Middle</VerticalAlignment>\
-      <TextFitMode>ShrinkToFit</TextFitMode>\
-      <UseFullFontHeight>True</UseFullFontHeight>\
-      <Verticalized>False</Verticalized>\
-      <StyledText>\
-        <Element>\
-          <String>Name</String>\
-          <Attributes>\
-            <Font Family="Helvetica" Size="13" Bold="False" Italic="False" Underline="False" Strikeout="False"/>\
-            <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>\
-          </Attributes>\
-        </Element>\
-      </StyledText>\
-    </TextObject>\
-    <Bounds X="129.5999" Y="114.9437" Width="2846.4" Height="299.6875"/>\
-  </ObjectInfo>\
-</DieCutLabel>';
+        var labelXml = '<?xml version="1.0" encoding="utf-8"?><DieCutLabel Version="8.0" Units="twips" MediaType="Default"><PaperOrientation>Landscape</PaperOrientation><Id>LargeShipping</Id><PaperName>30256 Shipping</PaperName><DrawCommands><RoundRectangle X="0" Y="0" Width="3331" Height="5715" Rx="270" Ry="270"/></DrawCommands><ObjectInfo><BarcodeObject><Name>BARCODE</Name><ForeColor Alpha="255" Red="0" Green="0" Blue="0"/><BackColor Alpha="255" Red="255" Green="255" Blue="255"/><LinkedObjectName/><Rotation>Rotation0</Rotation><IsMirrored>False</IsMirrored><IsVariable>False</IsVariable><Text>1234567890</Text><Type>Code128Auto</Type><Size>Medium</Size><TextPosition>Bottom</TextPosition><TextFont Family="Helvetica" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False"/><CheckSumFont Family="Helvetica" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False"/><TextEmbedding>None</TextEmbedding><ECLevel>0</ECLevel><HorizontalAlignment>Center</HorizontalAlignment><QuietZonesPadding Left="0" Right="0" Top="0" Bottom="0"/></BarcodeObject><Bounds X="709.4592" Y="2248.828" Width="4756.016" Height="966.25"/></ObjectInfo><ObjectInfo><TextObject><Name>PRICE</Name><ForeColor Alpha="255" Red="0" Green="0" Blue="0"/><BackColor Alpha="0" Red="255" Green="255" Blue="255"/><LinkedObjectName/><Rotation>Rotation0</Rotation><IsMirrored>False</IsMirrored><IsVariable>False</IsVariable><HorizontalAlignment>Center</HorizontalAlignment><VerticalAlignment>Middle</VerticalAlignment><TextFitMode>ShrinkToFit</TextFitMode><UseFullFontHeight>True</UseFullFontHeight><Verticalized>False</Verticalized><StyledText><Element><String>Price</String><Attributes><Font Family="Helvetica" Size="64" Bold="False" Italic="False" Underline="False" Strikeout="False"/><ForeColor Alpha="255" Red="0" Green="0" Blue="0"/></Attributes></Element></StyledText></TextObject><Bounds X="3336.953" Y="1323.047" Width="1630.469" Height="590"/></ObjectInfo><ObjectInfo><TextObject><Name>NAME</Name><ForeColor Alpha="255" Red="0" Green="0" Blue="0"/><BackColor Alpha="0" Red="255" Green="255" Blue="255"/><LinkedObjectName/><Rotation>Rotation0</Rotation><IsMirrored>False</IsMirrored><IsVariable>False</IsVariable><HorizontalAlignment>Center</HorizontalAlignment><VerticalAlignment>Middle</VerticalAlignment><TextFitMode>ShrinkToFit</TextFitMode><UseFullFontHeight>True</UseFullFontHeight><Verticalized>False</Verticalized><StyledText><Element><String>Nombre</String><Attributes><Font Family="Helvetica" Size="36" Bold="False" Italic="False" Underline="False" Strikeout="False"/><ForeColor Alpha="255" Red="0" Green="0" Blue="0"/></Attributes></Element></StyledText></TextObject><Bounds X="2633.359" Y="432.7563" Width="2874.609" Height="765.9375"/></ObjectInfo><ObjectInfo><ImageObject><Name>GRAPHIC</Name><ForeColor Alpha="255" Red="0" Green="0" Blue="0"/><BackColor Alpha="0" Red="255" Green="255" Blue="255"/><LinkedObjectName/><Rotation>Rotation0</Rotation><IsMirrored>False</IsMirrored><IsVariable>False</IsVariable><Image>iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAIAAACx0UUtAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAA4aADAAQAAAABAAAA4QAAAAAYn8bHAABAAElEQVR4Aey9B5BlSXWw+bwvb7uq7fT09PgevNUwgwaxwC8E+uEXCNmRWVbakAsR2pVZKYRWqz82FKFfUih+KYYBJEDSj8QPCGTwMAsD473pad</Image><ScaleMode>Uniform</ScaleMode><BorderWidth>0</BorderWidth><BorderColor Alpha="255" Red="0" Green="0" Blue="0"/><HorizontalAlignment>Center</HorizontalAlignment><VerticalAlignment>Center</VerticalAlignment></ImageObject><Bounds X="335.9998" Y="148.8501" Width="2024.297" Height="1981.397"/></ObjectInfo></DieCutLabel>';
 
             return labelXml;
         }
 
-        function printPNG(upc,name,price)
+        function printPNG(upc,name,price,imgPath)
         {
             try
             {
@@ -140,21 +76,39 @@
                 // create label from XML file
                 var stampi = dymo.label.framework.openLabelXml(this.getImageLabelXml());
 
+                
 
                 // overwrite image "Image" from XML label with loaded image
                 stampi.setObjectText('BARCODE', upc);
                 stampi.setObjectText('NAME', name);
                 stampi.setObjectText('PRICE', price);
 
-
-                // print it
-                stampi.print(printer,params);
+                var imagePath = imgPath;
+                toDataURL(imagePath, function(data) {
+                    data = data.replace('data:image/png;base64,', '');
+                    stampi.setObjectText("GRAPHIC", data);
+                    stampi.print(printer,params);
+                    });
 
             }
             catch(e)
             {
                 alert(e.message || e, false);
             }
+        }
+
+        function toDataURL(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                var reader = new FileReader();
+                reader.onloadend = function() {
+                    callback(reader.result);
+                }
+                reader.readAsDataURL(xhr.response);
+            };
+            xhr.open('GET', url);
+            xhr.responseType = 'blob';
+            xhr.send();
         }
 
         function loadPrinter()
@@ -171,4 +125,9 @@
 
     </script>
 
+{% endblock %}
+
+{% block pagejs %}
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('theme/dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
 {% endblock %}

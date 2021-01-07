@@ -168,6 +168,21 @@ class Company
      */
     private $productQuotes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Provider::class, mappedBy="company")
+     */
+    private $providers;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProviderOrder::class, mappedBy="company")
+     */
+    private $providerOrders;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProductOrdered::class, mappedBy="company")
+     */
+    private $productOrdereds;
+
 
 
     public function __construct()
@@ -192,6 +207,9 @@ class Company
         $this->categories = new ArrayCollection();
         $this->quotes = new ArrayCollection();
         $this->productQuotes = new ArrayCollection();
+        $this->providers = new ArrayCollection();
+        $this->providerOrders = new ArrayCollection();
+        $this->productOrdereds = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -938,6 +956,96 @@ class Company
             // set the owning side to null (unless already changed)
             if ($productQuote->getCompany() === $this) {
                 $productQuote->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Provider[]
+     */
+    public function getProviders(): Collection
+    {
+        return $this->providers;
+    }
+
+    public function addProvider(Provider $provider): self
+    {
+        if (!$this->providers->contains($provider)) {
+            $this->providers[] = $provider;
+            $provider->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProvider(Provider $provider): self
+    {
+        if ($this->providers->removeElement($provider)) {
+            // set the owning side to null (unless already changed)
+            if ($provider->getCompany() === $this) {
+                $provider->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProviderOrder[]
+     */
+    public function getProviderOrders(): Collection
+    {
+        return $this->providerOrders;
+    }
+
+    public function addProviderOrder(ProviderOrder $providerOrder): self
+    {
+        if (!$this->providerOrders->contains($providerOrder)) {
+            $this->providerOrders[] = $providerOrder;
+            $providerOrder->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProviderOrder(ProviderOrder $providerOrder): self
+    {
+        if ($this->providerOrders->removeElement($providerOrder)) {
+            // set the owning side to null (unless already changed)
+            if ($providerOrder->getCompany() === $this) {
+                $providerOrder->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductOrdered[]
+     */
+    public function getProductOrdereds(): Collection
+    {
+        return $this->productOrdereds;
+    }
+
+    public function addProductOrdered(ProductOrdered $productOrdered): self
+    {
+        if (!$this->productOrdereds->contains($productOrdered)) {
+            $this->productOrdereds[] = $productOrdered;
+            $productOrdered->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductOrdered(ProductOrdered $productOrdered): self
+    {
+        if ($this->productOrdereds->removeElement($productOrdered)) {
+            // set the owning side to null (unless already changed)
+            if ($productOrdered->getCompany() === $this) {
+                $productOrdered->setCompany(null);
             }
         }
 

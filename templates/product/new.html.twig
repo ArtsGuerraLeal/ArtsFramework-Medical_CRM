@@ -1,26 +1,25 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
-{% block title %}New Product{% endblock %}
+{% block title %}Nuevo Producto{% endblock %}
 
 {% block body %}
-    <div class="app-page-title">
-        <div class="page-title-wrapper">
-            <div class="page-title-heading">
-                <div class="page-title-icon">
-                    <i class="pe-7s-graph text-success">
-                    </i>
-                </div>
-                <div>Nuevo Producto
-                    <div class="page-title-subheading">Agregar un nuevo producto
-                    </div>
-                </div>
-            </div>
-        </div>
+
+
+<div class="card">
+    <div class="card-header">Producto
     </div>
+    
+        <div class="card-body">
+ 
+        {{ include('product/_form.html.twig', {'button_label': 'Guardar'}) }}
 
-    {{ include('product/_form.html.twig') }}
+        </div>
 
-    <a href="{{ path('product_index') }}">back to list</a>
+        
+</div>
+
+
+    <a href="{{ path('product_index') }}">Catalogo</a>
 
     <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
 
@@ -36,7 +35,8 @@
                 reader.onload = function (e) {
                     $("<img />", {
                         "src": e.target.result,
-                        "class": "thumb-image"
+                        "class": "img-fluid img-thumbnail",
+                        "width": "170px"
                     }).appendTo(image_holder);
 
                 };

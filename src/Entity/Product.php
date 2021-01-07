@@ -73,10 +73,31 @@ class Product
      */
     private $productQuotes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductOrdered::class, mappedBy="product")
+     */
+    private $productOrdereds;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sku;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $upc;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cost;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
         $this->productQuotes = new ArrayCollection();
+        $this->productOrdereds = new ArrayCollection();
     }
 
     public function __toString() {
@@ -254,6 +275,72 @@ class Product
                 $productQuote->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductOrdered[]
+     */
+    public function getProductOrdereds(): Collection
+    {
+        return $this->productOrdereds;
+    }
+
+    public function addProductOrdered(ProductOrdered $productOrdered): self
+    {
+        if (!$this->productOrdereds->contains($productOrdered)) {
+            $this->productOrdereds[] = $productOrdered;
+            $productOrdered->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductOrdered(ProductOrdered $productOrdered): self
+    {
+        if ($this->productOrdereds->removeElement($productOrdered)) {
+            // set the owning side to null (unless already changed)
+            if ($productOrdered->getProduct() === $this) {
+                $productOrdered->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSku(): ?string
+    {
+        return $this->sku;
+    }
+
+    public function setSku(?string $sku): self
+    {
+        $this->sku = $sku;
+
+        return $this;
+    }
+
+    public function getUpc(): ?string
+    {
+        return $this->upc;
+    }
+
+    public function setUpc(?string $upc): self
+    {
+        $this->upc = $upc;
+
+        return $this;
+    }
+
+    public function getCost(): ?float
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?float $cost): self
+    {
+        $this->cost = $cost;
 
         return $this;
     }

@@ -6,6 +6,7 @@
 parameters:
     locale: 'en'
     uploads_dir: '%kernel.project_dir%/public/uploads/'
+    temp_storage_dir: '%kernel.project_dir%/public/temp_storage/'
     private_uploads_dir: '%kernel.project_dir%/private/uploads/'
 services:
     # default configuration for services in *this* file
@@ -27,3 +28,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    Qipsius\TCPDFBundle\Controller\TCPDFController: '@qipsius.tcpdf'
+
+

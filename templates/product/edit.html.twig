@@ -1,26 +1,25 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block title %}Edit Product{% endblock %}
 
 {% block body %}
-    <div class="app-page-title">
-        <div class="page-title-wrapper">
-            <div class="page-title-heading">
-                <div class="page-title-icon">
-                    <i class="pe-7s-graph text-success">
-                    </i>
-                </div>
-                <div>Producto
-                    <div class="page-title-subheading">Editar un producto
-                    </div>
-                </div>
-            </div>
-        </div>
+
+
+<div class="card">
+    <div class="card-header">Producto
     </div>
+    
+        <div class="card-body">
+ 
+        {{ include('product/_form.html.twig', {'button_label': 'Actializar'}) }}
 
-    {{ include('product/_form.html.twig', {'button_label': 'Actializar'}) }}
+        </div>
 
-    <a href="{{ path('product_index') }}">back to list</a>
+        
+</div>
+
+
+    <a href="{{ path('product_index') }}">Catalogo</a>
 
     {{ include('product/_delete_form.html.twig') }}
 

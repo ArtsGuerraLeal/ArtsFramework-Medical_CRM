@@ -1,29 +1,17 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
-{% block title %}Product index{% endblock %}
+{% block title %}Catalogo de Productos{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
 
 {% block body %}
-    <div class="app-page-title mb-1">
-        <div class="page-title-wrapper">
-            <div class="page-title-heading">
-                <div class="page-title-icon">
-                    <i class="pe-7s-graph text-success">
-                    </i>
-                </div>
-                <div>Catalogo
-                    <div class="page-title-subheading">Catalogo de Productos
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mb-3">
-        <div class="card-header">
-            <i class="fas fa-table"></i>
-            Catalogo</div>
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Catalogo</div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped " id="dataTable" >
+           <table class="table table-bordered table-striped " id="zero_config" >
         <thead>
         <tr>
                 <th style="width:10%" >Imagen</th>
@@ -31,7 +19,7 @@
                 <th style="width:10%" >SKU</th>
                 <th style="width:10%" >Nombre</th>
                 <th style="width:10%" >Precio</th>
-                <th style="width:10%">Cantidad</th>
+                <th style="width:10%" >Existencia</th>
                 <th style="width:10%" >Categoria</th>
             <th>Acciones</th>
             </tr>
@@ -40,7 +28,7 @@
         {% for product in products %}
             <tr>
                 {%  if product.image != null %}
-                    <td><img class="img-fluid img-thumbnail rounded mx-auto d-block" width="70px" height="70px" src="{{ '/uploads/' ~ product.image }}" />
+                    <td><img class="img-thumbnail rounded mx-auto d-block" width="70px" height="70px" style="height:70px" src="{{ '/uploads/' ~ product.image }}" />
                     </td>
 
                     {% else %}
@@ -48,8 +36,10 @@
                         </td>
 
                 {% endif %}
-                <td> </td>
-                <td> </td>
+                <td>{{ product.upc }}</td>
+
+                <td>{{ product.sku }}</td>
+
                 <td>{{ product.name }}</td>
 
                 <td>${{ product.price }} MXN</td>
@@ -64,7 +54,7 @@
                 {% endif %}
 
                 <td>
-                    <div class="btn btn-primary btn-sm">
+                    <div class="btn btn-primary btn-sm my-1">
                         <a class="text-white" href="{{ path('product_show', {'id': product.id}) }}">Detalles</a>
 
                     </div>
@@ -80,14 +70,14 @@
         {% endfor %}
         </tbody>
     </table>
-    </div>
-            <div class="btn btn-primary ">
-                <a class="text-white" href="{{ path('product_new') }}">Nuevo Producto</a>
-            </div>
-    </div>
-    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-    </div>
+    <div class="btn btn-primary ">
+    <a class="text-white" href="{{ path('product_new') }}">Nuevo Producto</a>
+</div>
 
+{% endblock %}
 
+{% block pagejs %}
+    <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../theme/dist/js/pages/datatable/datatable-basic.init.js"></script>
 {% endblock %}
 

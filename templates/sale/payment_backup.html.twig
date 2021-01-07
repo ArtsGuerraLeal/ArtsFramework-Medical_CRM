@@ -1,0 +1,285 @@
+{% extends 'base_admin.html.twig' %}
+
+
+
+
+{% block title %}Pago de Venta{% endblock %}
+
+{% block body %}
+<a class="btn btn-primary my-2" href ="../{{sale.id}}/">Editar Venta</a>
+    <div class="container">
+    <div class ="row">
+        <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
+            <h1>Products</h1>
+            
+            <div class ="row">
+                {% for payment in paymentMethods %}
+                    <div class="col-sm-3 my-1">
+                        <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
+                            <img  width="100%" height="100%" src="{{ asset('assets/images/payment_icons/' ~ payment.image) }}" data-id="{{ payment.id }}" data-name="{{ payment.name }}" data-commission="{{ payment.commissionAmount }}" class="img-responsive product_drag" />
+                            <h4 class="text-info">{{ payment.name }}</h4>
+                            <input id="amount" class="col-sm my-2" type="number">
+                            <div class="add-button">
+                                <button id="add_product" class="add_product btn btn-primary">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+
+                    <p>no records found</p>
+
+                {% endfor %}
+            </div>
+        </div>
+        <div style="width:30%;height:50%;border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding-left: 10px;" align="center">
+            <h1>Cart</h1>
+         
+            <div id="dragable_product_order">
+            </div>
+            <table id="cart" class="cart-table table table-bordered"  width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>Metodo de Pago</th>
+                    <th>Cantidad</th>
+
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td>Restante:</td>
+                    <td id="remaining">{{ sale.total }}</td>
+
+                </tr>
+                <tr>
+                    <td>Total:</td>
+                    <td id="total">{{ sale.total }}</td>
+                    <input type="hidden" id="orignalTotal" value="{{ sale.total }}">
+
+                </tr>
+
+
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="col-sm-5">
+                    <p class="my-1">Venta a Credito</p>
+                </div>
+                <div class="col-sm-3">
+                    <label class="switch">
+                        <input id="credit_switch" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="col-sm-3">
+                    <input class="container-fluid rounded my-1" style="display:none" type="number">
+                </div>
+
+            </div>
+
+            <div class="row" style="display:none">
+                <div class="col-sm-5">
+                    <p class="my-1">Commision %</p>
+                </div>
+                <div class="col-sm-3">
+                    <label class="switch">
+                        <input id="commission_switch" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="col-sm-3">
+                        <input id="commision_text" class="container-fluid rounded my-1" style="display:none" type="number">
+                </div>
+
+            </div>
+
+
+            <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
+        </div>
+
+    </div>
+
+
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(data){
+            const originalTotal = document.querySelector('#total').innerText;
+
+
+            $('#commission_switch').click(function() {
+                var total = document.querySelector('#total');
+                var remaining = document.querySelector('#remaining');
+
+                $("#commision_text").toggle(this.checked);
+                total.innerText = originalTotal;
+                remaining.innerText = originalTotal;
+
+            });
+
+            $("#commision_text").change(function(){
+                var remaining = document.querySelector('#remaining');
+                var total = document.querySelector('#total');
+
+                remaining.innerText = (parseFloat(originalTotal) + (parseFloat(originalTotal) * ($(this).val()/100))).toFixed(2);
+                total.innerText = (parseFloat(originalTotal) + (parseFloat(originalTotal) * ($(this).val()/100))).toFixed(2);
+
+
+            });
+
+            $(document).on('click', '.remove_product', function(){
+                var quantity = $(this).parent().parent().children()[1].innerText;
+                var remaining = document.querySelector('#remaining');
+                var commission = parseFloat($(this).parent().parent().attr('data-commission'));
+                var total = document.querySelector('#total');
+
+                var i = $(this).parent().parent().index();
+                var table = $(this).parent().parent().parent();
+
+                $(this).parent().parent().remove();
+                var value = (1+(commission/100));
+                console.log(parseFloat(quantity)/value);
+                remaining.innerText = parseFloat(remaining.innerText) + parseFloat(quantity)/value;
+                total.innerText = parseFloat(total.innerText) - (parseFloat(quantity) - parseFloat(quantity)/value);
+
+            });
+
+
+            $(document).on('click', '.add_product', function(){
+
+                var paymentName = $(this).parent().parent().children('img').attr('data-name');
+                var paymentID = $(this).parent().parent().children('img').attr('data-id');
+                var paymentCommission = parseFloat($(this).parent().parent().children('img').attr('data-commission'));
+
+                var paymentAmount = $(this).parent().parent().children('input');
+                var payment = parseFloat(paymentAmount.val());
+
+                var remaining = document.querySelector('#remaining');
+                var total = document.querySelector('#total');
+
+                var cellVal = $(".cart-table tr td").filter(function() {
+                    return $(this).text() === paymentName;
+                });
+
+                if(paymentCommission > 0){
+                    payment = paymentAmount.val()*(1+(paymentCommission/100));
+                }
+
+            if(parseFloat(remaining.innerText) > 0 && paymentAmount.val() !== "") {
+                if (cellVal.text() === "") {
+                    if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
+                        $(".cart-table").prepend('<tr id="' + paymentID + '" data-commission="'+ paymentCommission +'"><td>' + paymentName + '</td><td id="quantity">' + remaining.innerText + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    } else {
+
+                        $(".cart-table").prepend('<tr id="' + paymentID + '" data-commission="'+ paymentCommission +'" ><td>' + paymentName + '</td><td id="quantity">' + payment + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                    }
+                } else {
+                    var quantity = parseFloat(cellVal.parent().children()[1].innerText);
+                    if(parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)){
+                        cellVal.parent().children()[1].innerText = quantity + parseFloat(remaining.innerText);
+
+                    }else {
+                        cellVal.parent().children()[1].innerText = quantity + parseFloat(paymentAmount.val());
+                    }
+                }
+
+                if(paymentCommission > 0){
+
+                    total.innerText = parseFloat(total.innerText) + (paymentAmount.val()*(1+(paymentCommission/100))) - paymentAmount.val();
+                }
+
+                if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
+                    remaining.innerText = (parseFloat(remaining.innerText) - parseFloat(remaining.innerText)).toFixed(2);
+                } else {
+                    remaining.innerText = (parseFloat(remaining.innerText) - parseFloat(paymentAmount.val())).toFixed(2);
+                }
+
+                }
+            });
+        });
+
+        function deleteRow(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById(".cart").deleteRow(i);
+        }
+
+
+
+        function payment() {
+
+            var row_count = $('#cart tr').length;
+            var remaining = document.querySelector('#remaining');
+
+            if(parseFloat(remaining.innerText)===0){
+
+                var payment_ids = [];
+                var amounts = [];
+                var saleID = {{ sale.id }};
+                var commissionAmount = $('#commision_text').val();
+                var payment_total = parseFloat(document.querySelector('#total').innerHTML);
+                var originalTotal = parseFloat(document.querySelector('#orignalTotal').value);
+
+                if (commissionAmount===""){
+                    commissionAmount = 0;
+                }
+
+                if(originalTotal < payment_total){
+                    commissionAmount = payment_total - originalTotal;
+                }
+
+                $('#cart tr').each(function(index, tr) {
+
+                    if(index>0) {
+                        if(index < row_count-2) {
+                            var row = $(tr).closest('tr');
+                            var total = row.find('#quantity').text();
+
+
+                            // console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
+                            payment_ids.push(tr.id);
+                            amounts.push(total);
+
+                        }
+                    }
+
+                });
+
+                $.ajax({
+                    url:"{{ path('create_sale_payment') }}",
+                    type: "POST",
+                    data:{
+                        payments:payment_ids,
+                        amounts:amounts,
+                        saleID:{{ sale.id }},
+                        commission:parseFloat(commissionAmount)
+
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+
+                    }
+
+                });
+                setTimeout(function(){
+                    window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
+                    window.location.replace("/sale");
+                }, 250);
+
+
+
+
+            }
+
+
+        }
+
+
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% block stylesheets %}
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+
+    <style>
+
+    h2 {
+    font-family: "Sofia", sans-serif;
+    }
+
+    .border {
+    border: 1px solid black;
+    }
+
+    .mytable {
+    width: 100%;
+    border-collapse: collapse;
+    }
+
+    .column {
+    float: left;
+    width: 33.33%;
+    padding: 5px;
+    }
+
+    /* Clearfix (clear floats) */
+    .row::after {
+    content: "";
+    clear: both;
+    display: table;
+    }
+    
+    .top-text{
+    display: inline-block;
+    padding-left:500px;
+    margin-top: 0px;
+    }
+
+    .logo{
+    display: inline-block;
+    
+    }
+
+    .headers{
+        
+
+    }
+
+    .below-header{
+
+    }
+
+    .header-bill{
+    display: inline-block;
+
+    }
+
+
+    .date{
+    display: inline-block;
+    padding-left:500px;
+    margin-top:0px;
+    margin-bottom:0px;
+
+    }
+
+    .p-o{
+    display: inline-block;
+    padding-left:500px;
+    margin-top:0px;
+    }
+
+    .table-body{
+   
+        padding-top:0px;
+
+    }
+
+    
+
+    .shipping{
+    display: inline-block;
+    padding-left:140px;
+    margin-top:10px;
+    margin-bottom:0px;
+
+    }
+
+    .billing{
+    display: inline-block;
+    margin-top:10px;
+    margin-bottom:0px;
+
+    }
+
+    .billing-table{
+    padding-left: 50px;
+        
+    }
+
+    .shipping-table{
+    padding-left: 50px;
+        
+    }
+
+    .total{
+    display: inline-block;
+    padding-left:600px;
+    margin-top:15px;
+    }
+
+
+    </style>
+
+    {% endblock %}
+</head>
+
+{% block body %}
+<div class="headers">
+        <img class="logo" height="60px" width="180px" style="float:left" src="https://cdn.shopify.com/s/files/1/2016/5199/files/Untitled_design_1_200x80.png" alt="">
+
+        <h2 class="top-text">Purchase Order</h2>
+</div>
+
+<div class="header-date">
+        <h4 class="date">Date: {{ order.time ? order.time|date('d-m-Y') : '' }}</h4>
+        
+</div>
+<div class"header-po">
+<h4 class="p-o">P.O#: {{ order.id}}</h4>
+</div>
+
+<div class="header-bill">
+
+<div class="billing">
+<h5 style="margin-bottom:3px">Bill To:</h5>
+<table class=" billing-table">
+        <tbody>
+
+            <tr>
+                <td>Zampree.com, LLC</td>
+            </tr>
+            <tr>
+                <td>4400 Post Oak Parkway</td>
+            </tr>
+            <tr>
+                <td>Suite 2600 - FO</td>
+            </tr>
+            <tr>
+                <td>Houston , TX 77027</td>
+            </tr>
+
+            
+            
+
+        </tbody>
+       
+    </table>
+</div>
+
+<div class="shipping">
+<h5 style="margin-bottom:3px">Ship To:</h5>
+<table class=" shipping-table ">
+        <tbody>
+        
+            <tr>
+                <td>Zampree.com, LLC</td>
+            </tr>
+            <tr>
+                <td>4400 Post Oak Parkway</td>
+            </tr>
+            <tr>
+                <td>Suite 2600 - FO</td>
+            </tr>
+            <tr>
+                <td>Houston , TX 77027</td>
+            </tr>
+            
+
+        </tbody>
+       
+    </table>
+</div>
+
+</div>
+
+<div class="table-body">
+    <table class="border mytable">
+        <tbody>
+        <tr>
+            <th class="border">Quantity</th>
+            <th class="border">Part Num</th>
+            <th class="border">Description</th>
+            <th class="border">Price</th>
+            <th class="border">Total</th>
+
+        </tr>
+
+           {% for product in order.productOrdereds %}
+           
+            <tr class="border">
+           
+                <td class="border" style="text-align:center;">{{ product.amount }}</td>
+                <td class="border" style="text-align:center;">{{ product.product.sku }}</td>
+                <td class="border">{{ product.product.name }}</td>
+                <td class="border">$ {{ product.product.price }}</td>
+                <td class="border">$ {{ product.amount * product.product.price  }}</td>
+            </tr>
+            {% endfor %}
+        {% if order.productOrdereds.count < 20%}
+            {% for i in 0..20 - order.productOrdereds.count %}
+            <tr class="border">
+                <td class="border"></td>
+                <td class="border"></td>
+                <td class="border"></td>
+                <td class="border"></td>
+                <td class="border" style="text-align:right">-</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        </tbody>
+       
+    </table>
+    <h5 class="total">Total: ${{ order.total}}</h5>
+
+</div>
+
+
+{% endblock %}

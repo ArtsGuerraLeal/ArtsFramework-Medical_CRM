@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sale {{ order.id }}{% endblock %}
+
+{% block body %}
+    <h1>Product</h1>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped " id="dataTable" >
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ order.id }}</td>
+            </tr>
+            <tr>
+                <th>Cliente</th>
+                <td>{{ order.client }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ order.total }}</td>
+            </tr>
+
+            <tr>
+                <th>Fecha</th>
+                <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
+            </tr>
+
+          
+
+            {% for product in order.productOrdereds %}
+            <tr>
+                <th>Product</th>
+                <td>{{ product.product.name  ~ ' x ' ~ product.amount}}</td>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <a href="{{ path('order_list') }}">back to list</a>
+    <a href="{{ path('order_pdf_preview', {'id': order.id}) }}">Preview</a>
+    <a href="{{ path('order_pdf_download', {'id': order.id}) }}">Download</a>
+    <button onclick="send(this)">Send</button>
+
+
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
+
+<script type="text/javascript">
+
+        function send(button) {
+
+
+
+                $.ajax({
+                    url:"{{ path('order_pdf_send') }}",
+                    type: "POST",
+                    success:function (php_result) {
+                        console.log(php_result);
+                        
+
+                    }
+
+                });
+
+            }
+    </script>
+
+{% endblock %}

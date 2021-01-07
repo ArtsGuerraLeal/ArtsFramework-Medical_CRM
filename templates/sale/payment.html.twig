@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 
 
@@ -6,16 +6,25 @@
 {% block title %}Pago de Venta{% endblock %}
 
 {% block body %}
-<a class="btn btn-primary my-2" href ="../{{sale.id}}/">Editar Venta</a>
-    <div class="container">
-    <div class ="row">
-        <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
-            <h1>Products</h1>
+<a class="btn btn-warning my-2" href ="../{{sale.id}}/">Editar Venta</a>
+
+<div class="card">
+        <div class="card-header">
+        Pagar Venta   
+        
+        </div>
+
+        <div class="card-body">
+
+        <div class ="row">
+        <div style="width:70%;border:0px solid #333; border-radius:5px; padding: 10px;" align="center">
+            <h1>Metodos de Pago</h1>
             
             <div class ="row">
                 {% for payment in paymentMethods %}
                     <div class="col-sm-3 my-1">
-                        <div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
+                    
+                        <div class = "card" style="border:0x solid #333; border-radius:5px; padding:16px; cursor:move" align="center">
                             <img  width="100%" height="100%" src="{{ asset('assets/images/payment_icons/' ~ payment.image) }}" data-id="{{ payment.id }}" data-name="{{ payment.name }}" data-commission="{{ payment.commissionAmount }}" class="img-responsive product_drag" />
                             <h4 class="text-info">{{ payment.name }}</h4>
                             <input id="amount" class="col-sm my-2" type="number">
@@ -30,14 +39,17 @@
                     <p>no records found</p>
 
                 {% endfor %}
+
+
+                
             </div>
         </div>
-        <div style="width:30%;height:50%;border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding-left: 10px;" align="center">
+        <div class="card" style="width:30%;height:50%;border:0px solid #333; border-radius:5px; padding-left: 10px;" align="center">
             <h1>Cart</h1>
          
             <div id="dragable_product_order">
             </div>
-            <table id="cart" class="cart-table table table-bordered"  width="100%" cellspacing="0">
+            <table id="cart" class="cart-table table table-bordered table-striped"  width="100%" cellspacing="0">
                 <thead>
                 <tr>
                     <th>Metodo de Pago</th>
@@ -101,9 +113,8 @@
             <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
         </div>
 
-    </div>
-
-
+        </div>
+</div>
 
     <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
 

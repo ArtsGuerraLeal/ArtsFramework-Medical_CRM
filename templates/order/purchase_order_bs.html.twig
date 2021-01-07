@@ -1,0 +1,38 @@
+   {% block stylesheets %}
+        <link href="{{ asset('fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+        <!-- Page level plugin CSS-->
+        <link href="{{ asset('datatables/dataTables.bootstrap4.css') }}" rel="stylesheet">
+        <!-- Custom styles for this template-->
+        <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
+
+
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@4.1.0/main.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@4.1.0/main.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.1.0/main.min.css">
+        <link href="{{ asset('css/main.css') }}" rel="stylesheet">
+
+    {% endblock %}
+    
+{% block body %}
+
+
+    <table class="table table-sm table-striped table-bordered">
+        <tbody>
+        <tr>
+            <th>Order Info</th>
+        </tr>
+        <tr>
+            <th>Id</th>
+            <td>{{ order.id }}</td>
+
+            
+        </tr>
+
+
+        </tbody>
+    </table>
+
+
+
+{% endblock %}

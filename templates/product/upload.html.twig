@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Product{% endblock %}
+
+{% block body %}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-graph text-success">
+                    </i>
+                </div>
+                <div>Nuevo Producto
+                    <div class="page-title-subheading">Agregar un nuevo producto
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  {{ form_start(form) }}
+
+
+<div class="main-card mb-3 card">
+    <div class="card-body">
+      
+        {{ form_row(form.attachment) }}
+        
+        <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+
+    </div>
+
+</div>
+
+{{ form_end(form) }}
+
+    <a href="{{ path('product_index') }}">back to list</a>
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+  
+
+{% endblock %}

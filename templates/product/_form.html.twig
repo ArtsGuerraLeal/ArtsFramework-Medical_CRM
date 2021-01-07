@@ -2,8 +2,6 @@
 {{ form_start(form) }}
 
 
-<div class="main-card mb-3 card">
-    <div class="card-body">
         {{ form_row(form.name) }}
         {{ form_row(form.category) }}
         {{ form_row(form.price) }}
@@ -25,9 +23,9 @@
         </div>
         <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 
-    </div>
+    
 
-</div>
+
 
 {{ form_end(form) }}
 

@@ -67,6 +67,9 @@ security:
         - { path: ^/equipment,       roles: ROLE_COMPANY_ADMIN }
         - { path: ^/patient,       roles: ROLE_COMPANY_ADMIN }
         - { path: ^/dashboard,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/product,       roles: ROLE_COMPANY_ADMIN }
+        - { path: ^/sale,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/quote,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/logout, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -22,6 +22,44 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param $companyId
+     * @param $id
+     * @return Product
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('product')
+            ->andWhere('product.company = :company')
+            ->andWhere('product.id = :id')
+            ->setParameter('company', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('product.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
+    /**
+     * @param $companyId
+     * @param $sku
+     * @return Product
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanySKU($companyId,$sku)
+    {
+        return $this->createQueryBuilder('product')
+            ->andWhere('product.company = :company')
+            ->andWhere('product.sku = :sku')
+            ->setParameter('company', $companyId)
+            ->setParameter('sku', $sku)
+            ->orderBy('product.sku', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
+    /**
      * @return Product[] Returns an array of Product objects
      */
     public function findArray()
