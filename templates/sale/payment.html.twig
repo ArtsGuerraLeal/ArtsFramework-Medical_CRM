@@ -110,13 +110,14 @@
             </div>
 
 
-            <button type='submit' onclick="payment()" class='payment-button btn btn-primary my-2 '>Confirmar</button>
+            <button type='submit' onclick="payment(this)" class='payment-button btn btn-primary my-2 '>Confirmar</button>
         </div>
 
         </div>
 </div>
 
-    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 
     <script type="text/javascript">
         $(document).ready(function(data){
@@ -221,7 +222,7 @@
 
 
 
-        function payment() {
+        function payment(button) {
 
             var row_count = $('#cart tr').length;
             var remaining = document.querySelector('#remaining');
@@ -260,9 +261,13 @@
 
                 });
 
+                button.disabled = true;
+                button.value = "submitting...."
+
                 $.ajax({
                     url:"{{ path('create_sale_payment') }}",
                     type: "POST",
+                    dataType:"text",
                     data:{
                         payments:payment_ids,
                         amounts:amounts,
@@ -270,16 +275,16 @@
                         commission:parseFloat(commissionAmount)
 
                     },
-                    success:function (php_result) {
-                        console.log(php_result);
+                    success:function (data) {
+                   var obj = jQuery.parseJSON(data.toString());
+                setTimeout(function(){
+                    window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
+                    window.location.replace("/sale");
+                }, 1050);
 
                     }
 
                 });
-                setTimeout(function(){
-                    window.open("/sale/"+saleID.toString()+"/reciept", '_blank');
-                    window.location.replace("/sale");
-                }, 250);
 
 
 

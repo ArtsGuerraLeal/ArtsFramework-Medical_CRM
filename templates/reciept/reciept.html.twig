@@ -239,7 +239,7 @@
 
                         {% else %}
                             {% if product.discount is not null %}
-                                <td class="tableitem"><p class="itemtext">${{ (product.amount * product.product.price) -product.discount}}</p></td>
+                                <td class="tableitem"><p class="itemtext">${{ (product.amount * product.product.price) }}</p></td>
                             {% else %}
                                 <td class="tableitem"><p class="itemtext">${{ product.amount * product.product.price }}</p></td>
 

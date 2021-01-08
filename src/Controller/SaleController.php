@@ -615,7 +615,7 @@ class SaleController extends AbstractController
         $em->flush();
 
 
-        $response = "1";
+        $response = '{"id":"'.$sale->getId().'"}';
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);
@@ -682,13 +682,13 @@ class SaleController extends AbstractController
 
         if ($request->getMethod() == 'POST')
         {
-            $id = $request->request->get('id');
+            $id = $request->request->get('upc');
         }
         else {
             die();
         }
 
-        $results = $this->productRepository->findOneBy(['id'=>$id]);
+        $results = $this->productRepository->findOneBy(['upc'=>$id]);
 
         $response = '{"id":"'.$results->getId().'","name":"'.$results->getName().'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
 

@@ -150,9 +150,12 @@
                 toDataURL(imagePath, function(data) {
                     data = data.replace('data:image/'+ext+';base64,', '');
                     stampi.setObjectText("GRAPHIC", data);
-                  //  console.log(ext);
+                    //console.log(data);
                     stampi.print(printer,params);
+
                     });
+                
+
                     
             }
             catch(e)

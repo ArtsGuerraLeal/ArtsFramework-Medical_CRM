@@ -66,9 +66,9 @@
 
                                     <div class="card-body">
                                     {%  if product.image != null %}
-                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
                                     {% else %}
-                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" alt="image"/>
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" alt="image"/>
                                     {% endif %}
                                         <h4 class="card-title">{{ product.name }}</h4>
                                        {%  if product.quantity is not null %}
@@ -214,7 +214,8 @@
     </div>
 
     <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    
 
 
     <script>
@@ -813,7 +814,7 @@
                 type: "POST",
                 dataType: "text",
                 data:{
-                    id:product_id,
+                    upc:product_id,
                 },
                 success: function(data){
                     var obj = jQuery.parseJSON(data);
@@ -983,3 +984,11 @@
 
 
 {% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+ {% block pagejs %}
+    {% endblock %}
