@@ -14,9 +14,10 @@
            <table class="table table-bordered table-striped " id="zero_config" >
         <thead>
         <tr>
-                <th style="width:10%" >ID</th>
-                <th style="width:10%" >Estatus de Pago</th>
+                <th style="width:10%" >Order Number</th>
                 <th style="width:10%" >Cliente</th>
+                <th style="width:10%" >Total</th>
+
                 <th style="width:10%" >Fecha</th>
                 <th style="width:10%">Acciones</th>
             </tr>
@@ -24,7 +25,7 @@
         <tbody>
         {% for order in orders %}
                         <tr>
-                            <td>{{ order.id }}</td>                            
+                            <td>{{ order.ordernumber }}</td>                            
                             <td>{{ order.client }} </td>
                             <td>${{ order.total }} MXN</td>
                             <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
