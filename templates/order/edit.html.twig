@@ -1,0 +1,146 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Editar {{ order.id }}{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Orden
+    </div>
+    
+        <div class="card-body">
+
+        <table class="table table-bordered table-striped main_table " id="zero_config" >
+    
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ order.id }}</td>
+            </tr>
+            <tr>
+                <th>Cliente</th>
+                <td>{{ order.client }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td id="order_total">{{ order.total }}</td>
+            </tr>
+
+            <tr>
+                <th>Fecha</th>
+                <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
+            </tr>
+
+        </tbody>
+    </table>
+    <h2>Productos</h2>
+     <table class="table table-bordered products_table" id="zero_config" >
+          <thead>
+                    <tr>
+                        <th style="width:10%" >Nombre</th>
+                        <th style="width:10%" >Cantidad</th>
+                        <th style="width:10%" >Acciones</th>                
+                    </tr>
+        </thead>
+        <tbody>
+           
+            {% for product in order.productOrdereds %}
+            <tr id="{{product.product.id}}">
+                <th>
+                <select class="custom-select mr-sm-2 text-dark" id="product-selector">
+                    <option selected>{{ product.product.name }}</option>
+                    {% for prod in products %}
+                    <option value="{{prod.id}}">{{prod.name}}</option>
+                    {% endfor %}
+                                            
+                </select>
+                 </th>
+                <td><input type="number" id="quantity" name="quantity" min="1" value ="{{ product.amount}}"></td>
+                <td> <button class = "btn btn-danger remove_product" >Borrar</button></td>
+            </tr>
+            
+            {% endfor %}
+             <tr>
+                <td> <button class = "btn btn-success add_product" >+</button></td>
+            </tr>
+        </tbody>
+        
+    </table>
+        <a class = "btn btn-primary" href="{{ path('order_list') }}">Regresar</a>
+        <button class = "btn btn-success" onclick="save()">Guardar</button>
+
+</div>
+
+    
+
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
+
+<script type="text/javascript">
+
+
+    //add on change to product selector too
+    $(document).on('change', '#quantity', function(data){
+       // console.log($(this).val());
+    });
+
+    $(document).on('click', '.remove_product', function(){
+        $(this).parent().parent().remove();
+    });
+
+    $(document).on('click', '.add_product', function(){
+        var products_table = $('.products_table > tbody:last-child');
+
+        //Get products from fetch
+        products_table.prepend('<tr><th> <select class="custom-select mr-sm-2 text-dark" id="product-selector"> <option selected="0">Product</option> <option value="815">Balero para las Tapas</option> <option value="816">Balero para el Carrete</option> <option value="817">Balero Interno para Orillador McLane</option> <option value="818">Balero Externo para Llanta de Orillador</option> <option value="819">Balero con Funda para la Banda</option> <option value="820">Balero de Soporte para el Eje</option> <option value="821">Balero de Contencion</option> <option value="822">Balero 1002</option> <option value="823">Balero Para Portacuhcilla</option> <option value="824">Armazon Portacuchilla</option> <option value="825">Arandela de Friccion</option> <option value="826">Arandela 2052</option> <option value="827">Abrazadera para el Protector de Cuchilla</option> <option value="828">Abrazadera para el Rodillo</option> <option value="829">Abrazadera en U</option> <option value="830">Balero Para La Llanta Trasera</option> <option value="831">Balero para Carrete California Trimmer</option> <option value="832">Arandela 3/8 Plana Z (929)</option> <option value="833">Arandela Plana 5/16 Z (928)</option> <option value="834">Arandela Grande 25313</option> <option value="835">Arandela Especial H0929</option> <option value="836">Arandela Especial H0930</option> <option value="837">Arandela Espaciador 25302</option> <option value="838">Arandela de Acelerador Nylon (H0925)</option> <option value="839">Arandela Chica 25312</option> <option value="840">Arandela 5/16 SPLIT LOCK (927)</option> <option value="841">Arandela 25906</option> <option value="842">Arandela 1/4 SAE Plana Z (948)</option> <option value="843">Arandela 1/2 SAE Plana G9 Z (930)</option> <option value="844">Anillo Sin Roscado 20/25"</option> <option value="845">Anillo Con Roscado 20/25"</option> <option value="846">Adaptador Para Levantar Altura de Corte en Podadora Flotante</option> <option value="847">Abrazadera de Rodillo</option> <option value="848">Banda 1060 para Podadoras McLane</option> <option value="849">Armazón del Clutch</option> <option value="850">Arandela McLane 1051</option> <option value="851">Arandela McLane 1099</option> <option value="852">Arandela McLane 1106</option> <option value="853">Arandela McLane 1007</option> <option value="854">Abrazadera Para el Cable del Acelerador</option> <option value="855">Arandela Especial H0928</option> <option value="856">Arandela H0923</option> <option value="857">Adaptador para Manguera Cub Cadet</option> <option value="858">Aceite Motor 4 Tiempos 5W-30 1 Litro</option> <option value="859">Aceite Para Motor 2 Tiempos 1 Litro</option> <option value="860">Aceite Para Motor 4 Tiempos 600ml</option> <option value="861">Arnés Para Desbrozadora</option> <option value="862">Aceite Para Motor 2 Tiempos 100ml (1:100)</option> <option value="863">Aceite Para Motor 2 Tiempos (50:1)</option> <option value="864">Aceite Para Motosierra 1 Litro</option> </select> </th> <td><input type="number" id="quantity" name="quantity" min="1" max="5" value="1"></td> <td> <button class="btn btn-danger remove_product">Borrar</button></td></tr>');
+
+    });
+
+
+        function save() {
+            
+            var product_ids = [];
+            var quantities = [];
+            var orderId = {{ order.id }};
+            //var orderTotal = $(document).find('#order_total').text();
+
+            var row_count = $('.products_table tr').length;
+
+
+                 $('.products_table tr').each(function(index, tr) {
+
+                    if(index>0) {
+                        if(index < row_count-1) {
+                            var row = $(tr).closest('tr');
+                            var quantity = row.find('#quantity').val();
+                      
+                            product_ids.push(parseInt(tr.id));
+                            quantities.push(parseInt(quantity));
+                          
+                        }
+                    }
+
+                });
+
+                console.log(product_ids);
+                console.log(quantities);
+
+                $.ajax({
+                    url:"{{ path('order_edit_post') }}",
+                    dataType:"text",
+                    type: "POST",
+                     data:{
+                        id:orderId,
+                        products:product_ids,
+                        quantity:quantities
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                        window.location.replace('/order/'+orderId);
+                    }
+                });
+
+            }
+</script>
+
+{% endblock %}

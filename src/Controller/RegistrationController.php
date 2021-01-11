@@ -208,12 +208,12 @@ class RegistrationController extends AbstractController
                     $company->setCode(md5(uniqid()));
 
 
-                    $customer = Customer::create([
-                        'name' => $data['companyname'],
-                        'email' => $data['email']
-                    ]);
+           //         $customer = Customer::create([
+           //             'name' => $data['companyname'],
+           //             'email' => $data['email']
+            //        ]);
 
-                    $company->setStripeId($customer['id']);
+          //          $company->setStripeId($customer['id']);
 
 
                     $em->persist($company);

@@ -106,9 +106,9 @@ class SaleController extends AbstractController
        
 
         return $this->render('sale/index.html.twig', [
-            'products' => $productRepository->findAll(),
-            'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findAll() 
+            'products' => $productRepository->findByCompany($user->getCompany()),
+            'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany()) 
         ]);
 
     }
@@ -125,13 +125,13 @@ class SaleController extends AbstractController
         $sale = $this->saleRepository->findOneBy(['id'=>$id]);
 
         return $this->render('sale/edit_sale.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $productRepository->findByCompany($user->getCompany()),
             'sale' => $sale,
             'productsold' => $sale->getProducts(),
             'payments'=>$sale->getPayments(),
             'discounts'=>$sale->getDiscounts(),
-            'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findAll()
+            'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany())
         ]);
 
     }
@@ -147,9 +147,9 @@ class SaleController extends AbstractController
         $user = $this->security->getUser();
 
         return $this->render('sale/index_test.html.twig', [
-            'products' => $productRepository->findAll(),
-            'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findAll()
+            'products' => $productRepository->findByCompany($user->getCompany()),
+            'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany())
         ]);
 
     }
@@ -198,7 +198,7 @@ class SaleController extends AbstractController
     {
 
         $user = $this->security->getUser();
-        $sale = $this->saleRepository->findOneBy(['id'=>$id]);
+        $sale = $this->saleRepository->findByCompanyID($user->getCompany(),$id);
         //$discount = $this->discountRepository->findBy(['sale'=>$id]);
 
         if ($this->container->has('profiler'))
@@ -224,7 +224,7 @@ class SaleController extends AbstractController
     {
 
         $user = $this->security->getUser();
-        $sale = $this->saleRepository->findOneBy(['id'=>$id]);
+        $sale = $this->saleRepository->findByCompanyID($user->getCompany(),$id);
 
         return $this->render('sale/payment.html.twig', [
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
@@ -680,6 +680,9 @@ class SaleController extends AbstractController
     public function fetchProduct(Request $request, ProductRepository $repository):JsonResponse
     {
 
+        $user = $this->security->getUser();
+
+
         if ($request->getMethod() == 'POST')
         {
             $id = $request->request->get('upc');
@@ -688,9 +691,16 @@ class SaleController extends AbstractController
             die();
         }
 
-        $results = $this->productRepository->findOneBy(['upc'=>$id]);
+        $results = $this->productRepository->findOneBy(['upc'=>$id,'company'=>$user->getCompany()]);
 
-        $response = '{"id":"'.$results->getId().'","name":"'.$results->getName().'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+        if($results != null){
+
+            $response = '{"id":"'.$results->getId().'","name":"'.$results->getName().'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+
+        }else{
+            $response = 1;
+        }
+
 
 
         $returnResponse = new JsonResponse();

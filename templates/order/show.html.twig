@@ -1,11 +1,16 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block title %}Sale {{ order.id }}{% endblock %}
 
 {% block body %}
-    <h1>Product</h1>
-<div class="table-responsive">
-    <table class="table table-bordered table-striped " id="dataTable" >
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Orden
+    </div>
+    
+        <div class="card-body">
+
+        <table class="table table-bordered table-striped " id="zero_config" >
+    
         <tbody>
             <tr>
                 <th>Id</th>
@@ -25,22 +30,37 @@
                 <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
             </tr>
 
-          
+        </tbody>
+    </table>
+<a class = "btn btn-primary my-1" href="{{ path('order_edit', {'id': order.id}) }}">Editar</a>
+     <table class="table table-bordered table-striped " id="zero_config" >
+          <thead>
+                    <tr>
+                        <th style="width:10%" >Nombre</th>
+                        <th style="width:10%" >Cantidad</th>
 
+                
+
+                    </tr>
+        </thead>
+        <tbody>
+           
             {% for product in order.productOrdereds %}
             <tr>
-                <th>Product</th>
-                <td>{{ product.product.name  ~ ' x ' ~ product.amount}}</td>
+                <th>{{ product.product.name }}</th>
+                <td>{{  product.amount}}</td>
 
             {% endfor %}
         </tbody>
     </table>
-</div>
-    <a href="{{ path('order_list') }}">back to list</a>
-    <a href="{{ path('order_pdf_preview', {'id': order.id}) }}">Preview</a>
-    <a href="{{ path('order_pdf_download', {'id': order.id}) }}">Download</a>
-    <button onclick="send(this)">Send</button>
+<a class = "btn btn-primary" href="{{ path('order_list') }}">Regresar</a>
+    <a class = "btn btn-primary" href="{{ path('order_pdf_preview', {'id': order.id}) }}">Preview</a>
+    <a class = "btn btn-primary" href="{{ path('order_pdf_download', {'id': order.id}) }}">Descargar Pdf</a>
+        <button class = "btn btn-primary" onclick="send(this)">Enviar</button>
 
+</div>
+
+    
 
 
     <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
@@ -49,18 +69,13 @@
 <script type="text/javascript">
 
         function send(button) {
-
-
-
                 $.ajax({
                     url:"{{ path('order_pdf_send') }}",
                     type: "POST",
                     success:function (php_result) {
                         console.log(php_result);
-                        
-
+                    
                     }
-
                 });
 
             }

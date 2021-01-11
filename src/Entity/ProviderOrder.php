@@ -50,6 +50,46 @@ class ProviderOrder
      */
     private $productOrdereds;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firstName;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastName;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $line1;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $line2;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $city;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $state;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $postalcode;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $orderNumber;
+
     public function __construct()
     {
         $this->productOrdereds = new ArrayCollection();
@@ -146,6 +186,102 @@ class ProviderOrder
                 $productOrdered->setProviderOrder(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getLine1(): ?string
+    {
+        return $this->line1;
+    }
+
+    public function setLine1(string $line1): self
+    {
+        $this->line1 = $line1;
+
+        return $this;
+    }
+
+    public function getLine2(): ?string
+    {
+        return $this->line2;
+    }
+
+    public function setLine2(string $line2): self
+    {
+        $this->line2 = $line2;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): self
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    public function getPostalcode(): ?string
+    {
+        return $this->postalcode;
+    }
+
+    public function setPostalcode(string $postalcode): self
+    {
+        $this->postalcode = $postalcode;
+
+        return $this;
+    }
+
+    public function getOrderNumber(): ?string
+    {
+        return $this->orderNumber;
+    }
+
+    public function setOrderNumber(string $orderNumber): self
+    {
+        $this->orderNumber = $orderNumber;
 
         return $this;
     }

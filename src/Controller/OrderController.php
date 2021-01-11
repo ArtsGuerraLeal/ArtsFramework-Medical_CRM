@@ -5,8 +5,11 @@ namespace App\Controller;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Entity\ProviderOrder;
+use App\Entity\ProductOrdered;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ProviderOrderRepository;
+use App\Repository\ProductOrderedRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,9 +40,13 @@ class OrderController extends AbstractController
      */
     public function index(ProviderOrderRepository $providerOrderRepository): Response
     {
+
+        $user = $this->security->getUser();
+
+
         return $this->render('order/index.html.twig', [
             'controller_name' => 'OrderController',
-            'orders' => $providerOrderRepository->findAll(),
+            'orders' => $providerOrderRepository->findByCompany($user->getCompany()),
         ]);
     }
 
@@ -53,6 +60,24 @@ class OrderController extends AbstractController
     {
         return $this->render('order/show.html.twig', [
             'order' => $order,
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/edit", name="order_edit", methods={"GET","POST"})
+     * @param ProviderOrder $order
+     * @return Response
+     */
+    public function edit(ProviderOrder $order,ProductRepository $productRepository): Response
+    {
+        $user = $this->security->getUser();
+        $products = $productRepository->findOneByCompany($user->getCompany());
+        $entityManager = $this->getDoctrine()->getManager();
+
+
+        return $this->render('order/edit.html.twig', [
+            'order' => $order,
+            'products' => $products,
         ]);
     }
 
@@ -110,6 +135,68 @@ class OrderController extends AbstractController
             "Attachment" => false
         ]);
 
+    }
+
+    /**
+     * @Route("/editamount", name="order_edit_post", methods={"POST"})
+     * @param ProviderOrderRepository $providerOrderRepository
+     * @param ProductOrderedRepository $product
+     * @param Request $request
+     * @return JsonResponse
+     * @throws NonUniqueResultException
+     */
+    public function EditOrder(ProviderOrderRepository $providerOrderRepository, ProductOrderedRepository $productOrderedRepository, Request $request):JsonResponse
+    {
+
+        if ($request->getMethod() == 'POST')
+        {
+            
+            //Order ID
+            $id = $request->request->get('id');
+            //Product Ids
+            $products = $request->request->get('products');
+            //Product Quantites
+            $quantity = $request->request->get('quantity');
+   
+        }
+        else {
+            die();
+        }
+
+        $user = $this->security->getUser();
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $id);
+
+        $productsOrdered = $order->getProductOrdereds();
+
+        $count = 0;
+        $newTotal = 0;
+        foreach ($productsOrdered as $prod ){
+            $cost = $prod->getProduct()->getCost();
+            $newTotal = $newTotal + ($cost * $quantity[$count]);
+
+            $prod->setAmount($quantity[$count]);
+            $entityManager->persist($prod);
+            $entityManager->flush();
+            $count++;
+        }
+        
+        $order->setTotal($newTotal);
+
+        $entityManager->persist($order);
+        $entityManager->flush();
+
+    
+
+
+  $returnResponse = new JsonResponse();
+  $returnResponse->setjson(200);
+
+  return $returnResponse;
+
+       
     }
 
     /**

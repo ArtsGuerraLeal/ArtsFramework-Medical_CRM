@@ -19,6 +19,35 @@ class ProductSoldRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductSold::class);
     }
 
+    /**
+     * @param $companyId
+     * @return ProductSold[] Returns an array of ProductSOld objects
+     */
+
+    public function findByCompany($companyId)
+    {
+        return $this->createQueryBuilder('productSold')
+            ->andWhere('productSold.company = :val')
+            ->setParameter('val', $companyId)
+            ->orderBy('productSold.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('productSold')
+            ->andWhere('productSold.company = :val')
+            ->andWhere('productSold.id = :id')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('productSold.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
     // /**
     //  * @return ProductSold[] Returns an array of ProductSold objects
     //  */

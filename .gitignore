@@ -16,3 +16,6 @@
 ###< lexik/jwt-authentication-bundle ###
 /public/json/ArtsComp/57.json
 .DS_Store
+public/uploads/
+public/assets/.DS_Store
+public/.DS_Store

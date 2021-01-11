@@ -19,6 +19,41 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
+    /**
+     * @param $companyId
+     * @return Category
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompany($companyId)
+    {
+        return $this->createQueryBuilder('category')
+            ->andWhere('category.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('category.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @param $companyId
+     * @param $id
+     * @return Category
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('category')
+            ->andWhere('category.company = :company')
+            ->andWhere('category.id = :id')
+            ->setParameter('company', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('category.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
     // /**
     //  * @return Category[] Returns an array of Category objects
     //  */

@@ -8,9 +8,11 @@ use App\Form\ProductUploadType;
 use App\Repository\ProductRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -18,13 +20,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class ProductController extends AbstractController
 {
+
+    private $security;
+  
+    private $session;
+
+
+    public function __construct(Security $security,SessionInterface $session){
+      
+        $this->security = $security;
+        
+        $this->session = $session;
+
+    }
+
     /**
      * @Route("/", name="product_index", methods={"GET"})
      */
     public function index(ProductRepository $productRepository): Response
     {
+        $user = $this->security->getUser();
         return $this->render('product/index.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $productRepository->findOneByCompany($user->getCompany())
         ]);
     }
 
@@ -81,6 +98,7 @@ class ProductController extends AbstractController
      */
     public function upload(Request $request): Response
     {
+        $user = $this->security->getUser();
         $form = $this->createForm(ProductUploadType::class);
         $form->handleRequest($request);
 
@@ -94,11 +112,12 @@ class ProductController extends AbstractController
                     $flag = true;
                     while (($data = fgetcsv($fp, 1000, ",")) !== FALSE) {
                         if($flag) { $flag = false; continue; }
+                        
+                       
                         $product = new Product();
                         
                         $num = count($data);
-
-                        
+                       
                         for ($c=0; $c < $num; $c++) {
                             //3 Vendor. Look for one and if it doesnt exist, create one
                             //4 Category. Look for one and if it doesnt exist, create one.
@@ -110,10 +129,14 @@ class ProductController extends AbstractController
                             }
                             if($c==13){
                                 $s = $data[$c];
-                                if($s[0]=="'"){
-                                    $s = ltrim($s, $s[0]);
+                               
+                                if( isset($s[0]) ){
+                                    if($s[0]=="'"){
+                                        $s = ltrim($s, $s[0]);
+                                    }
+                                    $product->setSku($s);
                                 }
-                                $product->setSku($s);
+                             
                             }
                             if($c==16){
                                 $product->setQuantity(intval($data[$c]));
@@ -124,12 +147,16 @@ class ProductController extends AbstractController
                             if($c==46){
                                 $product->setCost(floatval($data[$c]));
                             }
-                          //  $product->setCompany(3);
+                            $product->setCompany($user->getCompany());
 
                         }
-                        $entityManager->persist($product);
-                        $entityManager->flush();
-                    
+                        
+                        if($product->getSku()!=null){
+                            $entityManager->persist($product);
+                            $entityManager->flush();
+                        }
+                        
+                        
                       }
                       fclose($fp);
                 }

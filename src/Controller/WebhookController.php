@@ -85,11 +85,12 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @Route("/recieveorder", name="shopify_webhook", methods={"POST"})
+     * @Route("/{id}/recieveorder", name="shopify_webhook", methods={"POST"})
      * @param Request $request
+     * @param $id
      * @return JsonResponse
      */
-    public function webhook(Request $request): JsonResponse
+    public function webhook(Request $request,$id): JsonResponse
     {
         if ($request->getMethod() == 'POST')
         {
@@ -98,6 +99,7 @@ class WebhookController extends AbstractController
             $items =  $request->request->get('line_items');
             $shippingAddress = $request->request->get('shipping_address');
             $customer = $request->request->get('customer');
+            $orderNumber = $request->request->get('order_number');
         }
         else {
             die();
@@ -107,24 +109,35 @@ class WebhookController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $order = new ProviderOrder();
-
+        
+        $orderTotal = 0;
         
       //  $provider = $this->providerRepository->findByCompany();
-        $company = $this->companyRepository->findOneBy(['id'=>3]);
+        $company = $this->companyRepository->findOneBy(['id'=>5]);
         $order->setCompany($company);
-        $order->setTotal(1000);
+        $order->setTotal($orderTotal);
         $order->setClient($customer['first_name'].' '.$customer['last_name']);
+        $order->setFirstName($shippingAddress['first_name']);
+        $order->setLastName($shippingAddress['last_name']);
+        $order->setLine1($shippingAddress['address1']);
+        $order->setLine2($shippingAddress['address2']);
+        $order->setCity($shippingAddress['city']);
+        $order->setState($shippingAddress['province']);
+        $order->setPostalCode($shippingAddress['zip']);
+        $order->setOrderNumber($orderNumber);
         $order->setTime(new \DateTime());
 
         $em->persist($order);
         $em->flush();
 
+        
+        
         foreach ($items as $item ){
 
             $product = $this->productRepository->findOneByCompanySKU($company,$item['sku']);
             
-            //if($product != null){
-            
+            if($product != null){
+            $orderTotal = $orderTotal + ($product->getCost() * $item['quantity']);
             $productOrdered = new ProductOrdered();
             $productOrdered->setProduct($product);
             $productOrdered->setProviderOrder($order);
@@ -133,9 +146,13 @@ class WebhookController extends AbstractController
 
             $em->persist($productOrdered);
             $em->flush();
-            //}
+            }
 
         }
+
+        $order->setTotal($orderTotal);
+        $em->persist($order);
+        $em->flush();
         //$order->setProvider();
 
 

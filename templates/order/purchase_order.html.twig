@@ -131,7 +131,7 @@
         
 </div>
 <div class"header-po">
-<h4 class="p-o">P.O#: {{ order.id}}</h4>
+<h4 class="p-o">P.O#: {{ order.ordernumber}}</h4>
 </div>
 
 <div class="header-bill">
@@ -168,16 +168,16 @@
         <tbody>
         
             <tr>
-                <td>Zampree.com, LLC</td>
+                <td>{{order.firstname ~' '~ order.lastname}}</td>
             </tr>
             <tr>
-                <td>4400 Post Oak Parkway</td>
+                <td>{{order.line1}}</td>
             </tr>
             <tr>
-                <td>Suite 2600 - FO</td>
+                <td>{{order.line2}}</td>
             </tr>
             <tr>
-                <td>Houston , TX 77027</td>
+                <td>{{order.city ~ ', ' ~ order.state ~ ' ' ~ order.postalcode}}</td>
             </tr>
             
 
@@ -207,8 +207,8 @@
                 <td class="border" style="text-align:center;">{{ product.amount }}</td>
                 <td class="border" style="text-align:center;">{{ product.product.sku }}</td>
                 <td class="border">{{ product.product.name }}</td>
-                <td class="border">$ {{ product.product.price }}</td>
-                <td class="border">$ {{ product.amount * product.product.price  }}</td>
+                <td class="border">$ {{ product.product.cost }}</td>
+                <td class="border">$ {{ product.amount * product.product.cost  }}</td>
             </tr>
             {% endfor %}
         {% if order.productOrdereds.count < 20%}

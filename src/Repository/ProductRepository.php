@@ -21,6 +21,23 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+
+    /**
+     * @param $companyId
+     * @return Product
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompany($companyId)
+    {
+        return $this->createQueryBuilder('product')
+            ->andWhere('product.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('product.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     /**
      * @param $companyId
      * @param $id

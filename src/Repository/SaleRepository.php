@@ -35,6 +35,19 @@ class SaleRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('sale.id = :id')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('sale.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
     // /**
     //  * @return Sale[] Returns an array of Sale objects
     //  */
