@@ -322,6 +322,67 @@ class OrderController extends AbstractController
 */
     }
 
+    /**
+     * @Route("/pdf/multiple", name="order_pdf_preview_multiple", methods={"GET","POST"})
+     * @param ProviderOrderRepository $order
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function pdfPreviewMultiple(ProviderOrderRepository $providerOrderRepository, Request $request): Response
+    {
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+       
+        //Order IDs
+        $oids = $_GET['oids'];
+
+        
+        $orderArray = explode(",",$oids);
+       
+        $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+
+        foreach($orders as $ord){
+        
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
+        
+        }
+       
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('order/purchase_order_multiple.html.twig', [
+            'title' => "Welcome to our PDF Test",
+            'order' => $order,
+            'orders' => $orders,
+        
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (inline view)
+        $dompdf->stream($order->getId()."_report.pdf", [
+            //Show download box on open
+            "Attachment" => false
+        ]);
+
+    }
+
      /**
      * @Route("/{id}/pdf/preview", name="order_pdf_preview", methods={"GET","POST"})
      * @param ProviderOrderRepository $order
@@ -332,6 +393,9 @@ class OrderController extends AbstractController
      */
     public function pdfPreview(ProviderOrderRepository $providerOrderRepository, $id, Request $request): Response
     {
+
+       
+
         $user = $this->security->getUser();
         $entityManager = $this->getDoctrine()->getManager();
         $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $id);
