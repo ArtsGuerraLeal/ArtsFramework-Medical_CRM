@@ -56,7 +56,7 @@
 <a class = "btn btn-primary" href="{{ path('order_list') }}">Regresar</a>
     <a class = "btn btn-primary" href="{{ path('order_pdf_preview', {'id': order.id}) }}">Preview</a>
     <a class = "btn btn-primary" href="{{ path('order_pdf_download', {'id': order.id}) }}">Descargar Pdf</a>
-        <button class = "btn btn-primary" onclick="send(this)">Enviar</button>
+    <a class = "btn btn-primary" href="{{ path('order_compose', {'id': order.id}) }}">Enviar</a>
 
 </div>
 

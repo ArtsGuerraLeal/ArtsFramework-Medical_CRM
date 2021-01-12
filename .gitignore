@@ -19,3 +19,6 @@
 public/uploads/
 public/assets/.DS_Store
 public/.DS_Store
+MailConfig.ini
+AmazonConfig.ini
+
