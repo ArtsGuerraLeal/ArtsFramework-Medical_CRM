@@ -50,9 +50,11 @@ class SalesListController extends AbstractController
      */
     public function DiscountedSales(SaleRepository $saleRepository,DiscountRepository $discountRepository)
     {
+        $user = $this->security->getUser();
+
         return $this->render('sales_list/discount.html.twig', [
-            'sales' => $saleRepository->findAll(),
-            'discounts' => $discountRepository->findAll()
+            'sales' => $saleRepository->findByCompany($user->getCompany()),
+            'discounts' => $discountRepository->findByCompany($user->getCompany())
         ]);
     }
 

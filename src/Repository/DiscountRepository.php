@@ -19,6 +19,30 @@ class DiscountRepository extends ServiceEntityRepository
         parent::__construct($registry, Discount::class);
     }
 
+    public function findByCompany($companyId)
+    {
+        return $this->createQueryBuilder('discount')
+            ->andWhere('discount.company = :val')
+            ->setParameter('val', $companyId)
+            ->orderBy('discount.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('discount')
+            ->andWhere('discount.company = :val')
+            ->andWhere('discount.id = :id')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('discount.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
     // /**
     //  * @return Discount[] Returns an array of Discount objects
     //  */

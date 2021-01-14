@@ -278,6 +278,7 @@ class OrderController extends AbstractController
         $user = $config['user'];
         $pass = $config['passwd'];
         $server = $config['server'];
+        $port = $config['port'];
 
         //set for gmail
         //  $transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465,'ssl'))
@@ -286,7 +287,7 @@ class OrderController extends AbstractController
 
         //set for other
 
-        $transport = (new \Swift_SmtpTransport($server,25))
+        $transport = (new \Swift_SmtpTransport($server,$port))
         ->setUsername($user)
         ->setPassword($pass);
     
@@ -337,6 +338,7 @@ class OrderController extends AbstractController
         $user = $config['user'];
         $pass = $config['passwd'];
         $server = $config['server'];
+        $port = $config['port'];
 
         //set for gmail
         //  $transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465,'ssl'))
@@ -345,7 +347,7 @@ class OrderController extends AbstractController
 
         //set for other
 
-        $transport = (new \Swift_SmtpTransport($server,465,'ssl'))
+        $transport = (new \Swift_SmtpTransport($server,$port))
         ->setUsername($user)
         ->setPassword($pass);
     
@@ -370,74 +372,6 @@ class OrderController extends AbstractController
 
   return $returnResponse;
 
-        /*
-        $user = $this->security->getUser();
-        $entityManager = $this->getDoctrine()->getManager();
-        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $id);
-
-
-
-
-        // Configure Dompdf according to your needs
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        $pdfOptions->setIsRemoteEnabled(true);
-
-        // Instantiate Dompdf with our options
-        $dompdf = new Dompdf();
-        $dompdf->setOptions($pdfOptions);
-        $dompdf->set_base_path("/public/");
-        $base = $this->renderView('base.html.twig');
-
-        // Retrieve the HTML generated in our twig file
-        $html = $this->renderView('order/purchase_order.html.twig', [
-            'title' => "Welcome to our PDF Test",
-            'order' => $order
-        ]);
-
-        // Load HTML to Dompdf
-        $dompdf->loadHtml($html);
-        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
-        $dompdf->setPaper('A4', 'portrait');
-
-        // Render the HTML as PDF
-        $dompdf->render();
-
-        $output = $dompdf->output();
-        $filename = $order->getId()."_report.pdf";
-        
-        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
-
-        $message = (new Swift_Message())
-
-  // Give the message a subject
-  ->setSubject('Your subject')
-
-  // Set the From address with an associative array
-  ->setFrom(['john@doe.com' => 'John Doe'])
-
-  // Set the To addresses with an associative array (setTo/setCc/setBcc)
-  ->setTo(['guerraarturo11@gmail.com' => 'A name'])
-
-  // Give it a body
-  ->setBody('Here is the message itself')
-
-  // And optionally an alternative body
-  ->addPart('<q>Here is the message itself</q>', 'text/html')
-
-  // Optionally add any attachments
-  ->attach(Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$filename))
-  ;
-
-        unlink($this->getParameter('temp_storage_dir').$filename);
-      //  $file->move($this->getParameter('uploads_dir'),$filename);
-
-        // Output the generated PDF to Browser (inline view)
-        $dompdf->stream($order->getId()."_report.pdf", [
-            //Show download box on open
-            "Attachment" => false
-        ]);
-*/
     }
 
     /**
@@ -499,6 +433,71 @@ class OrderController extends AbstractController
             "Attachment" => false
         ]);
 
+    }
+
+    /**
+     * @Route("/pdf/multiple/compose", name="order_pdf_compose_multiple", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function ComposeMultiplePdf(ProviderOrderRepository $providerOrderRepository): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+        $oids = $_GET['oids'];
+
+        
+        $orderArray = explode(",",$oids);
+       
+        $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+
+        foreach($orders as $ord){
+        
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
+        
+        }
+       
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('order/purchase_order_multiple.html.twig', [
+            'title' => "Welcome to our PDF Test",
+            'order' => $order,
+            'orders' => $orders,
+        
+        ]);
+
+    // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        $filename = $order->getId()."_report.pdf";
+        
+      //  $file->move($this->getParameter('uploads_dir'),$filename);
+
+        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
+
+      //  $file->move($this->getParameter('uploads_dir'),$filename);
+
+        return $this->render('order/compose.html.twig', [
+            'order' => $order,
+        ]);
     }
 
      /**

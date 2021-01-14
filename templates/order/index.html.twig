@@ -93,7 +93,7 @@
                 });
 
                 console.log(order_ids.toString());
-                window.location.replace('/order/pdf/multiple?oids='+order_ids.toString());
+                window.location.replace('/order/pdf/multiple/compose?oids='+order_ids.toString());
 
                               
             });
@@ -103,6 +103,7 @@
 {% endblock %}
 
 {% block pagejs %}
+
     <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="../theme/dist/js/pages/datatable/datatable-basic.init.js"></script>
 {% endblock %}

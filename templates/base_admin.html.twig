@@ -308,6 +308,16 @@
                             <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="{{ path('order_list') }}"
                                 aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span
                                     class="hide-menu">Ordenes</span></a></li>
+
+                        <li class="list-divider"></li>
+
+                         <li class="nav-small-cap"><span class="hide-menu">Reportes</span></li>
+                            <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="{{ path('sales_list') }}"
+                                aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span
+                                    class="hide-menu">Ventas</span></a></li>
+                             <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="{{ path('sales_discounts_list') }}"
+                                aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span
+                                    class="hide-menu">Entradas</span></a></li>
                         
                     </ul>
                 </nav>
@@ -373,7 +383,7 @@
     <!-- End Wrapper -->
     {% block javascripts %}
     <!-- ============================================================== -->
-    <!-- All Jquery -->
+    <!-- All Jquery  Remove Jquery to fix user menu not opening error--> 
     <!-- ============================================================== -->
 
     <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>

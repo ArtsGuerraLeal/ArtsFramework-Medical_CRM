@@ -1,29 +1,17 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
-{% block title %}Sales index{% endblock %}
+{% block title %}Ventas{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
 
 {% block body %}
-    <div class="app-page-title mb-1">
-        <div class="page-title-wrapper">
-            <div class="page-title-heading">
-                <div class="page-title-icon">
-                    <i class="pe-7s-graph text-success">
-                    </i>
-                </div>
-                <div>Catalogo
-                    <div class="page-title-subheading">Catalogo de Ventas
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mb-3">
-        <div class="card-header">
-            <i class="fas fa-table"></i>
-            Catalogo</div>
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Ordenes</div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped " id="dataTable" >
+           <table class="table table-bordered table-striped order_table" id="zero_config" >
                     <thead>
                     <tr>
                         <th style="width:10%" >ID</th>
@@ -68,27 +56,24 @@
                     {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="btn btn-primary ">
+                 <div class="btn btn-primary ">
                 <a class="text-white" href="{{ path('product_new') }}">Nuevo Producto</a>
             </div>
+            </div>
+           
         </div>
-        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
     </div>
+
     <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
     <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<script type="text/javascript">
-
-    $(document).ready(function() {
-    $('#dataTable').DataTable( {
-        "order": [[ 0, "desc" ]]
-    } );
-
-    });
 
 
-</script>
 {% endblock %}
+
+{% block pagejs %}
+
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('theme/dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
+{% endblock %}
+
 
