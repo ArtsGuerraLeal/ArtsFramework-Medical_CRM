@@ -19,7 +19,6 @@
                 <th style="width:10%" >Order Number</th>
                 <th style="width:10%" >Cliente</th>
                 <th style="width:10%" >Total</th>
-
                 <th style="width:10%" >Fecha</th>
                 <th style="width:10%">Acciones</th>
             </tr>
@@ -30,7 +29,7 @@
                             <td><input type="checkbox" id="order_check" value="{{ order.id }}"></td>                            
                             <td>{{ order.ordernumber }}</td>                            
                             <td>{{ order.client }} </td>
-                            <td>${{ order.total }} MXN</td>
+                            <td>${{ order.total }} USD</td>
                             <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
                             <td>
                                 <div class="btn btn-primary btn-sm">
@@ -52,10 +51,24 @@
                             
 </div>
 
-    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
-    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
 
-<script type="text/javascript">
+{% endblock %}
+
+{% block pagejs %}
+
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+
+    <script>
+
+        $('#zero_config').DataTable({
+            "order": [
+                [6, "desc"]
+            ]
+        });
+    
+    </script>
+
+    <script type="text/javascript">
 
         function send(button) {
                 $.ajax({
@@ -99,12 +112,5 @@
             });
 
     </script>
-
-{% endblock %}
-
-{% block pagejs %}
-
-    <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="../theme/dist/js/pages/datatable/datatable-basic.init.js"></script>
 {% endblock %}
 
