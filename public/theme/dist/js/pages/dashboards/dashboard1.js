@@ -1,4 +1,42 @@
+
 $(function () {
+    var chart2 = c3.generate({
+        bindto: '#clientes',
+        data: {
+            columns: [
+                ['Direct Sales', 25],
+                ['Referral Sales', 15],
+                ['Afilliate Sales', 10],
+                ['Indirect Sales', 15]
+            ],
+
+            type: 'donut',
+            tooltip: {
+                show: true
+            }
+        },
+        donut: {
+            label: {
+                show: false
+            },
+            title: 'Clientes',
+            width: 18
+        },
+
+        legend: {
+            hide: true
+        },
+        color: {
+            pattern: [
+                '#edf2f6',
+                '#5f76e8',
+                '#ff4f70',
+                '#01caf1'
+            ]
+        }
+    });
+
+    d3.select('#clientes .c3-chart-arcs-title').style('font-family', 'Rubik');
 
     // ==============================================================
     // Campaign
@@ -23,7 +61,7 @@ $(function () {
             label: {
                 show: false
             },
-            title: 'Sales',
+            title: 'Ventas',
             width: 18
         },
 
@@ -46,17 +84,30 @@ $(function () {
     // income
     // ============================================================== 
     var data = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: ['Ene', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
         series: [
-            [5, 4, 3, 7, 5, 10]
+            [500, 400, 300, 7000, 500, 1000, 5000, 400, 3000, 7000, 500,2000]
         ]
     };
+    maxVal = data.series[0];
+    
+    
+    var largest= 0;
+
+    for (i=0; i<=largest;i++){
+        if (maxVal[i]>largest) {
+            var largest=maxVal[i];
+        }
+    }
+
 
     var options = {
+        high: largest*1.2,
+        low:0,
         axisX: {
             showGrid: false
         },
-        seriesBarDistance: 1,
+        seriesBarDistance: 2,
         chartPadding: {
             top: 15,
             right: 15,
@@ -77,6 +128,7 @@ $(function () {
                     return value[0];
                 }
             }
+            
         }]
     ];
     new Chartist.Bar('.net-income', data, options, responsiveOptions);

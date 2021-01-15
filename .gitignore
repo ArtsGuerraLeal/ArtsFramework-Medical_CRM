@@ -17,6 +17,7 @@
 /public/json/ArtsComp/57.json
 .DS_Store
 public/uploads/
+public/temp_storage/
 public/assets/.DS_Store
 public/.DS_Store
 MailConfig.ini

@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
-use App\Repository\AppointmentRepository;
 use App\Repository\SaleRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\AppointmentRepository;
+use App\Repository\ProductSoldRepository;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/dashboard", name="home.")
@@ -40,25 +41,31 @@ class HomeController extends AbstractController
         $this->entityManager = $entityManager;
         $this->appointmentRepository = $appointmentRepository;
         $this->saleRepository = $saleRepository;
-
         $this->security = $security;
 
     }
 
     /**
      * @Route("/", name="index", methods={"GET"})
-     * @param AppointmentRepository $appointmentRepository
+     * @param SaleRepository $saleRepository
+     * @param ProductSoldRepository $productSoldRepository
      * @return Response
      */
-    public function index(AppointmentRepository $appointmentRepository): Response
+    public function index(SaleRepository $saleRepository,ProductSoldRepository $productSoldRepository): Response
     {
         $user = $this->security->getUser();
-
-        if($user->getRoles())
+        $date = new \DateTime();
+        $yesterday = new \DateTime();
+        $yesterday->sub(new \DateInterval('P1D'));
+        
+       // if($user->getRoles())
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            'appointments' => $appointmentRepository->findByCompany($user->getCompany()),
+            'sales' => $saleRepository->findAllByCompanyDate($user->getCompany(),$date),
+            'salesmonth' => $saleRepository->findAllByCompanyMonth($user->getCompany(),$date),
+            'salesyesterday' => $saleRepository->findAllByCompanyDate($user->getCompany(),$yesterday),
+
         ]);
 
     }

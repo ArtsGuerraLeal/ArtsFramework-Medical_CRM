@@ -56,9 +56,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                 <div class="btn btn-primary ">
-                <a class="text-white" href="{{ path('product_new') }}">Nuevo Producto</a>
-            </div>
+                 
             </div>
            
         </div>
@@ -73,7 +71,16 @@
 {% block pagejs %}
 
     <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('theme/dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
+
+    <script>
+
+        $('#zero_config').DataTable({
+            "order": [
+                [6, "desc"]
+            ]
+        });
+    
+    </script>
 {% endblock %}
 
 

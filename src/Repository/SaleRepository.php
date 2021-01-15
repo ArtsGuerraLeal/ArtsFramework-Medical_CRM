@@ -48,6 +48,85 @@ class SaleRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findAllByCompanyColumn($companyId,$parameter)
+    {
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('sale.'.$parameter.' = :param')
+            ->setParameter('val', $companyId)
+            ->setParameter('param', $parameter)
+            ->orderBy('sale.'.$parameter, 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findAllByCompanyDate($companyId,$date)
+    {
+        
+        $from = new \DateTime($date->format("Y-m-d")." 00:00:00");
+        $to   = new \DateTime($date->format("Y-m-d")." 23:59:59");
+
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('sale.time BETWEEN :from AND :to')
+            ->setParameter('val', $companyId)
+            ->setParameter('from', $from )
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
+    public function findAllByCompanyMonth($companyId,$date)
+    {
+        
+        $from = new \DateTime($date->format("Y-m-1"));
+        $to   = new \DateTime($date->format("Y-m-t"));
+
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('sale.time BETWEEN :from AND :to')
+            ->setParameter('val', $companyId)
+            ->setParameter('from', $from )
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findAllByCompanyDateMonth($companyId,$date,$monthNum)
+    {
+        
+        $from = new \DateTime($date->format("Y-".$monthNum."-1"));
+        $to   = new \DateTime($date->format("Y-".$monthNum."-t"));
+
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('sale.time BETWEEN :from AND :to')
+            ->setParameter('val', $companyId)
+            ->setParameter('from', $from )
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findAllByCompanyColumnToday($companyId,$parameter)
+    {
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('sale.'.$parameter.' = :param')
+            ->andWhere('cast(sale.time as Date) = cast(getdate() as Date)')
+            ->setParameter('val', $companyId)
+            ->setParameter('param', $parameter)
+            ->orderBy('sale.'.$parameter, 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return Sale[] Returns an array of Sale objects
     //  */

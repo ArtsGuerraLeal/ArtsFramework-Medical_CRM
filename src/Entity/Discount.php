@@ -51,6 +51,11 @@ class Discount
      */
     private $productQuote;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $type;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -136,6 +141,18 @@ class Discount
     public function setProductQuote(?ProductQuote $productQuote): self
     {
         $this->productQuote = $productQuote;
+
+        return $this;
+    }
+
+    public function getType(): ?int
+    {
+        return $this->type;
+    }
+
+    public function setType(?int $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

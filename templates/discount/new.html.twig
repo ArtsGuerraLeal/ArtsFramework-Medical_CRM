@@ -1,0 +1,24 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Nuevo Discount{% endblock %}
+
+{% block body %}
+
+
+<div class="card">
+    <div class="card-header">Descuento</div>
+    
+        <div class="card-body">
+ 
+            {{ form(form) }}
+            
+        </div>
+        
+</div>
+
+
+    <a class="btn btn-primary" href="{{ path('discount_index') }}">Regresar</a>
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+{% endblock %}

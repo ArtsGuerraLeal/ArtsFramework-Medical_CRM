@@ -1,0 +1,62 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Discounts{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Descuentos</div>
+        <div class="card-body">
+          
+                 <table class="table table-bordered table-striped order_table" id="zero_config" >
+                 <div class="btn btn-primary my-2">
+                    <a class="text-white " href="{{ path('discount_new') }}">Nuevo Descuento</a>
+                    </div>
+                    <thead>
+                    
+                    <tr>
+                        <th style="width:10%" >ID</th>
+                        <th style="width:10%" >Nombre descuento</th>
+                        <th style="width:10%" >Tipo de Descuento</th>
+                        <th style="width:10%" >Valor</th>
+                        <th style="width:10%" >Acciones</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    
+                    </tbody>
+                    
+                </table>
+            
+           </div>
+           
+        </div>
+        
+    </div>
+
+ 
+
+{% endblock %}
+
+{% block pagejs %}
+<script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+
+    <script>
+
+        $('#zero_config').DataTable({
+            "order": [
+                [1, "desc"]
+            ]
+        });
+    
+    </script>
+  
+{% endblock %}
+
+

@@ -48,6 +48,22 @@ class ProductSoldRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findAllByCompanyMonthMostSold($companyId,$date)
+    {
+        
+        $from = new \DateTime($date->format("Y-m-1"));
+        $to   = new \DateTime($date->format("Y-m-t"));
+
+        return $this->createQueryBuilder('productSold')
+            ->andWhere('productSold.company = :val')
+         //  ->andWhere('productSold.sale = 264')
+            ->setParameter('val', $companyId)
+
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return ProductSold[] Returns an array of ProductSold objects
     //  */
