@@ -287,7 +287,7 @@ class OrderController extends AbstractController
 
         //set for other
 
-        $transport = (new \Swift_SmtpTransport($server, 465,'ssl'))
+        $transport = (new \Swift_SmtpTransport($server,$port,'ssl'))
         ->setUsername($user)
         ->setPassword($pass);
     
