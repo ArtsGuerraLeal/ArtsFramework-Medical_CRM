@@ -1,2 +1,0 @@
-#### ArchitectUI HTML Theme Free
-
