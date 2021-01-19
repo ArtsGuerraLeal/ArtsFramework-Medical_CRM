@@ -617,7 +617,7 @@
                     var quantity = parseInt(cellVal.parent().children()[1].innerText);
                     cellVal.parent().children()[1].innerText = quantity + prodAmount;
 
-                    var price = parseInt(cellVal.parent().children()[2].innerText);
+                    var price = parseFloat(cellVal.parent().children()[2].innerText);
                     cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                 }
 

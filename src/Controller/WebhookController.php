@@ -117,6 +117,7 @@ class WebhookController extends AbstractController
         $order->setCompany($company);
         $order->setTotal($orderTotal);
         $order->setClient($customer['first_name'].' '.$customer['last_name']);
+        $order->setTelephone($customer['phone']);
         $order->setFirstName($shippingAddress['first_name']);
         $order->setLastName($shippingAddress['last_name']);
         $order->setLine1($shippingAddress['address1']);

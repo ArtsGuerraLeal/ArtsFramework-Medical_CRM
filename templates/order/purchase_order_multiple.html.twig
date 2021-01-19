@@ -50,6 +50,14 @@
 
     }
 
+    .notes{
+        
+    
+    padding-left:30px;
+    padding-bottom:30px
+
+    }
+
     .below-header{
 
     }
@@ -131,7 +139,7 @@
         
 </div>
 <div class"header-po">
-<h4 class="p-o">P.O#:{{order.id}}</h4>
+<h4 class="p-o">P.O#: {order.ordernumber}}</h4>
 
 
 
@@ -182,6 +190,9 @@
             <tr>
                 <td>{{order.city ~ ', ' ~ order.state ~ ' ' ~ order.postalcode}}</td>
             </tr>
+            <tr>
+                <td>{{order.telephone}}</td>
+            </tr>
             
 
         </tbody>
@@ -189,7 +200,13 @@
     </table>
 </div>
 
+<div class="notes">
+<h5 style="margin-bottom:3px">Notes: {{note}}</h5>
 </div>
+
+</div>
+
+
 
 <div class="table-body">
     <table class="border mytable">

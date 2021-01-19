@@ -90,6 +90,7 @@ class OrderController extends AbstractController
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('order/purchase_order.html.twig', [
             'title' => "Welcome to our PDF Test",
+            'note' => '',
             'order' => $order
         ]);
 
@@ -110,6 +111,7 @@ class OrderController extends AbstractController
 
         return $this->render('order/compose.html.twig', [
             'order' => $order,
+            'oids' => ''
         ]);
     }
 
@@ -267,10 +269,21 @@ class OrderController extends AbstractController
             $recipient = $request->request->get('reciever');
             $subject = $request->request->get('subject');
             $body = $request->request->get('body');
+            $note = $request->request->get('note');
+            $oids = $request->request->get('oids');
 
         }
         else {
             die();
+        }
+
+
+        if($note != ''){
+            if($oids != ''){
+                $this->createMultiplePDF($providerOrderRepository,$note,$oids);
+            }else{
+                $this->createSinglePDF($providerOrderRepository,$note,$id);
+            }
         }
 
         $config = parse_ini_file('../MailConfig.ini');
@@ -279,6 +292,7 @@ class OrderController extends AbstractController
         $pass = $config['passwd'];
         $server = $config['server'];
         $port = $config['port'];
+        $postmaster = $config['postmaster'];
 
         //set for gmail
         //  $transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465,'ssl'))
@@ -295,8 +309,8 @@ class OrderController extends AbstractController
             $mailer = new \Swift_Mailer($transport);
 
             $message = (new \Swift_Message($subject))
-            ->setFrom([$sender => $usr->getFirstname() . ' ' . $usr->getLastname()])
-            //Change sender to user email
+            ->setFrom([$postmaster => $usr->getFirstname() . ' ' . $usr->getLastname()])
+            ->setReplyTo($sender)
             ->setTo([$recipient, $sender => 'Me'])
             ->setBody($body)
             ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$id.'_report.pdf'))
@@ -435,6 +449,105 @@ class OrderController extends AbstractController
 
     }
 
+    public function createSinglePDF($providerOrderRepository,$note,$id)
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+    
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $id);
+    
+
+     
+
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('order/purchase_order.html.twig', [
+            'title' => "Welcome to our PDF Test",
+            'order' => $order,
+            'note' => $note
+        
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        $filename = $order->getId()."_report.pdf";
+        
+        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
+
+    }
+
+
+    public function createMultiplePDF($providerOrderRepository,$note, $oids)
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+        
+
+        if($oids != null){
+            $orderArray = explode(",",$oids);
+            $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+            $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $orders[0]);
+    
+
+        }
+        
+
+        //foreach($orders as $ord){
+        //$order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
+        //}
+
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('order/purchase_order_multiple.html.twig', [
+            'title' => "Welcome to our PDF Test",
+            'order' => $order,
+            'orders' => $orders,
+            'note' => $note
+        
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        $filename = $order->getId()."_report.pdf";
+        
+        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
+
+    }
+
     /**
      * @Route("/pdf/multiple/compose", name="order_pdf_compose_multiple", methods={"GET","POST"})
      * @param Request $request
@@ -454,12 +567,11 @@ class OrderController extends AbstractController
        
         $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
 
-        foreach($orders as $ord){
-        
-        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
-        
-        }
-       
+        //foreach($orders as $ord){
+        //$order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
+        //}
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $orders[0]);
+
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
@@ -473,15 +585,15 @@ class OrderController extends AbstractController
 
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('order/purchase_order_multiple.html.twig', [
-            'title' => "Welcome to our PDF Test",
+            'title' => "Zampree",
             'order' => $order,
             'orders' => $orders,
+            'note' => ''
         
         ]);
 
-    // Load HTML to Dompdf
+        // Load HTML to Dompdf
         $dompdf->loadHtml($html);
-        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
@@ -489,14 +601,14 @@ class OrderController extends AbstractController
 
         $filename = $order->getId()."_report.pdf";
         
-      //  $file->move($this->getParameter('uploads_dir'),$filename);
 
         $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
 
-      //  $file->move($this->getParameter('uploads_dir'),$filename);
 
         return $this->render('order/compose.html.twig', [
             'order' => $order,
+            'oids' => $oids
+            
         ]);
     }
 

@@ -1,0 +1,69 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Cotizaciones{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Cotizaciones</div>
+        <div class="card-body">
+           <table class="table table-bordered table-striped order_table" id="zero_config" >
+                    <thead>
+                    <tr>
+                        <th style="width:10%">Fecha</th>
+                        <th style="width:10%" >Cliente</th>
+                        <th style="width:10%" >Total</th>
+                        <th style="width:10%">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for quote in quotes %}
+                        <tr>
+                            <td>{{ quote.time ? quote.time|date('d-m-Y H:i:s') : '' }}</td>
+
+                            <td>{{ quote.client.name }} </td>
+                            <td>${{ quote.total }} MXN</td>
+                    
+                            <td>
+                                <div class="btn btn-primary btn-sm">
+                                    <a class="text-white" href="{{ path('quotes_list_show', {'id': quote.id}) }}">Detalles</a>
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                 
+            </div>
+           
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block pagejs %}
+
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+
+    <script>
+
+        $('#zero_config').DataTable({
+            "order": [
+                [0, "desc"]
+            ]
+        });
+    
+    </script>
+{% endblock %}
+
+

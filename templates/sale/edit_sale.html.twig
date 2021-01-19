@@ -1,30 +1,47 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block title %}Modulo de Venta{% endblock %}
 
 {% block body %}
+<style>
 
-    <div class="card mb-3">
-    <div class="card-header">
+    .filterDiv {
+    display: none; /* Hidden by default */
+    }
+    
+    .show {
+    display: block;
+    }
+
+    
+
+    .btn.active {
+  background-color: #666;
+  color: white;
+}
+
+</style>
+
+  <div class="card">
+        <div class="card-header">
         <i class="fas fa-table"></i>
-        Catalogo
-    </div>
+        Punto de Venta   
+        </div>
 
-    <div class="card-body">
-    <h3>Categorias</h3>
-    <div class="my-2" id="myBtnContainer">
-        <button class="btn btn-primary" onclick="filterSelection('all')"> Todos</button>
-        {% for category in categories %}
-            <button class="btn btn-primary" onclick="filterSelection('{{ category.name }}')">{{ category.name }}</button>
-        {% endfor %}
-    </div>
+        <div class="card-body">
+     
+            <div class="my-2" id="myBtnContainer">
+                <button class="btn btn-primary" onclick="filterSelection('all')"> Todos</button>
+                {% for category in categories %}
+                    <button class="btn btn-primary" onclick="filterSelection('{{ category.name }}')">{{ category.name }}</button>
+                {% endfor %}
+            </div>
+                
+            <div id="ParentContainer" class="container-fluid">
 
-    <div id="ParentContainer" class="container-fluid">
-
-        <div class ="row">
-            <div style="width:70%;border:1px solid #333; border-radius:5px; padding: 10px;" align="center">
-                <h1>Productos</h1>
-
+            <div class ="row">
+                <div style="width:70%;border:0px solid #333; border-radius:5px; padding: 10px;" align="center">
+        
                 <div class="search-button input-group">
                     <input id="product_search" class="form-control rounded my-1" type="text" placeholder="Codigo de Barras">
                     <button id="search_product" onclick="" class="mx-1 search_product btn btn-primary">Agregar</button>
@@ -34,67 +51,64 @@
                 <div id="catalog" class ="row">
 
 
-                    {% for product in products %}
+                {% for product in products %}
 
-                    {%  if product.category != null %}
-                    <div class="col-sm-3 my-1 filterDiv {{ product.category.name }}" style="max-height: 500px">
-
-                        {% else %}
-                        <div class="col-sm-3 my-1 filterDiv General">
-
-                            {% endif %}
-                            <div class="" style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding:16px; cursor:move" align="center">
-                                {%  if product.image != null %}
-                                    <img class="img-fluid rounded img-responsive product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  />
-                                {% else %}
-                                    <img class="img-fluid rounded img-responsive product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" />
+                     {%  if product.category != null %}
+                        <div class="col-lg-3 col-md-6 filterDiv {{ product.category.name }}" style="max-height: 500px">
+                            {% else %}
+                            <div class="col-lg-3 col-md-6 filterDiv General">
                                 {% endif %}
 
-                                <h5 class="text-info" style="width: auto; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{ product.name }}</h5>
-
-                                {%  if product.quantity is not null %}
-                                    <h6 class="text-muted">Existencia: <p class="my-0"id="product-quantity">{{ product.quantity }}</p></h6>
-                                {% else %}
-                                    <h6 class="text-muted">Existencia Ilimitada <p class="my-0"id="product-quantity">999</p></h6>
-                                {% endif %}
-
-
-                                {%  if product.price is not null %}
-                                    <h4 class="text-danger">${{ product.price }}</h4>
-                                {% else %}
-                                <div class="add-button input-group">
-                                    <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
-                                </div>
-                                    {% endif %}
-
-                                <div class="add-button input-group">
-                                    {%  if product.price is not null %}
-
-                                        <button id="add_product" class="mx-1 add_product btn btn-sm btn-primary">Agregar</button>
-                                        <input id="product_amount" class="form-control rounded my-1" type="number" pattern="[0-9]" value="1">
-
+                                <div class="card ">
+                                    <div class="card-body">
+                                    {%  if product.image != null %}
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
                                     {% else %}
-
-                                        <button id="add_service" class="mx-auto add_service btn btn-primary my-2">Agregar</button>
-
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" alt="image"/>
+                                    {% endif %}
+                                        <h4 class="card-title">{{ product.name }}</h4>
+                                       {%  if product.quantity is not null %}
+                                        <h6 class="text-muted">Existencia: <p class="my-0"id="product-quantity">{{ product.quantity }}</p></h6>
+                                    {% else %}
+                                        <h6 class="text-muted">Existencia Ilimitada <p class="my-0"id="product-quantity">999</p></h6>
                                     {% endif %}
 
+
+                                    {%  if product.price is not null %}
+                                        <h4 class="text-danger">${{ product.price }}</h4>
+                                    {% else %}
+                                    <div class="add-button input-group">
+                                        <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
+                                    </div>
+                                        {% endif %}
+
+                                    <div class="add-button input-group">
+                                        {%  if product.price is not null %}
+
+                                            <button id="add_product" class="mx-1 add_product btn btn-sm btn-primary">Agregar</button>
+                                            <input id="product_amount" class="form-control rounded my-1" type="number" pattern="[0-9]" value="1">
+
+                                        {% else %}
+
+                                            <button id="add_service" class="mx-auto add_service btn btn-primary my-2">Agregar</button>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    </div>
                                 </div>
-
-
                             </div>
-                        </div>
 
-
-                        {% endfor %}
-
+                    {% endfor %}
                 </div>
             </div>
-            <div id="FixedDiv" class="sticky-top mx-1 " style="width:29%;height:50%;border:1px solid #333;top:60px; background-color:#ffffff; border-radius:5px; padding-left: 10px;" align="center">
+
+            <div id="FixedDiv" class="mx-1 card position-fixed" style=" width:29%;height:70%;border:0px solid #333; background-color:#ffffff; border-radius:5px; padding-left: 10px; padding-right: 10px; top:100px; right:15px" align="center">
                 <h5>Carrito</h5>
                 <div id="dragable_product_order">
                 </div>
-                    <table id="cart" class="cart-table table " style="overflow-y:scroll;height:330px;display:block;" >
+                    <table id="cart" class="cart-table table table-bordered table-striped table-sm" style="overflow-y:scroll;height:330px;display:block;" >
                         <p>Cliente<p/>
                         <div class="input-group mb-3">
                             <input type="text" id="client_name" class="form-control" placeholder="Nombre" value="{{ sale.client }}">
@@ -140,7 +154,7 @@
                     </table>
 
 
-                <table id="cart-discount" class="cart-discount table" style="overflow-y:scroll;height:130px;display:block;"  >
+                <table id="cart-discount" class="cart-discount table table-bordered table-striped table-sm" style="overflow-y:scroll;height:130px;display:block;"  >
                     <thead>
                     <tr>
                         <th>Nombre</th>
@@ -202,10 +216,9 @@
 
 
 
-    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
-    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+    <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+   
     <script>
         var input = document.getElementById("product_search");
         input.addEventListener("keyup", function(event) {
@@ -659,7 +672,7 @@
                     var quantity = parseInt(cellVal.parent().children()[1].innerText);
                     cellVal.parent().children()[1].innerText = quantity + prodAmount;
 
-                    var price = parseInt(cellVal.parent().children()[2].innerText);
+                    var price = parseFloat(cellVal.parent().children()[2].innerText);
                     cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                 }
 

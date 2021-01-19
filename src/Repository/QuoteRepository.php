@@ -21,7 +21,7 @@ class QuoteRepository extends ServiceEntityRepository
 
     /**
      * @param $companyId
-     * @return Sale[] Returns an array of Appointment objects
+     * @return Quote[] Returns an array of Appointment objects
      */
 
     public function findByCompany($companyId)
@@ -32,6 +32,19 @@ class QuoteRepository extends ServiceEntityRepository
             ->orderBy('quote.id', 'ASC')
             ->getQuery()
             ->getResult()
+            ;
+    }
+
+    public function findByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('quote')
+            ->andWhere('quote.company = :val')
+            ->andWhere('quote.id = :id')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('quote.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
             ;
     }
 

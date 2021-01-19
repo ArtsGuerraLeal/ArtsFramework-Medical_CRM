@@ -57,13 +57,16 @@
               <!-- /.card-header -->
               <div class="card-body">
               <div class="form-group">
-                  <input class="form-control" type="email" id="sender" placeholder="From:" value="{{app.user.email}}">
+                  <input class="form-control" type="email" id="sender" placeholder="Reply To:" value="{{app.user.email}}">
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="email" id="recipient" placeholder="To:">
+                  <input class="form-control" type="email" id="recipient" placeholder="Para:">
                 </div>
                 <div class="form-group">
-                  <input class="form-control" id="subject" placeholder="Subject:">
+                  <input class="form-control" id="subject" placeholder="Sujeto:">
+                </div>
+                <div class="form-group">
+                  <input class="form-control" id="notes" placeholder="Notas:">
                 </div>
                 <div class="form-group">
                     <textarea id="compose-text" class="form-control" style="height: 300px"></textarea>
@@ -97,6 +100,9 @@
             var to = $('#recipient').val();
             var from = $('#sender').val();
             var sbj = $('#subject').val();
+            var notes = $('#notes').val();
+            var oids = '{{ oids }}';
+
             var body_text = $('#compose-text').val();
                 $.ajax({
                     url:"{{ path('order_pdf_compose') }}",
@@ -104,20 +110,18 @@
                    type: "POST",
                     data:{
                         id:{{ order.id }},
+                        oids:oids,
                         reciever:to,
                         sender:from,
                         subject:sbj,
-                        body:body_text
+                        body:body_text,
+                        note:notes
                     },
                     success:function (php_result) {
                         console.log(php_result);     
                       window.location.replace('/order/'+{{ order.id }});
                     }
                 });
-             console.log(from);
-             console.log(to);
-             console.log(sbj);
-             console.log(body_text);
 
             }
     </script>
