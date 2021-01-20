@@ -218,8 +218,8 @@
                 <td class="border" style="text-align:center;">{{ product.amount }}</td>
                 <td class="border" style="text-align:center;">{{ product.product.sku }}</td>
                 <td class="border">{{ product.product.name }}</td>
-                <td class="border">$ {{ product.product.cost }}</td>
-                <td class="border">$ {{ product.amount * product.product.cost  }}</td>
+                <td class="border">$ {{ product.product.cost|number_format(2, '.', ',') }}</td>
+                <td class="border">$ {{ (product.amount * product.product.cost)|number_format(2, '.', ',')  }}</td>
             </tr>
             {% endfor %}
         {% if order.productOrdereds.count < 20%}
@@ -237,7 +237,7 @@
         </tbody>
        
     </table>
-    <h5 class="total">Total: ${{ order.total}}</h5>
+    <h5 class="total">Total: ${{ order.total|number_format(2, '.', ',') }}</h5>
 
 </div>
 

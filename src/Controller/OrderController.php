@@ -163,7 +163,8 @@ class OrderController extends AbstractController
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('order/purchase_order.html.twig', [
             'title' => "Order Zampree",
-            'order' => $order
+            'order' => $order,
+            'note' => ''
         ]);
 
         // Load HTML to Dompdf
@@ -430,6 +431,7 @@ class OrderController extends AbstractController
             'title' => "Welcome to our PDF Test",
             'order' => $order,
             'orders' => $orders,
+            'note' =>''
         
         ]);
 
@@ -644,7 +646,8 @@ class OrderController extends AbstractController
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('order/purchase_order.html.twig', [
             'title' => "Welcome to our PDF Test",
-            'order' => $order
+            'order' => $order,
+            'note' => ''
         ]);
 
         // Load HTML to Dompdf
@@ -692,7 +695,8 @@ class OrderController extends AbstractController
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('order/purchase_order.html.twig', [
             'title' => "Welcome to our PDF Test",
-            'order' => $order
+            'order' => $order,
+            'note'=> ''
         ]);
 
         // Load HTML to Dompdf
