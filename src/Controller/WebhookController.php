@@ -124,7 +124,7 @@ class WebhookController extends AbstractController
         if($shippingAddress['address2'] != null){
             $order->setLine2($shippingAddress['address2']);
         }else{
-            $order->setLine2(null);
+            $order->setLine2(' ');
         }
 
         $order->setCity($shippingAddress['city']);
