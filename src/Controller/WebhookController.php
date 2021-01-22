@@ -121,7 +121,12 @@ class WebhookController extends AbstractController
         $order->setFirstName($shippingAddress['first_name']);
         $order->setLastName($shippingAddress['last_name']);
         $order->setLine1($shippingAddress['address1']);
-        $order->setLine2($shippingAddress['address2']);
+        if($shippingAddress['address2'] != null){
+            $order->setLine2($shippingAddress['address2']);
+        }else{
+            $order->setLine2(null);
+        }
+
         $order->setCity($shippingAddress['city']);
         $order->setState($shippingAddress['province']);
         $order->setPostalCode($shippingAddress['zip']);
