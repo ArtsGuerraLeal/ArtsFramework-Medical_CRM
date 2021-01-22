@@ -66,7 +66,7 @@ class ProviderOrder
     private $line1;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $line2;
 
