@@ -197,7 +197,13 @@
 </div>
 
 <div class="notes">
+{% if order.note == null %}
 <h5 style="margin-bottom:3px">Notes: {{ note }}</h5>
+{% else %}
+<h5 style="margin-bottom:3px">Notes: {{ order.note }}</h5>
+
+{% endif %}
+
 </div>
 
 </div>

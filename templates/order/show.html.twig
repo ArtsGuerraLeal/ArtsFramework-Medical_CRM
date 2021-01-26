@@ -29,6 +29,34 @@
                 <th>Fecha</th>
                 <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
             </tr>
+            <tr>
+                <th>Calle </th>
+                <td>{{ order.line1 }}</td>
+            </tr>
+            <tr>
+                <th>Apt,Colonia, etc</th>
+                <td>{{ order.line2 }}</td>
+            </tr>
+            <tr>
+                <th>Ciudad</th>
+                <td>{{ order.city }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ order.state }}</td>
+            </tr>
+            <tr>
+                <th>C.P</th>
+                <td>{{ order.postalcode }}</td>
+            </tr>
+            <tr>
+                <th>telephone</th>
+                <td>{{ order.telephone }}</td>
+            </tr>
+             <tr>
+                <th>Nota</th>
+                <td>{{ order.note }}</td>
+            </tr>
 
         </tbody>
     </table>

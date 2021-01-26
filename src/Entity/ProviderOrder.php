@@ -95,6 +95,11 @@ class ProviderOrder
      */
     private $telephone;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $note;
+
     public function __construct()
     {
         $this->productOrdereds = new ArrayCollection();
@@ -299,6 +304,18 @@ class ProviderOrder
     public function setTelephone(?string $telephone): self
     {
         $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): self
+    {
+        $this->note = $note;
 
         return $this;
     }

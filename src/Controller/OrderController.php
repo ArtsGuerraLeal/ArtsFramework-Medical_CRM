@@ -210,7 +210,15 @@ class OrderController extends AbstractController
             $products = $request->request->get('products');
             //Product Quantites
             $quantity = $request->request->get('quantity');
-   
+            //Get note
+            $note = $request->request->get('note');
+            $line1 = $request->request->get('line1');
+            $line2 = $request->request->get('line2');
+            $city = $request->request->get('city');
+            $state = $request->request->get('state');
+            $postalcode = $request->request->get('postalcode');
+            $telephone = $request->request->get('telephone');
+
         }
         else {
             die();
@@ -235,7 +243,13 @@ class OrderController extends AbstractController
             $entityManager->flush();
             $count++;
         }
-        
+        $order->setLine1($line1);
+        $order->setLine2($line2);
+        $order->setCity($city);
+        $order->setState($state);
+        $order->setPostalcode($postalcode);
+        $order->setTelephone($telephone);
+        $order->setNote($note);
         $order->setTotal($newTotal);
 
         $entityManager->persist($order);
@@ -387,6 +401,83 @@ class OrderController extends AbstractController
 
   return $returnResponse;
 
+    }
+
+    /**
+     * @Route("/compose/separate/post", name="order_pdf_compose_separate", methods={"POST"})
+     * @param ProviderOrderRepository $order
+     * @param Request $request
+     * @return JsonResponse
+     * @throws NonUniqueResultException
+     */
+    public function ComposePDFSeparate(ProviderOrderRepository $providerOrderRepository,Request $request,\Swift_Mailer $mailer):JsonResponse
+    {
+        $usr = $this->security->getUser();
+
+        if ($request->getMethod() == 'POST')
+        {
+            $sender = $request->request->get('sender');
+            $recipient = $request->request->get('reciever');
+            $subject = $request->request->get('subject');
+            $body = $request->request->get('body');
+            $note = $request->request->get('note');
+            $oids = $request->request->get('oids');
+
+        }
+        else {
+            die();
+        }
+
+        $orderArray = explode(",",$oids);
+
+        if($note != ''){
+            foreach ($orderArray as $id) {
+                $this->createSinglePDF($providerOrderRepository,$note,$id);
+            }
+            
+        }
+
+        $config = parse_ini_file('../MailConfig.ini');
+
+        $user = $config['user'];
+        $pass = $config['passwd'];
+        $server = $config['server'];
+        $port = $config['port'];
+        $postmaster = $config['postmaster'];
+
+        //set for gmail
+        //  $transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465,'ssl'))
+        //  ->setUsername('')
+        // ->setPassword('');
+
+        //set for other
+
+        $transport = (new \Swift_SmtpTransport($server,$port,'ssl'))
+        ->setUsername($user)
+        ->setPassword($pass);
+    
+
+            $mailer = new \Swift_Mailer($transport);
+
+            $message = (new \Swift_Message($subject))
+            ->setFrom([$postmaster => $usr->getFirstname() . ' ' . $usr->getLastname()])
+            ->setReplyTo($sender)
+            ->setTo([$recipient, $sender => 'Me'])
+            ->setBody($body);
+
+            foreach ($orderArray as $id) {
+                $message->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$id.'_report.pdf'));
+            }
+
+            $mailer->send($message);
+            
+            unlink($this->getParameter('temp_storage_dir').$id.'_report.pdf');
+
+
+  $returnResponse = new JsonResponse();
+  $returnResponse->setjson(200);
+
+  return $returnResponse;
     }
 
     /**
@@ -548,6 +639,36 @@ class OrderController extends AbstractController
         
         $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
 
+    }
+
+    /**
+     * @Route("/pdf/multiple/compose/separate", name="order_pdf_compose_multiple_separate", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function ComposeMultiplePdfSeparate(ProviderOrderRepository $providerOrderRepository): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+        $oids = $_GET['oids'];
+
+        
+        $orderArray = explode(",",$oids);
+       
+      //  $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+
+        foreach($orderArray as $id){
+            $this->createSinglePDF($providerOrderRepository,'',$id);
+        }
+
+        return $this->render('order/compose_separate.html.twig', [
+            'oidsArray' => $orderArray,
+            'oids' => $oids
+
+        ]);
     }
 
     /**
