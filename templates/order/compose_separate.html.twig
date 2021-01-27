@@ -39,8 +39,8 @@
                 </div>
               </div>
               <div class="card-body p-0">
-              {% for order in oidsArray %}
-                  <embed src= "{{asset('temp_storage/'~ order ~'_report.pdf')}}" width="auto" height="500px" />
+              {% for order in orders %}
+                  <embed src= "{{asset('temp_storage/'~ order.company.name ~' - PO '~ order.ordernumber ~'.pdf')}}" width="auto" height="500px" />
               {% endfor %}
               </div>
               <!-- /.card-body -->

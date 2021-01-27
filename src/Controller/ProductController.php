@@ -62,6 +62,7 @@ class ProductController extends AbstractController
      */
     public function new(Request $request): Response
     {
+        $user = $this->security->getUser();
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
@@ -77,7 +78,7 @@ class ProductController extends AbstractController
                     $filename);
                 $product->setImage($filename);
             }
-           
+           $product->setCompany($user->getCompany());
 
            $entityManager->persist($product);
            $entityManager->flush();

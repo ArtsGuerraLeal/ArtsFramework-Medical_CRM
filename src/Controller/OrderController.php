@@ -89,7 +89,7 @@ class OrderController extends AbstractController
 
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('order/purchase_order.html.twig', [
-            'title' => "Welcome to our PDF Test",
+            'title' => "Zampree",
             'note' => '',
             'order' => $order
         ]);
@@ -102,7 +102,7 @@ class OrderController extends AbstractController
 
         $output = $dompdf->output();
 
-        $filename = $order->getId()."_report.pdf";
+        $filename = $user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf";
         
       //  $file->move($this->getParameter('uploads_dir'),$filename);
 
@@ -176,7 +176,7 @@ class OrderController extends AbstractController
         $dompdf->render();
 
         $output = $dompdf->output();
-        $filename = $order->getId()."_report.pdf";
+        $filename = $user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf";
         
     //    $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
 
@@ -580,7 +580,7 @@ class OrderController extends AbstractController
 
         $output = $dompdf->output();
 
-        $filename = $order->getId()."_report.pdf";
+        $filename = $user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf";
         
         $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
 
@@ -635,7 +635,7 @@ class OrderController extends AbstractController
 
         $output = $dompdf->output();
 
-        $filename = $order->getId()."_report.pdf";
+        $filename = $user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf";
         
         $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
 
@@ -658,7 +658,7 @@ class OrderController extends AbstractController
         
         $orderArray = explode(",",$oids);
        
-      //  $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+        $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
 
         foreach($orderArray as $id){
             $this->createSinglePDF($providerOrderRepository,'',$id);
@@ -666,7 +666,8 @@ class OrderController extends AbstractController
 
         return $this->render('order/compose_separate.html.twig', [
             'oidsArray' => $orderArray,
-            'oids' => $oids
+            'oids' => $oids,
+            'orders' => $orders
 
         ]);
     }
@@ -722,7 +723,7 @@ class OrderController extends AbstractController
 
         $output = $dompdf->output();
 
-        $filename = $order->getId()."_report.pdf";
+        $filename = $user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf";
         
 
         $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);

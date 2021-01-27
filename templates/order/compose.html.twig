@@ -39,7 +39,7 @@
                 </div>
               </div>
               <div class="card-body p-0">
-                  <embed src= "{{asset('temp_storage/'~ order.id ~'_report.pdf')}}" width="auto" height="500px" />
+                  <embed src= "{{asset('temp_storage/'~ order.company.name ~' - PO '~ order.ordernumber ~'.pdf')}}" width="auto" height="500px" />
 
               </div>
               <!-- /.card-body -->
