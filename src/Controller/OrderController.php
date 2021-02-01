@@ -301,6 +301,8 @@ class OrderController extends AbstractController
             }
         }
 
+        $order = $providerOrderRepository->findOneByCompanyID($usr->getCompany(), $id);
+
         $config = parse_ini_file('../MailConfig.ini');
 
         $user = $config['user'];
@@ -328,12 +330,12 @@ class OrderController extends AbstractController
             ->setReplyTo($sender)
             ->setTo([$recipient, $sender => 'Me'])
             ->setBody($body)
-            ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$id.'_report.pdf'))
+            ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf"))
             ;
 
             $mailer->send($message);
             
-            unlink($this->getParameter('temp_storage_dir').$id.'_report.pdf');
+            unlink($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf");
 
 
   $returnResponse = new JsonResponse();
@@ -387,7 +389,7 @@ class OrderController extends AbstractController
             ->setFrom(['john@doe.com' => 'Andres Zambrano'])
             ->setTo(['guerraarturo11@gmail.com', 'guerraarturo@icloud.com' => 'A name'])
             ->setBody('Mensaje')
-            ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').'6_report.pdf'))
+            ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf"))
             ;
 
             $mailer->send($message);
@@ -466,18 +468,20 @@ class OrderController extends AbstractController
             ->setBody($body);
 
             foreach ($orderArray as $id) {
-                $message->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$id.'_report.pdf'));
+                $order = $providerOrderRepository->findOneByCompanyID($usr->getCompany(), $id);
+                $message->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf"));
+
             }
 
             $mailer->send($message);
             
-            unlink($this->getParameter('temp_storage_dir').$id.'_report.pdf');
+            unlink($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf");
 
 
-  $returnResponse = new JsonResponse();
-  $returnResponse->setjson(200);
+            $returnResponse = new JsonResponse();
+            $returnResponse->setjson(200);
 
-  return $returnResponse;
+            return $returnResponse;
     }
 
     /**
@@ -668,7 +672,6 @@ class OrderController extends AbstractController
             'oidsArray' => $orderArray,
             'oids' => $oids,
             'orders' => $orders
-
         ]);
     }
 
@@ -781,7 +784,7 @@ class OrderController extends AbstractController
         $dompdf->render();
 
         // Output the generated PDF to Browser (inline view)
-        $dompdf->stream($order->getId()."_report.pdf", [
+        $dompdf->stream($user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf", [
             //Show download box on open
             "Attachment" => false
         ]);
@@ -830,7 +833,7 @@ class OrderController extends AbstractController
         $dompdf->render();
 
         // Output the generated PDF to Browser (inline view)
-        $dompdf->stream($order->getId()."_report.pdf", [
+        $dompdf->stream($user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf", [
             //Show download box on open
             "Attachment" => true
         ]);

@@ -911,7 +911,12 @@
                     success:function (php_result) {
                         console.log(php_result);
                         saleID = php_result.toString();
-                        window.location.replace(saleID+"/reciept");
+
+                          setTimeout(function(){
+                        window.open("/quote/"+saleID.toString()+"/reciept", '_blank');
+                        window.location.replace("/quote");
+                    }, 1050);
+
 
                     }
 

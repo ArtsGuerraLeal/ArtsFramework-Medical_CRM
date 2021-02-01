@@ -42,15 +42,19 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <a class = "btn btn-primary" href="{{ path('quotes_list') }}">Regresar</a>
+    <a class = "btn btn-primary" href="{{ path('quote_pdf_preview', {'id': quote.id}) }}">Preview</a>
+    <a class = "btn btn-primary" href="{{ path('quote_pdf_download', {'id': quote.id}) }}">Descargar Pdf</a>
+    <a class = "btn btn-primary" href="{{ path('quote_compose', {'id': quote.id}) }}">Enviar</a>
+
+</div>
 </div>
     <a href="{{ path('quotes_list') }}">back to list</a>
 
 
 
   
-
-
-
 {% endblock %}
 
 {% block pagejs %}

@@ -102,8 +102,7 @@ class SaleController extends AbstractController
     {
 
         $user = $this->security->getUser();
-
-       
+       // $counts = $this->saleRepository->GetMostSoldProducts();
 
         return $this->render('sale/index.html.twig', [
             'products' => $productRepository->findByCompany($user->getCompany()),
@@ -304,6 +303,7 @@ class SaleController extends AbstractController
             $productSold->setProduct($product);
             $productSold->setAmount($quantity[$count]);
             $productSold->setSale($sale);
+            $productSold->setCompany($this->security->getUser()->getCompany());
 
             if($product->getPrice()==0){
                 $productSold->setPrice($price[$count]);
@@ -313,7 +313,6 @@ class SaleController extends AbstractController
                 }else{
                     $productSold->setPrice($product->getPrice()*$quantity[$count]);
                     $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
-                    $productSold->setCompany($this->security->getUser()->getCompany());
 
                     $discountCount = 0;
 

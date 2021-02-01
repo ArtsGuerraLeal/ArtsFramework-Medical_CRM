@@ -1,137 +1,17 @@
 
 $(function () {
-    var chart2 = c3.generate({
-        bindto: '#clientes',
-        data: {
-            columns: [
-                ['Direct Sales', 25],
-                ['Referral Sales', 15],
-                ['Afilliate Sales', 10],
-                ['Indirect Sales', 15]
-            ],
-
-            type: 'donut',
-            tooltip: {
-                show: true
-            }
-        },
-        donut: {
-            label: {
-                show: false
-            },
-            title: 'Clientes',
-            width: 18
-        },
-
-        legend: {
-            hide: true
-        },
-        color: {
-            pattern: [
-                '#edf2f6',
-                '#5f76e8',
-                '#ff4f70',
-                '#01caf1'
-            ]
-        }
-    });
-
-    d3.select('#clientes .c3-chart-arcs-title').style('font-family', 'Rubik');
+    
 
     // ==============================================================
     // Campaign
     // ==============================================================
 
-    var chart1 = c3.generate({
-        bindto: '#campaign-v2',
-        data: {
-            columns: [
-                ['Direct Sales', 25],
-                ['Referral Sales', 15],
-                ['Afilliate Sales', 10],
-                ['Indirect Sales', 15]
-            ],
-
-            type: 'donut',
-            tooltip: {
-                show: true
-            }
-        },
-        donut: {
-            label: {
-                show: false
-            },
-            title: 'Ventas',
-            width: 18
-        },
-
-        legend: {
-            hide: true
-        },
-        color: {
-            pattern: [
-                '#edf2f6',
-                '#5f76e8',
-                '#ff4f70',
-                '#01caf1'
-            ]
-        }
-    });
-
-    d3.select('#campaign-v2 .c3-chart-arcs-title').style('font-family', 'Rubik');
+    
 
     // ============================================================== 
     // income
     // ============================================================== 
-    var data = {
-        labels: ['Ene', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
-        series: [
-            [500, 400, 300, 7000, 500, 1000, 5000, 400, 3000, 7000, 500,2000]
-        ]
-    };
-    maxVal = data.series[0];
-    
-    
-    var largest= 0;
-
-    for (i=0; i<=largest;i++){
-        if (maxVal[i]>largest) {
-            var largest=maxVal[i];
-        }
-    }
-
-
-    var options = {
-        high: largest*1.2,
-        low:0,
-        axisX: {
-            showGrid: false
-        },
-        seriesBarDistance: 2,
-        chartPadding: {
-            top: 15,
-            right: 15,
-            bottom: 5,
-            left: 0
-        },
-        plugins: [
-            Chartist.plugins.tooltip()
-        ],
-        width: '100%'
-    };
-
-    var responsiveOptions = [
-        ['screen and (max-width: 640px)', {
-            seriesBarDistance: 5,
-            axisX: {
-                labelInterpolationFnc: function (value) {
-                    return value[0];
-                }
-            }
-            
-        }]
-    ];
-    new Chartist.Bar('.net-income', data, options, responsiveOptions);
+   
 
     // ============================================================== 
     // Visit By Location

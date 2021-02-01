@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% block stylesheets %}
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+
+    <style>
+
+    h2 {
+    font-family: "Sofia", sans-serif;
+    }
+
+    .border {
+    border: 1px solid black;
+    }
+
+    .mytable {
+    width: 100%;
+    border-collapse: collapse;
+    }
+
+    .column {
+    float: left;
+    width: 33.33%;
+    padding: 5px;
+    }
+
+    /* Clearfix (clear floats) */
+    .row::after {
+    content: "";
+    clear: both;
+    display: table;
+    }
+    
+    .top-text{
+    display: inline-block;
+    padding-left:500px;
+    margin-top: 0px;
+    }
+
+    .logo{
+    display: inline-block;
+    
+    }
+
+    .headers{
+        
+
+    }
+
+    .below-header{
+
+    }
+
+    .header-bill{
+    display: inline-block;
+
+    }
+
+
+    .date{
+    display: inline-block;
+    padding-left:500px;
+    margin-top:0px;
+    margin-bottom:0px;
+
+    }
+
+    .p-o{
+    display: inline-block;
+    padding-left:500px;
+    margin-top:0px;
+    }
+
+    .table-body{
+   
+        padding-top:0px;
+
+    }
+
+    
+
+    .shipping{
+    display: inline-block;
+    padding-left:140px;
+    margin-top:10px;
+    margin-bottom:0px;
+
+    }
+
+    .billing{
+    display: inline-block;
+    margin-top:10px;
+    margin-bottom:0px;
+
+    }
+    .notes{
+    padding-left:30px;
+    padding-bottom:10px
+
+    }
+
+    .billing-table{
+    padding-left: 50px;
+        
+    }
+
+    .shipping-table{
+    padding-left: 50px;
+    }
+
+    .total{
+    display: inline-block;
+    padding-left:600px;
+    margin-top:15px;
+    }
+
+
+    </style>
+
+    {% endblock %}
+</head>
+
+{% block body %}
+<div class="headers">
+        <img class="logo" height="60px" width="180px" style="float:left" src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" alt="">
+
+        <h2 class="top-text">Presupuesto</h2>
+</div>
+
+<div class="header-date">
+        <h4 class="date">Fecha: {{ quote.time ? quote.time|date('d-m-Y') : '' }}</h4>
+        
+</div>
+<div class"header-po">
+<h4 class="p-o">#Presupuesto: {{ quote.id}}</h4>
+</div>
+
+<div class="header-bill">
+
+<div class="billing" style="padding-top:20px;">
+<h5 style="margin-bottom:3px"></h5>
+<table class=" billing-table">
+        <tbody>
+
+            <tr>
+                <td>Cliente: </td>
+            </tr>
+            <tr>
+                <td>Cajero</td>
+            </tr>
+            <tr>
+                <td>Telefono</td>
+            </tr>
+            <tr>
+                <td>Correo Electronico</td>
+            </tr>
+          
+
+            
+    
+        </tbody>
+       
+    </table>
+</div>
+
+<div class="notes">
+{% if quote.note == null %}
+<h5 style="margin-bottom:3px">Notas:<br> 
+Datos Bancarios para Depósito ó Transferencia <br>
+Banregio<br>
+Altima Viveros S.P.R de R.L. de C.V.<br>
+Cuenta: 012048860018Clabe: 0585 8012 0488 6001 86<br>
+<br>
+BBVA Bancomer<br>
+Altima Viveros S.P.R. de R.L. de C.V.<br>
+Cuenta: 0112816342Clabe: 0125 8000 1128 1634 20<br>
+Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de la 1 PM. Sujeto a existencia.<br>
+<br>
+{{ note }}
+</h5>
+{% else %}
+<h5 style="margin-bottom:3px">Notes: {{ quote.note }}</h5>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<div class="table-body">
+    <table class="border mytable">
+        <tbody>
+        <tr>
+            <th class="border">Cantidad</th>
+            <th class="border">Producto</th>
+            <th class="border">Price</th>
+            <th class="border">Total</th>
+
+        </tr>
+
+           {% for product in quote.productQuotes %}
+           
+            <tr class="border">
+           
+                <td class="border" style="text-align:center;">{{ product.amount }}</td>
+                <td class="border">{{ product.product.name }}</td>
+                <td class="border">$ {{ product.product.price|number_format(2, '.', ',') }}</td>
+                <td class="border">$ {{ (product.amount * product.product.price)|number_format(2, '.', ',')  }}</td>
+            </tr>
+            {% endfor %}
+        {% if quote.productQuotes.count < 20%}
+            {% for i in 0..20 - quote.productQuotes.count %}
+            <tr class="border">
+                <td class="border"></td>
+                <td class="border"></td>
+                <td class="border"></td>
+                <td class="border" style="text-align:right">-</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        </tbody>
+       
+    </table>
+    <h5 class="total">Total: ${{ quote.total|number_format(2, '.', ',') }}</h5>
+
+</div>
+
+
+{% endblock %}

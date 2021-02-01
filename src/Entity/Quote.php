@@ -70,6 +70,11 @@ class Quote
      */
     private $discounts;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $note;
+
     public function __construct()
     {
         $this->productQuotes = new ArrayCollection();
@@ -235,6 +240,18 @@ class Quote
                 $discount->setQuote(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): self
+    {
+        $this->note = $note;
 
         return $this;
     }

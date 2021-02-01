@@ -63,6 +63,53 @@ class ProductSoldRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+    public function GetMostSoldProductsDay($companyId,$date){
+  
+        $from = new \DateTime($date->format("Y-m-d")." 00:00:00");
+        $to   = new \DateTime($date->format("Y-m-d")." 23:59:59");
+
+        return $this->createQueryBuilder('productSold')
+            ->Select('count(productSold.product) as prodCount')
+            ->addSelect('product.name as prodName' )
+            ->addSelect('product.price as prodPrice' )
+            ->addSelect('product.id as prodId' )
+            ->andWhere('productSold.company = :val')
+            ->andWhere('sale.time BETWEEN :from AND :to')
+            ->setParameter('from', $from )
+            ->setParameter('to', $to)
+            ->Join('productSold.sale', 'sale')
+            ->Join('productSold.product', 'product')
+            ->setParameter('val', $companyId)
+            ->groupBy('product.name')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function GetMostSoldProducts($companyId,$date){
+  
+        $from = new \DateTime($date->format("Y-m-1"));
+        $to   = new \DateTime($date->format("Y-m-t"));
+
+        return $this->createQueryBuilder('productSold')
+            ->Select('count(productSold.product) as prodCount')
+            ->addSelect('product.name as prodName' )
+            ->addSelect('product.price as prodPrice' )
+            ->addSelect('product.id as prodId' )
+            ->andWhere('productSold.company = :val')
+            ->andWhere('sale.time BETWEEN :from AND :to')
+            ->setParameter('from', $from )
+            ->setParameter('to', $to)
+            ->Join('productSold.sale', 'sale')
+            ->Join('productSold.product', 'product')
+            ->setParameter('val', $companyId)
+            ->groupBy('product.name')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 
     // /**
     //  * @return ProductSold[] Returns an array of ProductSold objects

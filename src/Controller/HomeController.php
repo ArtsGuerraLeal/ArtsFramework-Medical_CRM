@@ -57,11 +57,20 @@ class HomeController extends AbstractController
         $date = new \DateTime();
         $yesterday = new \DateTime();
         $yesterday->sub(new \DateInterval('P1D'));
-        
+        $products = $productSoldRepository->GetMostSoldProducts($user->getCompany(),$date);
+        $clients = $saleRepository->GetMostFrequentClientMonth($user->getCompany(),$date);
+        $monthlySales = $saleRepository->GetSalesPerMonth($user->getCompany(),$date);
+
+       //  foreach ($products as $key) {
+       //     var_dump($key);
+       // }
        // if($user->getRoles())
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
+            'totalSalesMonth' => $monthlySales,
+            'clients' => $clients,
+            'products' => $products,
             'sales' => $saleRepository->findAllByCompanyDate($user->getCompany(),$date),
             'salesmonth' => $saleRepository->findAllByCompanyMonth($user->getCompany(),$date),
             'salesyesterday' => $saleRepository->findAllByCompanyDate($user->getCompany(),$yesterday),

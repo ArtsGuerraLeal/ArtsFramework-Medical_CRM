@@ -1,0 +1,129 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Compose Email{% endblock %}
+
+{% block body %}
+
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Compose</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Compose</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+            <a href="{{ path('order_list') }}" class="btn btn-primary btn-block mb-3">Back</a>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Preview</h3>
+
+                <div class="card-tools">
+               
+                </div>
+              </div>
+              <div class="card-body p-0">
+                  <embed src= "{{asset('temp_storage/'~ quote.company.name ~' - Quote '~ quote.id ~'.pdf')}}" width="auto" height="500px" />
+
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+           
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-9">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Compose New Message</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <div class="form-group">
+                  <input class="form-control" type="email" id="sender" placeholder="Reply To:" value="{{app.user.email}}">
+                </div>
+                <div class="form-group">
+                  <input class="form-control" type="email" id="recipient" placeholder="Para:">
+                </div>
+                <div class="form-group">
+                  <input class="form-control" id="subject" placeholder="Sujeto:">
+                </div>
+                <div class="form-group">
+                  <input class="form-control" id="notes" placeholder="Notas:">
+                </div>
+                <div class="form-group">
+                    <textarea id="compose-text" class="form-control" style="height: 300px"></textarea>
+                </div>
+               
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer">
+                <div class="float-right">
+                  <button type="submit" class="btn btn-primary" onclick="send(this)"><i class="far fa-envelope"></i> Enviar</button>
+                </div>
+                <button type="reset" class="btn btn-default"><i class="fas fa-times"></i> Descartar</button>
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+
+   
+
+<script type="text/javascript">
+
+        function send(button) {
+            var to = $('#recipient').val();
+            var from = $('#sender').val();
+            var sbj = $('#subject').val();
+            var notes = $('#notes').val();
+            var oids = '{{ oids }}';
+
+            var body_text = $('#compose-text').val();
+                $.ajax({
+                    url:"{{ path('quote_pdf_compose') }}",
+                    dataType:"text",
+                   type: "POST",
+                    data:{
+                        id:{{ quote.id }},
+                        oids:oids,
+                        reciever:to,
+                        sender:from,
+                        subject:sbj,
+                        body:body_text,
+                        note:notes
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);     
+                      window.location.replace('/quotes/'+{{ quote.id }});
+                    }
+                });
+
+            }
+    </script>
+
+{% endblock %}

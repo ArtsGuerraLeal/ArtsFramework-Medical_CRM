@@ -240,6 +240,8 @@ class QuoteController extends AbstractController
 
     }
 
+    
+
 
 
 

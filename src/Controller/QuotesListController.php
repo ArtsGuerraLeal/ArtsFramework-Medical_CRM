@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Entity\Quote;
 use App\Repository\QuoteRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -53,5 +57,279 @@ class QuotesListController extends AbstractController
         return $this->render('quotes_list/show.html.twig', [
             'quote' => $quote,
         ]);
+    }
+
+    /**
+     * @Route("/{id}/compose", name="quote_compose", methods={"GET"})
+     * @param Quote $quote
+     * @return Response
+     */
+    public function compose(Quote $quote, QuoteRepository $quoteRepository, $id): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $quote = $quoteRepository->findByCompanyID($user->getCompany(), $id);
+
+      
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('quote/purchase_order.html.twig', [
+            'title' => $user->getCompany()->getName(),
+            'note' => '',
+            'quote' => $quote
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        $filename = $user->getCompany()->getName().' - '.$quote->getId().".pdf";
+        
+      //  $file->move($this->getParameter('uploads_dir'),$filename);
+
+        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
+
+
+        return $this->render('quote/compose.html.twig', [
+            'quote' => $quote,
+            'oids' => ''
+        ]);
+    }
+
+    /**
+     * @Route("/compose/post", name="quote_pdf_compose", methods={"POST"})
+     * @param QuoteRepository $quoteRepository
+     * @param Request $request
+     * @return JsonResponse
+     * @throws NonUniqueResultException
+     */
+    public function ComposePDF(QuoteRepository $quoteRepository,Request $request,\Swift_Mailer $mailer):JsonResponse
+    {
+        $usr = $this->security->getUser();
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('id');
+            $sender = $request->request->get('sender');
+            $recipient = $request->request->get('reciever');
+            $subject = $request->request->get('subject');
+            $body = $request->request->get('body');
+            $note = $request->request->get('note');
+            $oids = $request->request->get('oids');
+
+        }
+        else {
+            die();
+        }
+
+
+    
+            
+        if($note != ''){
+            $this->createSinglePDF($quoteRepository,$note,$id);
+        
+        }            
+        
+
+        $quote = $quoteRepository->findByCompanyID($usr->getCompany(), $id);
+
+        $config = parse_ini_file('../MailConfig.ini');
+
+        $user = $config['user'];
+        $pass = $config['passwd'];
+        $server = $config['server'];
+        $port = $config['port'];
+        $postmaster = $config['postmaster'];
+
+        //set for gmail
+        //  $transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465,'ssl'))
+        //  ->setUsername('')
+        // ->setPassword('');
+
+        //set for other
+
+        $transport = (new \Swift_SmtpTransport($server,$port,'ssl'))
+        ->setUsername($user)
+        ->setPassword($pass);
+    
+
+            $mailer = new \Swift_Mailer($transport);
+
+            $message = (new \Swift_Message($subject))
+            ->setFrom([$postmaster => $usr->getFirstname() . ' ' . $usr->getLastname()])
+            ->setReplyTo($sender)
+            ->setTo([$recipient, $sender => 'Me'])
+            ->setBody($body)
+            ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - '.$quote->getId().".pdf"))
+            ;
+
+            $mailer->send($message);
+            
+            unlink($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - '.$quote->getId().".pdf");
+
+
+            $returnResponse = new JsonResponse();
+            $returnResponse->setjson(200);
+
+            return $returnResponse;
+    }
+
+    /**
+     * @Route("/{id}/pdf/preview", name="quote_pdf_preview", methods={"GET","POST"})
+     * @param QuoteRepository $quoteRepository
+     * @param $id
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function pdfPreview(QuoteRepository $quoteRepository, $id, Request $request): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $quote = $quoteRepository->findByCompanyID($user->getCompany(), $id);
+
+      
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('quote/purchase_order.html.twig', [
+            'title' => "",
+            'quote' => $quote,
+            'note' => ''
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (inline view)
+        $dompdf->stream($user->getCompany()->getName().' - '.$quote->getId().".pdf", [
+            //Show download box on open
+            "Attachment" => false
+        ]);
+
+    }
+
+    /**
+     * @Route("/{id}/pdf/download", name="quote_pdf_download", methods={"GET","POST"})
+     * @param ProviderOrderRepository $order
+     * @param $id
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function pdfDownload(QuoteRepository $quoteRepository, $id, Request $request): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $quote = $quoteRepository->findByCompanyID($user->getCompany(), $id);
+
+      
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('quote/purchase_order.html.twig', [
+            'title' => "",
+            'quote' => $quote,
+            'note' => ''
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (inline view)
+        $dompdf->stream($user->getCompany()->getName().' - '.$quote->getId().".pdf", [
+            //Show download box on open
+            "Attachment" => true
+        ]);
+
+    }
+
+    public function createSinglePDF($providerOrderRepository,$note,$id)
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+    
+        $quote = $providerOrderRepository->findByCompanyID($user->getCompany(), $id);
+    
+
+     
+
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('quote/purchase_order.html.twig', [
+            'title' => "",
+            'quote' => $quote,
+            'note' => $note
+        
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        $filename = $user->getCompany()->getName().' - '.$quote->getId().".pdf";
+        
+        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
+
     }
 }
