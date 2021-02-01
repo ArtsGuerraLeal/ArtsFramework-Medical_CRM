@@ -90,9 +90,9 @@ class QuoteController extends AbstractController
         $user = $this->security->getUser();
 
         return $this->render('quote/index.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $productRepository->findOneByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findAll()
+            'categories' => $this->categoryRepository->findOneByCompany($user->getCompany())
         ]);
 
     }
