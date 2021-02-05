@@ -2,24 +2,25 @@
 
 namespace App\Controller;
 
+use http\Exception;
+use App\Entity\Quote;
+use App\Entity\Client;
 use App\Entity\Discount;
 use App\Entity\ProductQuote;
-use App\Entity\Quote;
-use App\Repository\CategoryRepository;
-use App\Repository\ClientRepository;
-use App\Repository\DiscountRepository;
-use App\Repository\PaymentMethodRepository;
-use App\Repository\ProductRepository;
-use App\Repository\QuoteRepository;
 use App\Repository\SaleRepository;
+use App\Repository\QuoteRepository;
+use App\Repository\ClientRepository;
+use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
+use App\Repository\DiscountRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use http\Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\PaymentMethodRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/quote")
@@ -92,7 +93,7 @@ class QuoteController extends AbstractController
         return $this->render('quote/index.html.twig', [
             'products' => $productRepository->findOneByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findOneByCompany($user->getCompany())
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany())
         ]);
 
     }
@@ -160,15 +161,26 @@ class QuoteController extends AbstractController
 
 
         if($clientData == ""){
-            $client = $this->clientRepository->findOneBy(['id'=>10]);
-
+            $client = $this->clientRepository->searchOneByName('Publico En General',$this->security->getUser()->getCompany());
             $quote->setClient($client);
         }else{
-            $client = $this->clientRepository->findOneBy(['id'=>$clientData]);
-            $quote->setClient($client);
-        }
+            $client = $this->clientRepository->searchOneByName($clientData,$this->security->getUser()->getCompany());
 
-        $quote->setTime(new \DateTime());
+            if($client == null){
+                $client = new Client();
+                $client->setName($clientData);
+                $em->persist($client);
+                $em->flush();
+                $quote->setClient($client);
+            }else{
+                $quote->setClient($client);
+            }
+        }
+        
+        $time = new \DateTime();
+        $quote->setTime($time);
+        $quote->setExpirationdate($time->modify('+1 month'));
+
         $quote->setUser($this->security->getUser());
         $quote->setCompany($this->security->getUser()->getCompany());
 

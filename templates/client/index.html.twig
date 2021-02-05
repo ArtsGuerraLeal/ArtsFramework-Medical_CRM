@@ -1,20 +1,63 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
-{% block title %}Hello ClientController!{% endblock %}
+{% block title %}Catalogo de Productos{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Catalogo</div>
+        <div class="card-body">
+           <table class="table table-bordered table-striped " id="zero_config" >
+        <thead>
+        <tr>
+                <th style="width:10%">ID</th>
+                <th style="width:10%">Nombre</th>
+                <th style="width:10%">Codigo</th>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for client in clients %}
+            <tr>
+               
+                <td>{{ client.id }}</td>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/Users/aguerra/Sites/clinimedica/src/Controller/ClientController.php'|file_link(0) }}">src/Controller/ClientController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/Users/aguerra/Sites/clinimedica/templates/client/index.html.twig'|file_link(0) }}">templates/client/index.html.twig</a></code></li>
-    </ul>
+                <td>{{ client.name }}</td>
+
+                <td>{{ client.code }}</td>
+
+              
+
+                <td>
+                    <div class="btn btn-primary btn-sm my-1">
+                        <a class="text-white" href="">Detalles</a>
+
+                    </div>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="">Editar</a>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="btn btn-primary ">
+    <a class="text-white" href="">Nuevo Cliente</a>
 </div>
+
 {% endblock %}
+
+{% block pagejs %}
+    <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../theme/dist/js/pages/datatable/datatable-basic.init.js"></script>
+{% endblock %}
+

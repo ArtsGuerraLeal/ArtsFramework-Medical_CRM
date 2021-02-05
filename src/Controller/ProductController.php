@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Aws\S3\S3Client;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Form\ProductUploadType;
@@ -67,16 +68,45 @@ class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
+        $config = parse_ini_file('../AmazonConfig.ini');
+        $skey = $config['amazon_secret_key'];
+        $key = $config['amazon_key'];
+
+        $s3 = new S3Client([
+            'region'  => 'us-east-1',
+            'version' => 'latest',
+            'credentials' => [
+                'key'    => $key,
+                'secret' => $skey,
+            ]
+        ]);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             /**@var UploadedFile $file */
             $file = $request->files->get('product')['attachment'];
             if($file){
                 $filename = md5(uniqid()). '.' . $file->guessClientExtension();
-                $file->move(
+
+                $temp_file_location = $file->move(
                     $this->getParameter('uploads_dir'),
                     $filename);
+
                 $product->setImage($filename);
+
+
+                $s3->putObject([
+                    'Bucket' => 'pos.artstech',
+                    'Key'    => $user->getCompany()->getName().'/'.$filename,
+                    'SourceFile' => $temp_file_location,
+                    'ACL'    => 'public-read'
+                ]);
+                    
+                unlink($temp_file_location);
+
+               // $file->move($this->getParameter('uploads_dir'),$filename);
+
+                
             }
            $product->setCompany($user->getCompany());
 
@@ -102,6 +132,19 @@ class ProductController extends AbstractController
         $user = $this->security->getUser();
         $form = $this->createForm(ProductUploadType::class);
         $form->handleRequest($request);
+
+        $config = parse_ini_file('../AmazonConfig.ini');
+        $skey = $config['amazon_secret_key'];
+        $key = $config['amazon_key'];
+
+        $s3 = new S3Client([
+            'region'  => 'us-east-1',
+            'version' => 'latest',
+            'credentials' => [
+                'key'    => $key,
+                'secret' => $skey,
+            ]
+        ]);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
@@ -144,6 +187,35 @@ class ProductController extends AbstractController
                             }
                             if($c==19){
                                 $product->setPrice(floatval($data[$c]));
+                            }
+
+                            if($c==24){
+                            $product->setImage($data[$c]);
+
+                                if($product->getImage() != ''){
+                                    $image = file_get_contents($data[$c]);
+                                    $uID = md5(uniqid());
+
+                                    $file = file_put_contents($this->getParameter('uploads_dir').$uID.'.png', $image);
+                                    
+                                    $filename = $uID. '.png';
+                                    $product->setImage($filename);
+                               
+                                    $s3->putObject([
+                                        'Bucket' => 'pos.artstech',
+                                        'Key'    => $user->getCompany()->getName().'/'.$filename,
+                                        'SourceFile' => $this->getParameter('uploads_dir').$filename,
+                                        'ACL'    => 'public-read'
+                                    ]);
+
+                                   unlink($this->getParameter('uploads_dir').$filename);
+
+                                }else{
+
+                                    $product->setImage(null);
+                                }
+                
+
                             }
                             if($c==46){
                                 $product->setCost(floatval($data[$c]));

@@ -24,7 +24,7 @@ class CategoryRepository extends ServiceEntityRepository
      * @return Category
      * @throws NonUniqueResultException
      */
-    public function findOneByCompany($companyId)
+    public function findByCompany($companyId)
     {
         return $this->createQueryBuilder('category')
             ->andWhere('category.company = :company')

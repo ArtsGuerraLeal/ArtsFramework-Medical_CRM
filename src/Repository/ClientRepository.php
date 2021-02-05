@@ -19,34 +19,20 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-    // /**
-    //  * @return Client[] Returns an array of Client objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Client
+
+    public function findByCompanyID($companyId,$id)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
+        return $this->createQueryBuilder('client')
+            ->andWhere('client.company = :val')
+            ->andWhere('client.id = :id')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('client.id', 'ASC')
             ->getQuery()
             ->getOneOrNullResult()
-        ;
+            ;
     }
-    */
 
     /**
      * @param $name
@@ -60,6 +46,72 @@ class ClientRepository extends ServiceEntityRepository
             ->andWhere('client.name = :val2')
             ->setParameter('val', $companyId)
             ->setParameter('val2', $name)
+            ->orderBy('client.id', 'ASC')
+            ->getQuery()
+            ->getArrayResult()
+            ;
+
+    }
+
+    /**
+     * @param $name
+     * @param $companyId
+     * @return Client[] Returns an array of Content objects
+     */
+    public function searchByName($name,$companyId)
+    {
+        $searchQuery = 'client.name LIKE \'%' . $name . '%\'';
+
+        return $this->createQueryBuilder('client')
+            ->select('client.id')
+            ->addSelect('client.name')
+            ->addSelect('client.code')
+            ->andWhere('client.company = :val')
+            ->andWhere($searchQuery)
+            ->setParameter('val', $companyId)
+            ->orderBy('client.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getArrayResult()
+            ;
+
+    }
+
+    /**
+     * @param $name
+     * @param $companyId
+     * @return Client[] Returns an array of Content objects
+     */
+    public function searchOneByName($name,$companyId)
+    {
+
+        return $this->createQueryBuilder('client')
+            ->andWhere('client.company = :val')
+            ->andWhere('client.name = :name')
+            ->setParameter('val', $companyId)
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+
+    }
+
+    /**
+     * @param $name
+     * @param $companyId
+     * @return Client[] Returns an array of Content objects
+     */
+    public function searchByCode($code,$companyId)
+    {
+        $searchQuery = 'client.code LIKE \'%' . $code . '%\'';
+
+        return $this->createQueryBuilder('client')
+            ->select('client.id')
+            ->addSelect('client.name')
+            ->addSelect('client.code')
+            ->andWhere('client.company = :val')
+            ->andWhere($searchQuery)
+            ->setParameter('val', $companyId)
             ->orderBy('client.id', 'ASC')
             ->getQuery()
             ->getArrayResult()

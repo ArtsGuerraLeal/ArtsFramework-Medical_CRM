@@ -4,6 +4,25 @@
 
 {% block body %}
 
+<style>
+
+    .filterDiv {
+    display: none; /* Hidden by default */
+    }
+    
+    .show {
+    display: block;
+    }
+
+    
+
+    .btn.active {
+  background-color: #666;
+  color: white;
+}
+
+</style>
+
    <div class="card">
         <div class="card-header">
         <i class="fas fa-table"></i>
@@ -97,13 +116,16 @@
                 
                     <table id="cart" class="cart-table table table-bordered table-striped table-sm" style="overflow-y:scroll;height:330px;display:block;" >
                         <p>Cliente<p/>
-                        <div class="input-group mb-3">
-                            <input type="text" id="client_name" class="form-control" placeholder="Nombre">
+                        <div class="input-group mb-1">
+                        
+                            <input type="text" id="client_name" class="form-control" placeholder="Nombre" onkeyup="showResult(this.value)">
+                    
                             <div class="input-group-append">
                                 <button class="myBtn btn btn-primary mr-1 myBtn" id="myBtn" type="button" data-toggle="modal" data-target="#myModal">Buscar</button>
                             </div>
+                            
                         </div>
-
+                        <div class="" id="livesearch" style="  border-radius: 5px; position: absolute; top: 139px; background: white none repeat scroll 0% 0%; width: 90%;"></div>
 
                         <thead>
                         <tr>
@@ -151,7 +173,7 @@
                     </tbody>
                 </table>
 
-                <button type='submit' onclick="payment(this)" class='payment-button btn btn-primary my-2 '>Pagar</button>
+                <button type='submit' onclick="payment(this)" class='payment-button btn btn-primary my-2 '>Generar Presupueto</button>
 
             </div>
 
@@ -194,6 +216,7 @@
 
     <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    
 
     <script>
         var input = document.getElementById("product_search");
@@ -207,14 +230,78 @@
         });
     </script>
 
-    <script>
+    <script type="text/javascript">
+        function selectClient(str){
+            document.getElementById("client_name").value=str;
+            document.getElementById("livesearch").innerHTML="";
+            document.getElementById("livesearch").style.border="0px";
+        }
 
+        function CreateClient(){
+          
+            var str = document.getElementById("client_name").value;
+            
+            $.ajax({
+                    url:"{{ path('create_client') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        //document.getElementById("client_name").val=str;
+                        document.getElementById("livesearch").innerHTML="";
+                        document.getElementById("livesearch").style.border="0px";
+                    }
+                });
+                
+        
+        }
+
+
+
+        function showResult(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch").innerHTML="";
+                document.getElementById("livesearch").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_clients') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var clients = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < clients.length;i++){
+                                var name = clients[i].name
+                                console.log(name);
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
+                            }
+                            document.getElementById("livesearch").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch").innerHTML = '<a class="text-success" onclick="CreateClient()">Crear Cliente</a><br/>';
+                        }       
+                    }
+                });
+            }
+        
+
+    </script>
+
+    <script type="text/javascript">
 
         filterSelection("all");
         function filterSelection(c) {
             var x, i;
             x = document.getElementsByClassName("filterDiv");
-
             if (c === "all") c = "";
             // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
             for (i = 0; i < x.length; i++) {
@@ -562,7 +649,7 @@
                     var quantity = parseInt(cellVal.parent().children()[1].innerText);
                     cellVal.parent().children()[1].innerText = quantity + prodAmount;
 
-                    var price = parseInt(cellVal.parent().children()[2].innerText);
+                    var price = parseFloat(cellVal.parent().children()[2].innerText);
                     cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                 }
 
@@ -649,7 +736,7 @@
                     var quantity = parseInt(cellVal.parent().children()[1].innerText);
                     cellVal.parent().children()[1].innerText = quantity + prodAmount;
 
-                    var price = parseInt(cellVal.parent().children()[2].innerText);
+                    var price = parseFloat(cellVal.parent().children()[2].innerText);
                     cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                 }
 
@@ -801,7 +888,7 @@
                             var quantity = parseInt(cellVal.parent().children()[1].innerText);
                             cellVal.parent().children()[1].innerText = quantity + prodAmount;
 
-                            var price = parseInt(cellVal.parent().children()[2].innerText);
+                            var price = parseFloat(cellVal.parent().children()[2].innerText);
                             cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                         }
 
@@ -933,3 +1020,11 @@
     </script>
 
 {% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+ {% block pagejs %}
+    {% endblock %}

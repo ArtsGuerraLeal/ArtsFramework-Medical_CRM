@@ -1,0 +1,141 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Cliente{% endblock %}
+
+{% block body %}
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Cliente</div>
+        <div class="card-body">
+           <div class="row mr-n4">
+            <div class="col-lg-4 pb-5">
+
+                <div class="author-card pb-3">
+                    <div class="author-card-cover" style="background-image: url(https://demo.createx.studio/createx-html/img/widgets/author/cover.jpg);"></div>
+                    <div class="author-card-profile">
+                        <div class="author-card-avatar">
+
+                        </div>
+                        <div class="author-card-details">
+                            <h2 class="author-card-name text-lg">{{client.name}}</h5><span class="author-card-position">Cumpleaños :</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard">
+                    <nav class="list-group list-group-flush">
+                        <a class="list-group-item" href="#">
+                        </a>
+                        <a class="list-group-item active" href="">
+                            <i class="fe-icon-user text-muted">
+                            </i>Profile</a>
+                        <a class="list-group-item" href="{{ path('client_edit', {'id': client.id}) }}">
+                            <i class="fe-icon-map-pin text-muted">
+                            </i>Editar</a>
+                    </nav>
+                </div>
+            </div>
+            <!-- Profile Settings-->
+            <div class="col-lg-8 pb-5">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Correo</th>
+                        <td>
+                          {{ client.email }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Telefono</th>
+                        <td>
+                          {{ client.phone }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Celular</th>
+                        <td>
+                          {{ client.cellphone }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Empresa/Razón Social</th>
+                        <td>
+                          {{ client.business }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>RFC</th>
+                        <td>
+                          {{ client.taxid }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Dirección</th>
+                        <td>
+                          {{ client.line1 }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Colonia</th>
+                        <td>
+                          {{ client.line2 }}
+                        </td>
+                    </tr>
+                      <tr>
+                        <th>Ciudad</th>
+                        <td>
+                          {{ client.city }}
+                        </td>
+                    </tr>
+                       <tr>
+                        <th>Estado</th>
+                        <td>
+                          {{ client.state }}
+                        </td>
+                    </tr>
+                      <tr>
+                        <th>CP</th>
+                        <td>
+                          {{ client.postalcode }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Pais</th>
+                        <td>
+                          {{ client.country }}
+                        </td>
+                    </tr>
+                      <tr>
+                        <th>Tipo de Cliente</th>
+                        <td>
+                          {{ client.type }}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Nota</th>
+                        <td>{{ client.note }}</td>
+                    </tr>
+                    <tr>
+                        <th>Codido de Cliente</th>
+                        <td>{{ client.code }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+  
+    
+</div>
+    
+    
+
+
+    <script type="text/javascript">
+      
+    </script>
+
+{% endblock %}
+
+{% block pagejs %}
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('theme/dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
+{% endblock %}

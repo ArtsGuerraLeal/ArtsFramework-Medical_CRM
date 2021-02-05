@@ -75,6 +75,11 @@ class Quote
      */
     private $note;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $expirationdate;
+
     public function __construct()
     {
         $this->productQuotes = new ArrayCollection();
@@ -252,6 +257,18 @@ class Quote
     public function setNote(?string $note): self
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getExpirationdate(): ?\DateTimeInterface
+    {
+        return $this->expirationdate;
+    }
+
+    public function setExpirationdate(?\DateTimeInterface $expirationdate): self
+    {
+        $this->expirationdate = $expirationdate;
 
         return $this;
     }

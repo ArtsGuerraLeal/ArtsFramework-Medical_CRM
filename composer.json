@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "aws/aws-sdk-php": "^3.172",
         "beberlei/doctrineextensions": "^1.3",
         "dompdf/dompdf": "^1.0",
         "friendsofsymfony/rest-bundle": "^2.6",

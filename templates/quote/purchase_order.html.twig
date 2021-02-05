@@ -98,12 +98,12 @@
     }
     .notes{
     padding-left:30px;
-    padding-bottom:10px
+    padding-bottom:0px
 
     }
 
     .billing-table{
-    padding-left: 50px;
+    padding-left: 30px;
         
     }
 
@@ -116,6 +116,12 @@
     padding-left:600px;
     margin-top:15px;
     }
+    .subtotal{
+    padding-left:500px;
+    }
+    .iva{
+    padding-left:600px;
+    }
 
 
     </style>
@@ -125,37 +131,40 @@
 
 {% block body %}
 <div class="headers">
-        <img class="logo" height="60px" width="180px" style="float:left" src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" alt="">
+        <img class="logo" height="60px" width="180px" style="float:left; padding-bottom:30px" src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" alt="">
 
         <h2 class="top-text">Presupuesto</h2>
 </div>
 
 <div class="header-date">
         <h4 class="date">Fecha: {{ quote.time ? quote.time|date('d-m-Y') : '' }}</h4>
-        
+
 </div>
 <div class"header-po">
-<h4 class="p-o">#Presupuesto: {{ quote.id}}</h4>
+<h4 class="p-o"># Presupuesto: {{ quote.id}}</h4>
 </div>
 
 <div class="header-bill">
 
-<div class="billing" style="padding-top:20px;">
+<div class="billing" style="padding-top:50px;">
 <h5 style="margin-bottom:3px"></h5>
-<table class=" billing-table">
+<table class=" billing-table" >
         <tbody>
 
             <tr>
-                <td>Cliente: </td>
+                <td>Cliente: {{ quote.client.name}}</td>
             </tr>
             <tr>
-                <td>Cajero</td>
+                <td>Cajero: {{ quote.user.firstName ~ ' '~ quote.user.lastName}}</td>
             </tr>
             <tr>
-                <td>Telefono</td>
+                <td>Telefono: {{ quote.client.phone}}</td>
             </tr>
             <tr>
-                <td>Correo Electronico</td>
+                <td>Correo Electronico: {{ quote.client.email}}</td>
+            </tr>
+            <tr>
+                <td>Valido hasta: {{ quote.expirationdate ? quote.expirationdate|date('d-m-Y') : '' }}</td>
             </tr>
           
 
@@ -196,7 +205,7 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
         <tr>
             <th class="border">Cantidad</th>
             <th class="border">Producto</th>
-            <th class="border">Price</th>
+            <th class="border">Precio</th>
             <th class="border">Total</th>
 
         </tr>
@@ -211,8 +220,8 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
                 <td class="border">$ {{ (product.amount * product.product.price)|number_format(2, '.', ',')  }}</td>
             </tr>
             {% endfor %}
-        {% if quote.productQuotes.count < 20%}
-            {% for i in 0..20 - quote.productQuotes.count %}
+        {% if quote.productQuotes.count < 15 %}
+            {% for i in 0..15 - quote.productQuotes.count %}
             <tr class="border">
                 <td class="border"></td>
                 <td class="border"></td>
@@ -225,7 +234,10 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
         </tbody>
        
     </table>
-    <h5 class="total">Total: ${{ quote.total|number_format(2, '.', ',') }}</h5>
+    <h3 class="subtotal">
+    Subtotal: ${{ quote.subtotal|number_format(2, '.', ',') }}<br>
+    IVA: ${{ quote.tax|number_format(2, '.', ',') }}<br>
+    Total: ${{ quote.total|number_format(2, '.', ',') }}<br></h5>
 
 </div>
 

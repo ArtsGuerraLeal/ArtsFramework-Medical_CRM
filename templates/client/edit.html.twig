@@ -1,0 +1,188 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Cliente{% endblock %}
+
+{% block body %}
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Cliente</div>
+        <div class="card-body">
+           <div class="row mr-n4">
+            <div class="col-lg-4 pb-5">
+
+                <div class="author-card pb-3">
+                    <div class="author-card-cover" style="background-image: url(https://demo.createx.studio/createx-html/img/widgets/author/cover.jpg);"></div>
+                    <div class="author-card-profile">
+                        <div class="author-card-avatar">
+
+                        </div>
+                        <div class="author-card-details">
+                            <h2 class="author-card-name text-lg">{{client.name}}</h5><span class="author-card-position">Cumpleaños :</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard">
+                    <nav class="list-group list-group-flush">
+                        <a class="list-group-item" href="#">
+                        </a>
+                        <button class="btn btn-success" onclick="save()">Guardar</button>
+                        
+                    </nav>
+                </div>
+            </div>
+            <!-- Profile Settings-->
+            <div class="col-lg-8 pb-5">
+                <table class="table">
+                    <tbody>
+                    <tr>    
+                        <th>Correo</th>
+                        <td>
+                <td><input type="text" id="email" name="email" value ="{{ client.email }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Telefono</th>
+                        <td>
+                <td><input type="text" id="phone" name="phone" value ="{{ client.phone }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Celular</th>
+                        <td>
+                <td><input type="text" id="cellphone" name="cellphone" value ="{{ client.cellphone }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Empresa/Razon Social</th>
+                        <td>
+                <td><input type="text" id="business" name="business" value ="{{ client.business }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>RFC</th>
+                        <td>
+                <td><input type="text" id="taxid" name="taxid" value ="{{ client.taxid }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Dirección</th>
+                        <td>
+                <td><input type="text" id="line1" name="line1" value ="{{ client.line1 }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Colonia</th>
+                        <td>
+                <td><input type="text" id="line2" name="line2" value ="{{ client.line2 }}"></td>
+                        </td>
+                    </tr>
+                      <tr>
+                        <th>Ciudad</th>
+                        <td>
+                <td><input type="text" id="city" name="city" value ="{{ client.city }}"></td>
+                        </td>
+                    </tr>
+                       <tr>
+                        <th>Estado</th>
+                        <td>
+                <td><input type="text" id="state" name="state" value ="{{ client.state }}"></td>
+                        </td>
+                    </tr>
+                      <tr>
+                        <th>Codigo Postal</th>
+                        <td>
+                <td><input type="text" id="postalcode" name="postalcode" value ="{{ client.postalcode }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Pais</th>
+                        <td>
+                <td><input type="text" id="country" name="country" value ="{{ client.country }}"></td>
+                        </td>
+                    </tr>
+                      <tr>
+                        <th>Tipo de Cliente</th>
+                        <td>
+                <td><input type="text" id="type" name="type" value ="{{ client.type }}"></td>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>Nota</th>
+                        <td>
+                <td><input type="text" id="note" name="note" value ="{{ client.note }}"></td>
+                    </tr>
+                    <tr>
+                        <th>Codido de Cliente</th>
+                        <td>
+                <td><input type="text" id="code" name="code" value ="{{ client.code }}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+  
+    
+</div>
+    
+    
+    <script type="text/javascript">
+      function save() {
+            var clientId = {{ client.id }};
+            //var orderTotal = $(document).find('#order_total').text();
+            var name = $('#name').val();
+            var email = $('#email').val();
+            var phone = $('#phone').val();
+            var cellphone = $('#cellphone').val();
+            var business = $('#business').val();
+            var taxid = $('#taxid').val();
+            var note = $('#note').val();
+            var code = $('#code').val();
+            var type = $('#type').val();
+            var line1 = $('#line1').val();
+            var line2 = $('#line2').val();
+            var city = $('#city').val();
+            var state = $('#state').val();
+            var country = $('#country').val();
+            var postalcode = $('#postalcode').val();
+            
+
+
+                $.ajax({
+                    url:"{{ path('client_edit_post') }}",
+                    dataType:"text",
+                    type: "POST",
+                     data:{
+                        id:clientId,
+                        name:name,
+                        email:email,
+                        phone:phone,
+                        cellphone:cellphone,
+                        business:business,
+                        taxid:taxid,
+                        note:note,
+                        code:code,
+                        type:type,
+                        line1:line1,
+                        line2:line2,
+                        city:city,
+                        state:state,
+                        country:country,
+                        postalcode:postalcode,
+                        phone:phone,
+                        cellphone:cellphone,
+
+                    },
+                    success:function (php_result) {
+                        window.location.replace('/client/'+clientId);
+                    }
+                });
+
+            }
+    </script>
+
+{% endblock %}
+
+{% block pagejs %}
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('theme/dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
+{% endblock %}
