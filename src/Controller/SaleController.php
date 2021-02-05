@@ -709,6 +709,46 @@ class SaleController extends AbstractController
 
     }
 
+    /**
+     * @Route("/fetchproductsku", name="fetch_product_sku", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchProductSKU(Request $request, ProductRepository $repository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('sku');
+        }
+        else {
+            die();
+        }
+
+        $results = $this->productRepository->findOneBy(['sku'=>$id,'company'=>$user->getCompany()]);
+
+        if($results != null){
+
+            $response = '{"id":"'.$results->getId().'","name":"'.$results->getName().'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+
+        }else{
+            $response = 1;
+        }
+
+
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
 
 
 }

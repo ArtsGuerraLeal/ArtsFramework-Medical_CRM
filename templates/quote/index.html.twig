@@ -48,6 +48,11 @@
                     <button id="search_product" onclick="" class="mx-1 search_product btn btn-primary">Agregar</button>
                 </div>
 
+                <div class="search-button-sku input-group">
+                    <input id="product_search_input_sku" class="form-control rounded my-1" type="text" placeholder="SKU">
+                    <button id="search_product_btn_sku" onclick="searchSKU()" class="mx-1 search_product_btn btn btn-primary">Agregar</button>
+                </div>
+
 
                 <div id="catalog" class = "row">
                     
@@ -838,6 +843,81 @@
             });
 
         });
+
+        function searchSKU() {
+
+            var sku = $('#product_search_input_sku').val()
+            $.ajax({
+                url:"{{ path('fetch_product_sku') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    sku:sku,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+                    console.log(obj.name);
+
+                    if(obj.price !== "") {
+                        var prodAmount = 1;
+                        var cart = $('.cart-table');
+                        var prodName = obj.name;
+                        var prodPrice = parseFloat(obj.price);
+
+                        var prodID = obj.id;
+                        var prodTaxable = obj.tax.toString();
+
+                        var prod_quantity = $(this).parent().parent().find("#product-quantity");
+                        if (prod_quantity[0] !== undefined) {
+                            prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText) - prodAmount;
+                        }
+
+                        var total = document.querySelector('#total');
+                        var subtotal = document.querySelector('#subtotal');
+                        var tax = document.querySelector('#tax');
+
+
+                        var cellVal = $(".cart-table tr td").filter(function () {
+                            return $(this).text() === prodName;
+                        });
+                        if (cellVal.text() === "") {
+                            if (prodAmount === 1) {
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            } else {
+
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            }
+
+                        } else {
+                            var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                            cellVal.parent().children()[1].innerText = quantity + prodAmount;
+
+                            var price = parseFloat(cellVal.parent().children()[2].innerText);
+                            cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
+                        }
+
+                        if (prodTaxable === "1") {
+                            tax.innerText = (parseFloat(tax.innerText) + ((prodPrice * prodAmount) * .16)).toFixed(2);
+                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) + ((prodPrice * prodAmount) - ((prodPrice * prodAmount) * .16))).toFixed(2);
+
+                        } else {
+                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(2);
+
+                        }
+                    }
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        }
 
         function search(product_id) {
 
