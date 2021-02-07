@@ -733,8 +733,8 @@ class SaleController extends AbstractController
         $results = $this->productRepository->findOneBy(['sku'=>$id,'company'=>$user->getCompany()]);
 
         if($results != null){
-
-            $response = '{"id":"'.$results->getId().'","name":"'.$results->getName().'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+            $name = addslashes($results->getName());
+            $response = '{"id":"'.$results->getId().'","name":"'.$name.'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
 
         }else{
             $response = 1;
