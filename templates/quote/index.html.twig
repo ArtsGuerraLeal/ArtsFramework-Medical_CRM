@@ -49,9 +49,17 @@
                 </div>
 
                 <div class="search-button-sku input-group">
-                    <input id="product_search_input_sku" class="form-control rounded my-1" type="text" placeholder="SKU">
+                    <input id="product_search_input_sku" class="form-control rounded my-1" type="text" placeholder="SKU" onkeyup="showResultSKU(this.value)">
                     <button id="search_product_btn_sku" onclick="searchSKU()" class="mx-1 search_product_btn btn btn-primary">Agregar</button>
                 </div>
+                <div class="" id="livesearch_sku" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
+
+                <div class="search-button-name input-group">
+                    <input id="product_search_input_name" class="form-control rounded my-1" type="text" placeholder="Nombre" onkeyup="showResultName(this.value)">
+                    <button id="search_product_btn_name" onclick="searchName()" class="mx-1 search_product_name_btn btn btn-primary">Agregar</button>
+                </div>
+                <div class="" id="livesearch_name" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
+
 
 
                 <div id="catalog" class = "row">
@@ -234,6 +242,116 @@
             }
         });
     </script>
+
+    <script type="text/javascript">
+        function selectProductName(str){
+            document.getElementById("product_search_input_name").value=str;
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function clearProductName(){
+            document.getElementById("product_search_input_name").value='';
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function showResultName(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_name").innerHTML="";
+                document.getElementById("livesearch_name").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_products_name') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var products = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < products.length;i++){
+                                var name = products[i].name
+                                console.log(name);
+                                searchResults += '<a class="text-primary" onclick="selectProductName(this.innerHTML)">'+products[i].name+'</a><br/>'
+                            }
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = '<a class="text-success" onclick="clearProductName()">Sin Resultados</a><br/>';
+                        }       
+                    }
+                });
+            }
+        
+
+    </script>
+
+    <script type="text/javascript">
+        function selectProduct(str){
+            var sku = str.split(': ')[1];
+            document.getElementById("product_search_input_sku").value=sku;
+            document.getElementById("livesearch_sku").innerHTML="";
+            document.getElementById("livesearch_sku").style.border="0px";
+        }
+
+        function clearProduct(){
+            document.getElementById("product_search_input_sku").value='';
+            document.getElementById("livesearch_sku").innerHTML="";
+            document.getElementById("livesearch_sku").style.border="0px";
+        }
+
+        function CreateClient(){
+          
+            var str = document.getElementById("product_search_input_sku").value;
+           
+                
+        
+        }
+
+
+
+        function showResultSKU(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_sku").innerHTML="";
+                document.getElementById("livesearch_sku").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_products_sku') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        sku:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var products = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < products.length;i++){
+                                var name = products[i].name
+                                console.log(name);
+                                searchResults += '<a class="text-primary" onclick="selectProduct(this.innerHTML)">'+products[i].name+' : '+products[i].sku+'</a><br/>'
+                            }
+                            document.getElementById("livesearch_sku").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_sku").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_sku").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_sku").innerHTML = '<a class="text-success" onclick="clearProduct()">Sin Resultados</a><br/>';
+                        }       
+                    }
+                });
+            }
+        
+
+    </script>
+
 
     <script type="text/javascript">
         function selectClient(str){
@@ -843,6 +961,81 @@
             });
 
         });
+
+        function searchName() {
+
+            var name = $('#product_search_input_name').val()
+            $.ajax({
+                url:"{{ path('fetch_product_name') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    name:name,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+//                    console.log(obj.name);
+
+                    if(obj.price !== "") {
+                        var prodAmount = 1;
+                        var cart = $('.cart-table');
+                        var prodName = obj.name;
+                        var prodPrice = parseFloat(obj.price);
+
+                        var prodID = obj.id;
+                        var prodTaxable = obj.tax.toString();
+
+                        var prod_quantity = $(this).parent().parent().find("#product-quantity");
+                        if (prod_quantity[0] !== undefined) {
+                            prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText) - prodAmount;
+                        }
+
+                        var total = document.querySelector('#total');
+                        var subtotal = document.querySelector('#subtotal');
+                        var tax = document.querySelector('#tax');
+
+
+                        var cellVal = $(".cart-table tr td").filter(function () {
+                            return $(this).text() === prodName;
+                        });
+                        if (cellVal.text() === "") {
+                            if (prodAmount === 1) {
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            } else {
+
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            }
+
+                        } else {
+                            var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                            cellVal.parent().children()[1].innerText = quantity + prodAmount;
+
+                            var price = parseFloat(cellVal.parent().children()[2].innerText);
+                            cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
+                        }
+
+                        if (prodTaxable === "1") {
+                            tax.innerText = (parseFloat(tax.innerText) + ((prodPrice * prodAmount) * .16)).toFixed(2);
+                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) + ((prodPrice * prodAmount) - ((prodPrice * prodAmount) * .16))).toFixed(2);
+
+                        } else {
+                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(2);
+
+                        }
+                    }
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        }
 
         function searchSKU() {
 

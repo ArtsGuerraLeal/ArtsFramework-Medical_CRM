@@ -58,6 +58,48 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param $sku
+     * @param $companyId
+     * @return Product[] Returns an array of Content objects
+     */
+    public function searchBySKU($sku,$companyId)
+    {
+        $searchQuery = 'product.sku LIKE \'%' . $sku . '%\'';
+
+        return $this->createQueryBuilder('product')
+            ->andWhere('product.company = :val')
+            ->andWhere($searchQuery)
+            ->setParameter('val', $companyId)
+            ->orderBy('product.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getArrayResult()
+            ;
+
+    }
+
+    /**
+     * @param $sku
+     * @param $companyId
+     * @return Product[] Returns an array of Content objects
+     */
+    public function searchByName($name,$companyId)
+    {
+        $searchQuery = 'product.name LIKE \'%' . $name . '%\'';
+
+        return $this->createQueryBuilder('product')
+            ->andWhere('product.company = :val')
+            ->andWhere($searchQuery)
+            ->setParameter('val', $companyId)
+            ->orderBy('product.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getArrayResult()
+            ;
+
+    }
+
+    /**
      * @param $companyId
      * @param $sku
      * @return Product

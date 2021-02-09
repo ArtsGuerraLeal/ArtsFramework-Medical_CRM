@@ -564,6 +564,8 @@ class SaleController extends AbstractController
 
     }
 
+
+
     /**
      * @Route("/createpayment", name="create_sale_payment", methods={"POST"})
      * @param Request $request
@@ -741,6 +743,108 @@ class SaleController extends AbstractController
         }
 
 
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+     /**
+     * @Route("/fetchproductssku", name="fetch_products_sku", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchProductsSKU(Request $request, ProductRepository $repository):JsonResponse
+    {
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $sku = $request->request->get('sku');
+        }
+        else {
+            die();
+       }
+
+        $objects = $this->productRepository->searchBySKU($sku,$user->getCompany());
+
+        $response = json_encode($objects);
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/fetchproductname", name="fetch_product_name", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchProductName(Request $request, ProductRepository $repository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('name');
+        }
+        else {
+            die();
+        }
+
+        $results = $this->productRepository->findOneBy(['name'=>$id,'company'=>$user->getCompany()]);
+
+        if($results != null){
+            $name = addslashes($results->getName());
+            $response = '{"id":"'.$results->getId().'","name":"'.$name.'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+
+        }else{
+            $response = 1;
+        }
+
+
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/fetchproductsname", name="fetch_products_name", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchProductsName(Request $request, ProductRepository $repository):JsonResponse
+    {
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $name = $request->request->get('name');
+        }
+        else {
+            die();
+       }
+
+        $objects = $this->productRepository->searchByName($name,$user->getCompany());
+
+        $response = json_encode($objects);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);
