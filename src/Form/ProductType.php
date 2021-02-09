@@ -38,6 +38,16 @@ class ProductType extends AbstractType
                 'label'=>'Nombre'
 
             ])
+            ->add('sku', TextType::class,[
+                'required'=>false,
+                'label'=>'SKU'
+
+            ])
+            ->add('upc', TextType::class,[
+                'required'=>false,
+                'label'=>'UPC'
+
+            ])
             ->add('price',NumberType::class,[
                 'required' => false,
                 'label'=>'Precio'
