@@ -5,6 +5,7 @@ namespace App\Controller;
 use http\Exception;
 use App\Entity\Quote;
 use App\Entity\Client;
+use App\Entity\Product;
 use App\Entity\Discount;
 use App\Entity\ProductQuote;
 use App\Repository\SaleRepository;
@@ -140,7 +141,7 @@ class QuoteController extends AbstractController
             $quantity = $request->request->get('quantity');
             $clientData = $request->request->get('client');
             $price = $request->request->get('price');
-
+            $productName = $request->request->get('name');
             $discounts = $request->request->get('discountId');
             $reason = $request->request->get('reason');
             $discountAmount = $request->request->get('discount');
@@ -191,6 +192,19 @@ class QuoteController extends AbstractController
         $count = 0;
 
         foreach ($products as $prod ){
+
+            if($prod == -1){
+                $tempProduct = new Product();
+                $tempProduct->setName($productName[$count]);
+                $tempProduct->setPrice($price[$count]/$quantity[$count]);
+                $tempProduct->setCompany($this->security->getUser()->getCompany());
+                $tempProduct->setIsTaxable(true);
+
+                $em->persist($tempProduct);
+                $em->flush();
+                $prod = $tempProduct->getId();
+            }
+
             $product = $this->productRepository->findOneBy(['id'=>$prod]);
             $productQuote = new ProductQuote();
 

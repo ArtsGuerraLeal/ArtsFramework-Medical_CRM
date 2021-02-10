@@ -37,6 +37,10 @@
                     <button class="btn btn-primary" onclick="filterSelection('{{ category.name }}')">{{ category.name }}</button>
                 {% endfor %}
             </div>
+
+            <div class="input-group-append">
+                    <button class="myBtn btn btn-warning mr-1 myBtn" id="myBtn" type="button" data-toggle="modal" data-target="#myModal">Crear Producto Temporal</button>
+            </div>
                 
             <div id="ParentContainer" class="container-fluid">
 
@@ -123,6 +127,7 @@
             <div id="FixedDiv" class="mx-1 card position-fixed" style=" width:29%;height:70%;border:0px solid #333; background-color:#ffffff; border-radius:5px; padding-left: 10px; padding-right: 10px; top:100px; right:15px" align="center">
                 <h2>Carrito </h2>
                 
+                
                 <div id="dragable_product_order">
                 
                 </div>
@@ -195,37 +200,38 @@
     </div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Clientes</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
 
-                    <table class="clients-table table" id="clients-table" style="overflow-y:scroll;height:300px;display:block" >
-                        <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th style="width: 1%">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+<!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Crear Producto Temporal</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
             </div>
-        </div>
-    </div>
+            <div class="modal-body">
+            <h4 class="card-title">Nombre</h4>
+            <input id="tempProdName" class="tempProdName form-control rounded my-1" type="text" placeholder="Nombre">
+            <h4 class="card-title">Precio por Unidad</h4>
+
+            <input id="tempProdPrice" class="tempProdPrice form-control rounded my-1" type="number" placeholder="Precio">
+            <h4 class="card-title">Cantidad</h4>            
+            <input id="tempProdAmount" class="tempProdAmount form-control rounded my-1" type="number" placeholder="Cantidad">
+            <label for="tempProdTaxable"> Tiene IVA?</label>
+            <input id="tempProdTaxable" name="tempProdTaxable" class="tempProdTaxable rounded my-1" type="checkbox">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success tempProdAdd">Agregar a Carrito</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 
     <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
@@ -306,16 +312,7 @@
             document.getElementById("livesearch_sku").style.border="0px";
         }
 
-        function CreateClient(){
-          
-            var str = document.getElementById("product_search_input_sku").value;
-           
-                
-        
-        }
-
-
-
+    
         function showResultSKU(str) {
              if (str.length==0) {
                 document.getElementById("livesearch_sku").innerHTML="";
@@ -509,6 +506,7 @@
        */
 
 
+
         $('#myModal').on('hide.bs.modal', function (e) {
             //   $('#myModal').modal('handleUpdate');
             $("#clients-table > tbody").empty();
@@ -583,7 +581,7 @@
 
             });
 
-            $(document).on('click', '.myBtn', function(){
+            $(document).on('click', '.myBtn2', function(){
                 var client_name = $('#client_name').val();
                 $.ajax({
                     url:"{{ path('fetch_clients') }}",
@@ -704,6 +702,55 @@
 
             });
 
+      $(document).on('click', '.tempProdAdd', function(){
+                var prodAmount = parseInt($('.tempProdAmount').val());
+
+                var cart = $('.cart-table');
+            
+                var prodName = $('.tempProdName').val();
+                var prodPrice = parseFloat($('.tempProdPrice').val());
+                var prodID = -1;
+                var prodTaxable = $('.tempProdTaxable').is(':checked');
+                console.log('Name'+ prodName+ " " + " Price: " +prodPrice + "Amount "+ prodAmount + " Taxable?" + prodTaxable);
+
+                var total = document.querySelector('#total');
+                var subtotal = document.querySelector('#subtotal');
+                var tax = document.querySelector('#tax');
+
+                var cellVal = $(".cart-table tr td").filter(function() {
+                    return $(this).text() === prodName;
+                });
+                if(cellVal.text() === ""){
+                    if(prodAmount ===1){
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
+
+                    }else{
+
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
+
+                    }
+
+                }else{
+                    var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                    cellVal.parent().children()[1].innerText = quantity + prodAmount;
+
+                    var price = parseFloat(cellVal.parent().children()[2].innerText);
+                    cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
+                }
+
+                if(prodTaxable ===true){
+                    tax.innerText = (parseFloat(tax.innerText) + ((prodPrice * prodAmount)*.16)).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + ((prodPrice * prodAmount) - ((prodPrice * prodAmount)*.16)) ).toFixed(2);
+
+                }else{
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(2);
+
+                }
+
+            });
+
             $(document).on('click', '.add_product', function(){
                 var prodAmount = parseInt($(this).parent().parent().find("#product_amount").val());
 
@@ -760,11 +807,11 @@
                 });
                 if(cellVal.text() === ""){
                     if(prodAmount ===1){
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
 
                     }else{
 
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
 
                     }
 
@@ -847,11 +894,11 @@
                 });
                 if(cellVal.text() === ""){
                     if(prodAmount ===1){
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                     }else{
 
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                     }
 
@@ -940,9 +987,9 @@
                     });
 
                     if(cellName.text() === ""){
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
                     }else{
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td id="name">'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
                     }
 
 
@@ -1000,11 +1047,11 @@
                         });
                         if (cellVal.text() === "") {
                             if (prodAmount === 1) {
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td id="name">' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                             } else {
 
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td id="name">' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                             }
 
@@ -1075,11 +1122,11 @@
                         });
                         if (cellVal.text() === "") {
                             if (prodAmount === 1) {
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td id="name">' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                             } else {
 
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td id="name">' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                             }
 
@@ -1149,11 +1196,11 @@
                         });
                         if (cellVal.text() === "") {
                             if (prodAmount === 1) {
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td id="name">' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                             } else {
 
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td id="name">' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
 
                             }
 
@@ -1206,6 +1253,7 @@
                 var total,subtotal,tax;
                 var saleID;
                 var client_name;
+                var productNames = [];
 
                 client_name = $('#client_name').val();
                 total = $('#cart tr').find('#total').text();
@@ -1219,10 +1267,12 @@
                             var row = $(tr).closest('tr');
                             var quantity = row.find('#quantity').text();
                             var price = row.find('#price').text();
+                            var name = row.find('#name').text();
                             //   console.log("Index: "+index +" Id: "+tr.id+" Quantity: " + quantity);
                             product_ids.push(tr.id);
                             quantities.push(quantity);
                             prices.push(price);
+                            productNames.push(name)
                         }
                     }
 
@@ -1265,7 +1315,8 @@
                         price:prices,
                         discountId:discount_product_ids,
                         reason:reasons,
-                        discount:discounts
+                        discount:discounts,
+                        name:productNames
 
                     },
                     success:function (php_result) {
