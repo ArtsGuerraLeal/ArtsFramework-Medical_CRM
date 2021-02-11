@@ -88,6 +88,10 @@ class Sale
      */
     private $discount;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="sales")
+     */
+    private $clientId;
 
     public function __construct()
     {
@@ -341,6 +345,18 @@ class Sale
     public function setDiscount(?float $discount): self
     {
         $this->discount = $discount;
+
+        return $this;
+    }
+
+    public function getClientId(): ?Client
+    {
+        return $this->clientId;
+    }
+
+    public function setClientId(?Client $clientId): self
+    {
+        $this->clientId = $clientId;
 
         return $this;
     }

@@ -200,6 +200,41 @@ class ClientController extends AbstractController
     }
 
     /**
+     * @Route("/fetchclientscode", name="fetch_clients_code", methods={"POST"})
+     * @param Request $request
+     * @param ClientRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchClientsCode(Request $request, ClientRepository $repository):JsonResponse
+    {
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $code = $request->request->get('code');
+        }
+        else {
+            die();
+       }
+
+        $objects = $this->clientRepository->searchByCode($code,$user->getCompany());
+
+        $response = '{';
+
+
+        $response .= '}';
+        $response = json_encode($objects);
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
      * @Route("/createclient", name="create_client", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
@@ -212,6 +247,7 @@ class ClientController extends AbstractController
         if ($request->getMethod() == 'POST')
         {
             $name = $request->request->get('name');
+            $code = $request->request->get('code');
 
         }
         else {
@@ -225,6 +261,9 @@ class ClientController extends AbstractController
 
         $client->setCompany($user->getCompany());
         $client->setName($name);
+        if($code != ''){
+            $client->setCode($code);
+        }
 
         $em->persist($client);
         $em->flush();

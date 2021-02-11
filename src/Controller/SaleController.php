@@ -12,6 +12,7 @@ use App\Entity\PaymentMethod;
 use App\Repository\SaleRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\NoResultException;
+use App\Repository\ClientRepository;
 use App\Repository\PatientRepository;
 use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
@@ -67,6 +68,11 @@ class SaleController extends AbstractController
      * @var ProductSoldRepository
      */
     private $productSoldRepository;
+
+    /**
+     * @var ClientRepository
+     */
+    private $clientRepository;
     
      /**
      * @var UserRepository
@@ -76,7 +82,7 @@ class SaleController extends AbstractController
     private $session;
 
 
-    public function __construct(UserRepository $userRepository, ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security,SessionInterface $session){
+    public function __construct(ClientRepository $clientRepository, UserRepository $userRepository, ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security,SessionInterface $session){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
@@ -86,6 +92,7 @@ class SaleController extends AbstractController
         $this->discountRepository = $discountRepository;
         $this->productSoldRepository = $productSoldRepository;
         $this->userRepository = $userRepository;
+        $this->clientRepository = $clientRepository;
 
         $this->session = $session;
 
@@ -251,7 +258,7 @@ class SaleController extends AbstractController
             $quantity = $request->request->get('quantity');
             $client = $request->request->get('client');
             $price = $request->request->get('price');
-
+            $clientCode = $request->request->get('code');
             $discounts = $request->request->get('discountId');
             $reason = $request->request->get('reason');
             $discountAmount = $request->request->get('discount');
@@ -272,8 +279,24 @@ class SaleController extends AbstractController
 
         if($client == ""){
             $sale->setClient("Publico en General");
+            $client = $this->clientRepository->searchOneByName('Publico En General',$this->security->getUser()->getCompany());
+            $sale->setClientId($client);
         }else{
             $sale->setClient($client);
+            $clientEntity = $this->clientRepository->searchOneByName($client,$this->security->getUser()->getCompany());
+            if($clientEntity == null){
+                $clientEntity = new Client();
+                $clientEntity->setName($client);
+                if($code != null){
+                    $clientEntity->setCode($code);
+                }
+                $em->persist($clientEntity);
+                $em->flush();
+                $sale->setClientId($clientEntity);
+            }else{
+                $sale->setClientId($clientEntity);
+                $sale->setClient($client);
+            }
         }
 
         $sale->setTime(new \DateTime());

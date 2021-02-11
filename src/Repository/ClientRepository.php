@@ -77,6 +77,8 @@ class ClientRepository extends ServiceEntityRepository
 
     }
 
+    
+
     /**
      * @param $name
      * @param $companyId
@@ -101,6 +103,25 @@ class ClientRepository extends ServiceEntityRepository
      * @param $companyId
      * @return Client[] Returns an array of Content objects
      */
+    public function searchOneByCode($code,$companyId)
+    {
+
+        return $this->createQueryBuilder('client')
+            ->andWhere('client.company = :val')
+            ->andWhere('client.code = :code')
+            ->setParameter('val', $companyId)
+            ->setParameter('code', $code)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+
+    }
+
+    /**
+     * @param $name
+     * @param $companyId
+     * @return Client[] Returns an array of Content objects
+     */
     public function searchByCode($code,$companyId)
     {
         $searchQuery = 'client.code LIKE \'%' . $code . '%\'';
@@ -113,6 +134,7 @@ class ClientRepository extends ServiceEntityRepository
             ->andWhere($searchQuery)
             ->setParameter('val', $companyId)
             ->orderBy('client.id', 'ASC')
+            ->setMaxResults(10)
             ->getQuery()
             ->getArrayResult()
             ;
