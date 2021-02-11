@@ -92,7 +92,7 @@
                     data = data.replace('data:image/'+ext+';base64,', '');
                     stampi.setObjectText("GRAPHIC", data);
                     console.log(imagePath);
-                  //  stampi.print(printer,params);
+                    stampi.print(printer,params);
                     });
 
             }
@@ -133,6 +133,5 @@
 {% endblock %}
 
 {% block pagejs %}
-    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('theme/dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
+
 {% endblock %}

@@ -141,7 +141,6 @@
                         </div>
                         <div class="" id="livesearch_client" style="  border-radius: 5px; position: absolute; top: 95px; background: white none repeat scroll 0% 0%; width: 95%;"></div>
 
-
                         <thead>
                         <tr>
                             <th>Nombre</th>
@@ -151,7 +150,7 @@
                         </tr>
                         </thead>
                         <tbody>
-
+                       
                             <tr>
                                 <td>Subtotal:</td>
                                 <td id="subtotal">0.00</td>
@@ -639,9 +638,9 @@
             });
 
             $(document).on('click', '.remove_all', function(){
-                var quantity = $(this).parent().parent().children()[1].innerText;
-                var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
-                var prodID = $(this).parent().parent().attr('id');
+                var quantity = $(this).parent().parent().parent().parent().children()[1].innerText;
+                var prodPrice = parseFloat($(this).parent().parent().parent().parent().children()[2].innerText)/parseFloat(quantity);
+                var prodID = $(this).parent().parent().parent().parent().attr('id');
                 var productCard = $("img[data-id='" + prodID +"']").parent().children('h6').children('p');
                 var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
 
@@ -649,8 +648,8 @@
                 var subtotal = document.querySelector('#subtotal');
                 var tax = document.querySelector('#tax');
 
-                var i = $(this).parent().parent().index();
-                var table = $(this).parent().parent().parent();
+                var i = $(this).parent().parent().parent().parent().index();
+                var table = $(this).parent().parent().parent().parent().parent();
 
                     if(productCard[0] !== undefined){
                         productCard[0].innerText = parseFloat(productCard[0].innerText) + parseInt(quantity);
@@ -669,14 +668,14 @@
 
                 }
 
-                $(this).parent().parent().remove();
+                $(this).parent().parent().parent().parent().remove();
 
             });
 
             $(document).on('click', '.remove_product', function(){
-                var quantity = $(this).parent().parent().children()[1].innerText;
-                var prodPrice = parseFloat($(this).parent().parent().children()[2].innerText)/parseFloat(quantity);
-                var prodID = $(this).parent().parent().attr('id');
+                var quantity = $(this).parent().parent().parent().parent().children()[1].innerText;
+                var prodPrice = parseFloat($(this).parent().parent().parent().parent().children()[2].innerText)/parseFloat(quantity);
+                var prodID = $(this).parent().parent().parent().parent().attr('id');
                 var productCard = $("img[data-id='" + prodID +"']").parent().children('h6').children('p');
                 var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
 
@@ -684,24 +683,24 @@
                 var subtotal = document.querySelector('#subtotal');
                 var tax = document.querySelector('#tax');
 
-                var i = $(this).parent().parent().index();
-                var table = $(this).parent().parent().parent();
+                var i = $(this).parent().parent().parent().parent().index();
+                var table = $(this).parent().parent().parent().parent().parent();
 
                 if(quantity === "1"){
-                    $(this).parent().parent().remove();
+                    $(this).parent().parent().parent().parent().remove();
 
                     if(productCard[0] !== undefined){
                         productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
                     }
 
                 }else{
-                    $(this).parent().parent().children()[1].innerText = quantity - 1;
+                    $(this).parent().parent().parent().parent().children()[1].innerText = quantity - 1;
 
                     if(productCard[0] !== undefined){
                         productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
                     }
                     var price = parseFloat($(this).parent().parent().children()[2].innerText);
-                    $(this).parent().parent().children()[2].innerText = price - prodPrice;
+                    $(this).parent().parent().parent().parent().children()[2].innerText = price - prodPrice;
 
                 }
 
@@ -778,11 +777,11 @@
                 });
                 if(cellVal.text() === ""){
                     if(prodAmount ===1){
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>');
 
                     }else{
 
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm" data-toggle="modal" data-target="#discountModal">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>');
 
                     }
 
@@ -873,9 +872,9 @@
                     });
 
                     if(cellName.text() === ""){
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>');
                     }else{
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>');
                     }
 
 
@@ -945,8 +944,8 @@
                 var reason = prompt("Ingresar razon de descuento","Descuento");
                 var discount = parseFloat(prompt("Ingresar monto por descontar",""));
 
-                var price = parseFloat($(this).parent().parent().children()[2].innerText);
-                var prodID = $(this).parent().parent().attr('id');
+                var price = parseFloat($(this).parent().parent().parent().parent().children()[2].innerText);
+                var prodID = $(this).parent().parent().parent().parent().attr('id');
                 var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
                 var total = document.querySelector('#total');
                 var subtotal = document.querySelector('#subtotal');
@@ -957,7 +956,7 @@
 
                 if (discount!=null && $.isNumeric(discount) && discount < price){
                     $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
-                    $(this).parent().parent().children()[2].innerText = price - discount;
+                    $(this).parent().parent().parent().parent().children()[2].innerText = price - discount;
 
                     if(prodTaxable ==="1"){
                         var taxPerProduct = parseFloat(((price-discount)/1.16) * 0.16).toFixed(3);
