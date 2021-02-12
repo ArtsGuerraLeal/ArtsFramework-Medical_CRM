@@ -93,6 +93,7 @@ class ClientRepository extends ServiceEntityRepository
             ->setParameter('val', $companyId)
             ->setParameter('name', $name)
             ->getQuery()
+            ->setMaxResults(1)
             ->getOneOrNullResult()
             ;
 
@@ -112,6 +113,7 @@ class ClientRepository extends ServiceEntityRepository
             ->setParameter('val', $companyId)
             ->setParameter('code', $code)
             ->getQuery()
+            ->setMaxResults(1)
             ->getOneOrNullResult()
             ;
 

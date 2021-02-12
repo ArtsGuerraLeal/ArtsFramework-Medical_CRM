@@ -661,7 +661,8 @@
                     var taxAmt = parseFloat(taxPerProduct).toFixed(3) * parseInt(quantity);
                     tax.innerText = (parseFloat(tax.innerText) - (taxAmt)).toFixed(3);
                     total.innerText = (parseFloat(total.innerText) - (prodPrice * parseInt(quantity))).toFixed(3);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) - ((prodPrice * parseInt(quantity)) - (taxAmt))).toFixed(3);
+                    var subtotalTax = ((prodPrice * parseInt(quantity)) - (taxAmt)).toFixed(3)
+                    subtotal.innerText = (parseFloat(subtotal.innerText) - parseFloat(subtotalTax)).toFixed(3);
                 }else{
                     total.innerText = (parseFloat(total.innerText) - (prodPrice * parseInt(quantity))).toFixed(3);
                     subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice * parseInt(quantity))).toFixed(3);
@@ -699,7 +700,7 @@
                     if(productCard[0] !== undefined){
                         productCard[0].innerText = parseFloat(productCard[0].innerText) + 1;
                     }
-                    var price = parseFloat($(this).parent().parent().children()[2].innerText);
+                    var price = parseFloat($(this).parent().parent().parent().parent().children()[2].innerText);
                     $(this).parent().parent().parent().parent().children()[2].innerText = price - prodPrice;
 
                 }
@@ -710,7 +711,7 @@
                     var taxAmt = ((prodPrice) - (prodPrice/1.16)).toFixed(3);
                     tax.innerText = (parseFloat(tax.innerText) - (taxAmt)).toFixed(3);
                     total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(3);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice - taxAmt) ).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice - taxAmt).toFixed(3) ).toFixed(3);
                 }else{
                     total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(3);
                     subtotal.innerText = (parseFloat(subtotal.innerText) - prodPrice).toFixed(3);
