@@ -220,7 +220,7 @@
 
                                 {% for discount in discounts %}
                                     {% if product.id == discount.productSold.id %}
-                                    <p class="discounttext">{{ discount.discount.name}} $-{{ discount.discount.amount }}</p>
+                                    <p class="discounttext">{{ discount.discount.name}} $-{{ discount.productSold.discount }}</p>
                                     {% endif %}
                                 {% endfor %}
 
@@ -299,7 +299,7 @@
                         <h2  class="paymentmethod">{{ payment.type.name }}  ${{ payment.amount }}</h2>
                 {% endfor %}
                 {% for discount in discounts %}
-                        <h2  class="paymentmethod">{{ discount.discount.name }}  $-{{ discount.discount.amount }}</h2>
+                        <h2  class="paymentmethod">{{ discount.discount.name }}  $-{{ discount.productSold.discount }}</h2>
 
                 {% endfor %}
             </div>

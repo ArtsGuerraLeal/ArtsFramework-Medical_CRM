@@ -987,9 +987,15 @@
                     }
 
                 }else{
+                    if(discount === 33){
+                        discount = 33.3333333333;
+                    }
+                    if(discount === 66){
+                        discount = 66.6666666666;
+                    }
                         discount = price*(discount/100);
                         console.log(discount);
-                        $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="'+discountId+'" clas="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
+                        $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="'+discountId+'" clas="discount_reason">'+ reason +'</td><td id="price">'+ discount.toFixed(2) +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
                         row.children[2].innerText = parseFloat(price - discount).toFixed(2);
 
                         if(prodTaxable ==="1"){
