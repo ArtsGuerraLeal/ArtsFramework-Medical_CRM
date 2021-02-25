@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -55,6 +57,22 @@ class Discount
      * @ORM\Column(type="integer", nullable=true)
      */
     private $type;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProductSold::class, mappedBy="discountId")
+     */
+    private $productSolds;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProductSoldDiscount::class, mappedBy="discount")
+     */
+    private $productSoldDiscounts;
+
+    public function __construct()
+    {
+        $this->productSolds = new ArrayCollection();
+        $this->productSoldDiscounts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -153,6 +171,66 @@ class Discount
     public function setType(?int $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductSold[]
+     */
+    public function getProductSolds(): Collection
+    {
+        return $this->productSolds;
+    }
+
+    public function addProductSold(ProductSold $productSold): self
+    {
+        if (!$this->productSolds->contains($productSold)) {
+            $this->productSolds[] = $productSold;
+            $productSold->setDiscountId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductSold(ProductSold $productSold): self
+    {
+        if ($this->productSolds->removeElement($productSold)) {
+            // set the owning side to null (unless already changed)
+            if ($productSold->getDiscountId() === $this) {
+                $productSold->setDiscountId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductSoldDiscount[]
+     */
+    public function getProductSoldDiscounts(): Collection
+    {
+        return $this->productSoldDiscounts;
+    }
+
+    public function addProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if (!$this->productSoldDiscounts->contains($productSoldDiscount)) {
+            $this->productSoldDiscounts[] = $productSoldDiscount;
+            $productSoldDiscount->setDiscount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if ($this->productSoldDiscounts->removeElement($productSoldDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productSoldDiscount->getDiscount() === $this) {
+                $productSoldDiscount->setDiscount(null);
+            }
+        }
 
         return $this;
     }

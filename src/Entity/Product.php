@@ -93,11 +93,17 @@ class Product
      */
     private $cost;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductStock::class, mappedBy="product")
+     */
+    private $productStocks;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
         $this->productQuotes = new ArrayCollection();
         $this->productOrdereds = new ArrayCollection();
+        $this->productStocks = new ArrayCollection();
     }
 
     public function __toString() {
@@ -341,6 +347,36 @@ class Product
     public function setCost(?float $cost): self
     {
         $this->cost = $cost;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductStock[]
+     */
+    public function getProductStocks(): Collection
+    {
+        return $this->productStocks;
+    }
+
+    public function addProductStock(ProductStock $productStock): self
+    {
+        if (!$this->productStocks->contains($productStock)) {
+            $this->productStocks[] = $productStock;
+            $productStock->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductStock(ProductStock $productStock): self
+    {
+        if ($this->productStocks->removeElement($productStock)) {
+            // set the owning side to null (unless already changed)
+            if ($productStock->getProduct() === $this) {
+                $productStock->setProduct(null);
+            }
+        }
 
         return $this;
     }

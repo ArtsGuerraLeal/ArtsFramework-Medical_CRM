@@ -18,7 +18,7 @@
     .btn.active {
   background-color: #666;
   color: white;
-}
+  }
 
 </style>
 
@@ -143,50 +143,55 @@
 
                         <thead>
                         <tr>
-                            <th>Nombre</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                            <th></th>
+                            <th style="width:10%">Nombre</th>
+                            <th style="width:10%">Cantidad</th>
+                            <th style="width:10%">Precio</th>
+                            <th style="width:10%"></th>
                         </tr>
                         </thead>
                         <tbody>
-                       
+
                             <tr>
                                 <td>Subtotal:</td>
                                 <td id="subtotal">0.00</td>
-
                             </tr>
 
                             <tr>
                                 <td>IVA:</td>
                                 <td id="tax">0.00</td>
-
                             </tr>
                             <tr>
                                 <td>Total:</td>
                                 <td id="total">0.00</td>
-
                             </tr>
+                            
 
                         </tbody>
+
                     </table>
 
+                <div class="table-responsive-lg">
 
                 <table id="cart-discount" class="cart-discount table table-bordered table-striped table-sm" style="overflow-y:scroll;height:130px;display:block;"  >
                     <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Razon</th>
-                        <th>Descuento</th>
-                        <th></th>
+                        <th style="width:10%">Producto</th>
+                        <th style="width:10%">Razon</th>
+                        <th style="width:10%">Descuento</th>
+                        <th style="width:10%"></th>
                     </tr>
                     </thead>
                     <tbody>
+                    <tr>
+                
+
+                    </tr>
+                   
 
 
                     </tbody>
                 </table>
-
+  </div>
                 <button type='submit' onclick="payment(this)" class='payment-button btn btn-primary my-2 '>Pagar</button>
 
             </div>
@@ -196,37 +201,69 @@
     </div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Clientes</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <table class="clients-table table" id="clients-table" style="overflow-y:scroll;height:300px;display:block" >
-                        <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th style="width: 1%">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+<!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Descuentos</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
             </div>
-        </div>
-    </div>
+            <div class="modal-body" data-id='-1'>
+                <div class="table-responsive-lg">
+
+            <table class="table table-bordered table-striped order_table" id="zero_config" >
+                    <thead>
+                    
+                    <tr>
+                        <th style="width:10%" >Nombre descuento</th>
+                        <th style="width:10%" >Tipo de Descuento</th>
+                        <th style="width:10%" >Valor</th>
+                        <th style="width:10%" >Acciones</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for discount in discounts %}
+                     <tr>
+                <td data-id="{{ discount.id }}" data-name="{{ discount.name }}" data-amount="{{ discount.amount }}" data-type="{{ discount.type }}">{{ discount.name }}</td>
+                {% if discount.type == 0 %}
+                <td>Monto</td>
+
+                {% else %}
+                <td>Porcentaje</td>
+
+                {% endif %}
+
+                {% if discount.type == 0 %}
+                <td>${{ discount.amount }}</td>
+
+                {% else %}
+                <td>{{ discount.amount }}%</td>
+
+                {% endif %}
+
+                <td>
+                    <button class="add_discount_1 btn btn-success" >Agregar</button>
+                </td>
+            </tr>
+                    {% endfor %}
+                    
+                    </tbody>
+                    
+                </table>
+</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cerrar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
     <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
@@ -623,14 +660,15 @@
                cellVal.parent().children()[2].innerText = (price + discount);
 
             }
-
+         
                 if(prodTaxable ==="1"){
-                    tax.innerText = (parseFloat(tax.innerText) + (discount * .16)).toFixed(2);
-                    total.innerText = (parseFloat(total.innerText) + discount).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount - (discount*.16)) ).toFixed(2);
+                    var taxPerProduct = parseFloat(((discount)/1.16) * 0.16).toFixed(3);
+                    tax.innerText = (parseFloat(tax.innerText) + parseFloat(taxPerProduct)).toFixed(3);
+                    total.innerText = (parseFloat(total.innerText) + discount).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + parseFloat(discount - taxPerProduct)).toFixed(3);
                 }else{
-                    total.innerText = (parseFloat(total.innerText) + (discount)).toFixed(2);
-                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount)).toFixed(2);
+                    total.innerText = (parseFloat(total.innerText) + (discount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (discount)).toFixed(3);
                 }
 
             $(this).parent().parent().remove();
@@ -778,11 +816,11 @@
                 });
                 if(cellVal.text() === ""){
                     if(prodAmount ===1){
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">1</td><td id="price">'+prodPrice+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                     }else{
 
-                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>');
+                        $(".cart-table").prepend('<tr id="'+prodID+'"><td >'+prodName+'</td><td id="quantity">'+ prodAmount +'</td><td id="price">'+(prodPrice * prodAmount)+'</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                     }
 
@@ -898,47 +936,77 @@
         });
 
 
-            $(document).on('click', '.myBtn', function(){
-                var client_name = $('#client_name').val();
-                $.ajax({
-                    url:"{{ path('fetch_clients') }}",
-                    type: "POST",
-                    dataType: "text",
-                    data:{
-                        name:client_name
-                    },
-                    success:function (php_result) {
-                        if(php_result !== '[]') {
-                            var obj = jQuery.parseJSON(php_result);
-                            var table = document.querySelector('#clients-table');
-                            $('#clients-table > tbody:last-child').append('<tr><td>' + obj[0].name + '</td><td><div id="client_select" class="btn btn-success my-1 btn-sm">Select</div></td></tr>');
-                            $( "#client_select" ).click(function() {
-                                console.log("Clikc");
-                                $('#myModal').modal('hide');
+            $(document).on('click', '.discount_product_1', function(){
+                console.log('clicked');
+                var modal = $('.modal-body');
+                var prodID = $(this).parent().parent().parent().parent().attr('id');
+                $('.modal-body').attr('data-id',prodID);
+               
 
+            });
 
-                            });
+            $(document).on('click', '.add_discount_1', function(){
+                var prodID = $('.modal-body').attr('data-id');
+               
+                var cart = $('.cart-table');
+                var row = '';
 
-                        }else{
-                            $('#clients-table > tbody:last-child').append('<tr><td>'+client_name+'</td><td><div id="create_client" class="btn btn-primary my-1 btn-sm">Crear</div></td></tr>');
-                            $( "#create_client" ).click(function() {
-                                $.ajax({
-                                    url:"{{ path('create_client') }}",
-                                    type: "POST",
-
-                                    data:{
-                                        name:client_name
-                                    },
-                                    success:function (php_result) {
-                                        console.log("Clikc");
-                                        $('#myModal').modal('hide');
-                                    }
-                                });
-
-                            });
-                        }
+                $('.cart-table tr').each(function() {
+                    if(this.id === prodID){
+                        row = this;
                     }
-                });
+                })
+                var price = parseFloat(row.children[2].innerText);
+                var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
+                var total = document.querySelector('#total');
+                var subtotal = document.querySelector('#subtotal');
+                var tax = document.querySelector('#tax');
+                var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
+
+                var discount_cart = $('.cart-discount');
+                var discountId = $(this).parent().parent().children()[0].attributes[0].value;
+                var reason = $(this).parent().parent().children()[0].attributes[1].value;
+                var discount = parseFloat($(this).parent().parent().children()[0].attributes[2].value);
+                var type = parseInt($(this).parent().parent().children()[0].attributes[3].value);
+
+                if(type === 0){
+                    if (discount < price){
+                        $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="'+discountId+'" class="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
+                        row.children[2].innerText = parseFloat(price - discount).toFixed(2);
+
+                        if(prodTaxable ==="1"){
+                            var taxPerProduct = parseFloat(((price-discount)/1.16) * 0.16).toFixed(3);
+                            tax.innerText = (parseFloat(tax.innerText) - (parseFloat(tax.innerText) - taxPerProduct)).toFixed(3);
+                            total.innerText = (parseFloat(total.innerText) - discount).toFixed(3);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) - (discount/1.16)).toFixed(3);
+                        }else{
+                            total.innerText = (parseFloat(total.innerText) - (discount)).toFixed(3);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) - (discount)).toFixed(3);
+                        }
+
+                    }
+
+                }else{
+                        discount = price*(discount/100);
+                        console.log(discount);
+                        $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="'+discountId+'" clas="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
+                        row.children[2].innerText = parseFloat(price - discount).toFixed(2);
+
+                        if(prodTaxable ==="1"){
+                            var taxPerProduct = parseFloat(((price-discount)/1.16) * 0.16).toFixed(3);
+                            tax.innerText = (parseFloat(tax.innerText) - (parseFloat(tax.innerText) - taxPerProduct)).toFixed(3);
+                            total.innerText = (parseFloat(total.innerText) - discount).toFixed(3);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) - (discount/1.16)).toFixed(3);
+                        }else{
+                            total.innerText = (parseFloat(total.innerText) - (discount)).toFixed(3);
+                            subtotal.innerText = (parseFloat(subtotal.innerText) - (discount)).toFixed(3);
+                        }
+
+                }
+                
+                
+                
+
             });
 
             $(document).on('click', '.discount_product', function(){
@@ -1013,11 +1081,11 @@
                         });
                         if (cellVal.text() === "") {
                             if (prodAmount === 1) {
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                             } else {
 
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                             }
 
@@ -1091,11 +1159,11 @@
                         });
                         if (cellVal.text() === "") {
                             if (prodAmount === 1) {
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                             } else {
 
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                             }
 
@@ -1169,11 +1237,11 @@
                         });
                         if (cellVal.text() === "") {
                             if (prodAmount === 1) {
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                             } else {
 
-                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>');
 
                             }
 
@@ -1265,26 +1333,29 @@
                     var discount_product_ids = [];
                     var reasons = [];
                     var discounts = [];
+                    var discount_ids = [];
 
                     $('#cart-discount tr').each(function(index, tr) {
 
-                        if(index>0) {
+                        if(index>1) {
                             if(index < row_count-1) {
                                 var row = $(tr).closest('tr');
-                                var reason = row.find('#discount_reason').text();
+                                var reason = row.find('.discount_reason').parent();
                                 var price = row.find('#price').text();
-                                   console.log("Index: "+index +" Id: "+tr.id+" Reason: " + reason +" price: " + price);
-
+                                var discountId = row.children()[1].id;
+                              //  console.log("Index: "+index +" Id: "+tr.id+" Reason: " + reason +" price: " + price);
                                 discount_product_ids.push(tr.id);
-                                reasons.push(reason);
-                                discounts.push(price);
+                                discount_ids.push(discountId);
+
+                              //  reasons.push(reason);
+                             //   discounts.push(price);
                             }
                         }
 
                     });
 
                 }
-
+            
                 $.ajax({
                     url:"{{ path('create_sale') }}",
                     type: "POST",
@@ -1296,9 +1367,8 @@
                         tax:tax,
                         client:client_name,
                         price:prices,
-                        discountId:discount_product_ids,
-                        reason:reasons,
-                        discount:discounts,
+                        productDiscountId:discount_product_ids,
+                        discountId:discount_ids,
                         code:client_code
 
                     },
@@ -1310,6 +1380,8 @@
                     }
 
                 });
+            
+                
 
             }
 
@@ -1330,4 +1402,6 @@
 {% endblock %}
 
  {% block pagejs %}
+   <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script>$('#zero_config').DataTable();</script>
     {% endblock %}

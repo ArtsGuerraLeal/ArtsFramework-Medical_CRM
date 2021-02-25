@@ -60,9 +60,20 @@ class ProductSold
      */
     private $discountReason;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Discount::class, inversedBy="productSolds")
+     */
+    private $discountId;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProductSoldDiscount::class, mappedBy="productSold")
+     */
+    private $productSoldDiscounts;
+
     public function __construct()
     {
         $this->discounts = new ArrayCollection();
+        $this->productSoldDiscounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -181,6 +192,48 @@ class ProductSold
     public function setDiscountReason(?string $discountReason): self
     {
         $this->discountReason = $discountReason;
+
+        return $this;
+    }
+
+    public function getDiscountId(): ?Discount
+    {
+        return $this->discountId;
+    }
+
+    public function setDiscountId(?Discount $discountId): self
+    {
+        $this->discountId = $discountId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductSoldDiscount[]
+     */
+    public function getProductSoldDiscounts(): Collection
+    {
+        return $this->productSoldDiscounts;
+    }
+
+    public function addProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if (!$this->productSoldDiscounts->contains($productSoldDiscount)) {
+            $this->productSoldDiscounts[] = $productSoldDiscount;
+            $productSoldDiscount->setProductSold($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if ($this->productSoldDiscounts->removeElement($productSoldDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productSoldDiscount->getProductSold() === $this) {
+                $productSoldDiscount->setProductSold(null);
+            }
+        }
 
         return $this;
     }

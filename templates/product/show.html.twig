@@ -4,14 +4,29 @@
 
 {% block body %}
 <div class="card">
-    <div class="card-header"><i class="fas fa-table"></i>Catalogo
+    <div class="card-header"><i class=""></i>Producto
     </div>
     
         <div class="card-body">
-            <h1>{{ product.name }}</h1><button class="btn btn-primary" onclick="printPNG( '{{ product.upc }}','{{ product.name }}','${{ product.price }}','{{ '/uploads/' ~ product.image }}')">Print</button>
 
+        <div class="row my-2">
+            <div class="col-sm-4">
+            <img class="img-thumbnail rounded" width="150px" height="150px" style="height:150px" src="{{ '/uploads/' ~ product.image }} " />
+            <h1 class="d-inline-block">{{ product.name }}</h1>
+            </div>
+            <div class="col-sm-5">
+            </div>
+            <div class="col-sm-3">
+            <button class="btn btn-primary" onclick="printPNG( '{{ product.upc }}','{{ product.name }}','${{ product.price }}','{{ '/uploads/' ~ product.image }}')">Print</button>
+            <a class="btn btn-success" href="{{ path('product_edit', {'id': product.id}) }}" >Edit</a>
+            <a class="btn btn-danger" href="{{ path('product_index') }}">Delete</a>
 
-        <table class="table table-bordered table-striped " id="zero_config" >
+            </div>
+
+        </div>
+           
+
+        <table class="table table-bordered table-striped " >
         <tbody>
             <tr>
                 <th>UPC</th>
@@ -20,6 +35,14 @@
             <tr>
                 <th>SKU</th>
                 <td>{{ product.sku }}</td>
+            </tr>
+            <tr>
+                <th>Categoria</th>
+                {% if product.category != null %}
+                <td>{{ product.category.name }}</td>
+                {% else %}
+                <td></td>
+                {% endif %}
             </tr>
             <tr>
                 <th>Precio</th>
@@ -35,11 +58,11 @@
             </tr>
         </tbody>
     </table>
-    <img class="img-thumbnail rounded  d-block" width="70px" height="70px" style="height:70px" src="{{ '/uploads/' ~ product.image }} " />
+
+
 
     <a href="{{ path('product_index') }}">Catalogo</a>
 
-    <a href="{{ path('product_edit', {'id': product.id}) }}">Editar</a>
 
     {{ include('product/_delete_form.html.twig') }}
         </div>
@@ -47,12 +70,83 @@
         
 </div>
 
-
+<div class="card">
+    <div class="card-header"><i class=""></i>Ventas
+    </div>
     
-    
+        <div class="card-body">
+        <table class="table table-bordered table-striped " id="zero_config" >
+        <thead>
+        <tr>
+                <th style="width:10%" >Fecha</th>
+                <th style="width:10%" >Venta</th>
+                <th style="width:10%" >Cantidad</th>
+                <th style="width:10%" >Subtotal</th>
+                <th style="width:10%" >Descuento</th>
+                <th style="width:10%" >Total</th>
 
-    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
-    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for productSale in sales %}
+            <tr >
+                <td>{{ productSale.sale.time ? productSale.sale.time|date('Y-m-d H:i:s') : '' }}</td>
+
+                <td>{{ productSale.sale.id }}</td>
+
+                <td class="table-danger">-{{ productSale.amount }}</td>
+
+                <td>${{ productSale.price }}</td>
+                <td>${{ productSale.discount }}</td>
+                <td>${{ productSale.price - productSale.discount }}</td>
+
+            
+                <td>
+                    <div class="btn btn-primary btn-sm my-1">
+                        <a class="text-white" href="{{ path('sales_list_show', {'id': productSale.sale.id}) }}">Detalles</a>
+
+                    </div>
+                   
+                </td>
+            </tr>
+
+        {% endfor %}
+        {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.time ? stock.time|date('Y-m-d H:i:s') : '' }}</td>
+
+                <td>{{ stock.id }}</td>
+                {% if stock.amount < 0 %}
+
+                <td class="table-danger">{{ stock.amount }}</td>
+
+
+                {% else %}
+
+                <td class="table-success">{{ stock.amount }}</td>
+
+
+                {% endif %}
+
+                <td>${{ stock.product.price }}</td>
+                <td></td>
+                <td>${{ stock.product.price * stock.amount }}</td>
+
+            
+                <td>
+                   
+                   
+                </td>
+            </tr>
+       
+        {% endfor %}
+        </tbody>
+    </table>
+        </div>
+        
+    </div>
+
     <script src="{{ asset('js/DYMO.Label.Framework.3.0.js') }}"></script>
 
     <script type="text/javascript">
@@ -133,5 +227,12 @@
 {% endblock %}
 
 {% block pagejs %}
-
+ <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+ <script>
+ $('#zero_config').DataTable({
+            "order": [
+                [0, "desc"]
+            ]
+        });
+ </script>
 {% endblock %}

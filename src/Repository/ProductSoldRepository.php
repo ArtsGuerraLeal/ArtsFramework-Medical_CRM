@@ -111,6 +111,22 @@ class ProductSoldRepository extends ServiceEntityRepository
             ;
     }
 
+    public function FindSalesWithProduct($companyId,$productId){
+  
+
+        return $this->createQueryBuilder('productSold')
+            ->andWhere('productSold.company = :val')
+            ->andWhere('productSold.product = :id')
+            ->andWhere('sale.isPaid = 1')
+            ->setParameter('id', $productId )
+            ->Join('productSold.sale', 'sale')
+            ->Join('productSold.product', 'product')
+            ->setParameter('val', $companyId)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return ProductSold[] Returns an array of ProductSold objects
     //  */

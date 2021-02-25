@@ -22,7 +22,7 @@
 
 </style>
 
-  <div class="card">
+<div class="card">
         <div class="card-header">
         <i class="fas fa-table"></i>
         Punto de Venta   
@@ -47,11 +47,23 @@
                     <button id="search_product" onclick="" class="mx-1 search_product btn btn-primary">Agregar</button>
                 </div>
 
+                <div class="search-button-sku input-group">
+                    <input id="product_search_input_sku" class="form-control rounded my-1" type="text" placeholder="SKU" onkeyup="showResultSKU(this.value)">
+                    <button id="search_product_btn_sku" onclick="searchSKU()" class="mx-1 search_product_btn btn btn-primary">Agregar</button>
+                </div>
+                <div class="" id="livesearch_sku" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
 
-                <div id="catalog" class ="row">
+                <div class="search-button-name input-group">
+                    <input id="product_search_input_name" class="form-control rounded my-1" type="text" placeholder="Nombre" onkeyup="showResultName(this.value)">
+                    <button id="search_product_btn_name" onclick="searchName()" class="mx-1 search_product_name_btn btn btn-primary">Agregar</button>
+                </div>
+                <div class="" id="livesearch_name" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
 
 
-                {% for product in products %}
+
+                <div id="catalog" class = "row">
+                    
+                    {% for product in products %}
 
                      {%  if product.category != null %}
                         <div class="col-lg-3 col-md-6 filterDiv {{ product.category.name }}" style="max-height: 500px">
@@ -101,22 +113,33 @@
                             </div>
 
                     {% endfor %}
+
                 </div>
             </div>
-
-            <div id="FixedDiv" class="mx-1 card position-fixed" style=" width:29%;height:70%;border:0px solid #333; background-color:#ffffff; border-radius:5px; padding-left: 10px; padding-right: 10px; top:100px; right:15px" align="center">
-                <h5>Carrito</h5>
+            
+            <div id="FixedDiv" class="mx-1 card position-fixed" style=" width:29%;height:85%;border:0px solid #333; background-color:#ffffff; border-radius:5px; padding-left: 10px; padding-right: 10px; top:100px; right:15px" align="center">
+                <h3>Carrito</h3>
+                
                 <div id="dragable_product_order">
+                
                 </div>
+                
                     <table id="cart" class="cart-table table table-bordered table-striped table-sm" style="overflow-y:scroll;height:330px;display:block;" >
-                        <p>Cliente<p/>
-                        <div class="input-group mb-3">
-                            <input type="text" id="client_name" class="form-control" placeholder="Nombre" value="{{ sale.client }}">
-                            <div class="input-group-append">
-                                <button class="myBtn btn btn-primary mr-1 myBtn" id="myBtn" type="button" data-toggle="modal" data-target="#myModal">Buscar</button>
+                        <p class="mb-0">Cliente</p>
+                        
+                        <div class="row">
+                            <div class="col-sm-3 pr-0">
+                                <div class="form-group">
+                                    <input type="text" id="client_code" class="form-control " placeholder="Codigo" onkeyup="showResultCode(this.value)">
+                                </div>
+                            </div>
+                            <div class="col-sm-9 pl-0">
+                                <div class="form-group">
+                                    <input type="text" id="client_name" class="form-control" placeholder="Nombre" onkeyup="showResultClient(this.value)">
+                                </div>
                             </div>
                         </div>
-
+                        <div class="" id="livesearch_client" style="  border-radius: 5px; position: absolute; top: 95px; background: white none repeat scroll 0% 0%; width: 95%;"></div>
 
                         <thead>
                         <tr>
@@ -127,26 +150,21 @@
                         </tr>
                         </thead>
                         <tbody>
-
-                        {% for prodsold in productsold %}
-
-                            <tr id="{{ prodsold.product.id }}"><td >{{ prodsold.product.name }}</td><td id="quantity">{{ prodsold.amount }}</td><td id="price">{{ prodsold.price - prodsold.discount }}</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>
-                        {% endfor %}
-
+                       
                             <tr>
                                 <td>Subtotal:</td>
-                                <td id="subtotal">{{ sale.subtotal }}</td>
+                                <td id="subtotal">0.00</td>
 
                             </tr>
 
                             <tr>
                                 <td>IVA:</td>
-                                <td id="tax">{{ sale.tax }}</td>
+                                <td id="tax">0.00</td>
 
                             </tr>
                             <tr>
                                 <td>Total:</td>
-                                <td id="total">{{ sale.total }}</td>
+                                <td id="total">0.00</td>
 
                             </tr>
 
@@ -164,10 +182,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for discount in discounts %}
 
-                        <tr id="{{ discount.productSold.product.id }}"><td>{{ discount.productSold.product.name }}</td><td id="discount_reason">{{ discount.name }}</td><td id="price">{{ discount.amount }}</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>
-                    {% endfor %}
 
                     </tbody>
                 </table>
@@ -176,12 +191,12 @@
 
             </div>
 
+            </div>
+           
     </div>
+</div>
 
-    </div>
-    </div>
-
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" >
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" >
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -213,12 +228,11 @@
         </div>
     </div>
 
-
-
-
     <script src="{{ asset('theme/assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script type="javascript" src="{{ asset('theme/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-   
+    
+
+
     <script>
         var input = document.getElementById("product_search");
         input.addEventListener("keyup", function(event) {
@@ -231,12 +245,239 @@
         });
     </script>
 
-    <script>
+    <script type="text/javascript">
+        function selectClient(str){
+            
+            if(str.includes(':')){
+            var code = str.split(':')[1];
+            document.getElementById("client_code").value=code;
+            document.getElementById("client_name").value=str.split(':')[0];
+            }else{
+            document.getElementById("client_name").value=str;
+            }
+        
+
+            document.getElementById("livesearch_client").innerHTML="";
+            document.getElementById("livesearch_client").style.border="0px";
+        }
+
+        function CreateNewClient(){
+          
+            var str = document.getElementById("client_name").value;
+            var code = document.getElementById("client_code").value;
+            //add code to client
+            $.ajax({
+                    url:"{{ path('create_client') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str,
+                        code:code
+                    },
+                    success:function (php_result) {
+                        document.getElementById("livesearch_client").innerHTML="";
+                        document.getElementById("livesearch_client").style.border="0px";
+                    }
+                });
+                
+        
+        }
+
+        function showResultClient(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_client").innerHTML="";
+                document.getElementById("livesearch_client").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_clients') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var clients = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < clients.length;i++){
+                                var name = clients[i].name
+                               // console.log(name+" " + clients[i].code);
+                               if(clients[i].code !== null){
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+':'+clients[i].code+'</a><br/>'
+                               }else{
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
+                               }
+                            }
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_client").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_client").innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
+                        }       
+                    }
+                });
+            }
+
+            function showResultCode(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_client").innerHTML="";
+                document.getElementById("livesearch_client").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_clients_code') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        code:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var clients = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < clients.length;i++){
+                                var name = clients[i].name
+                                console.log(name);
+                               if(clients[i].code !== null){
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+':'+clients[i].code+'</a><br/>'
+                               }else{
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
+                               }                            }
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_client").innerHTML = searchResults;
+                        }
+                        else{
+                            if(document.getElementById("client_name").value !== ''){
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2";
+                            document.getElementById("livesearch_client").innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
+
+                            }
+                        }       
+                    }
+                });
+            }
+        
+
+    </script>
+
+    <script type="text/javascript">
+        function selectProductName(str){
+            document.getElementById("product_search_input_name").value=str;
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function clearProductName(){
+            document.getElementById("product_search_input_name").value='';
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function showResultName(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_name").innerHTML="";
+                document.getElementById("livesearch_name").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_products_name') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var products = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < products.length;i++){
+                                var name = products[i].name
+                                console.log(name);
+                                searchResults += '<a class="text-primary" onclick="selectProductName(this.innerHTML)">'+products[i].name+'</a><br/>'
+                            }
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = '<a class="text-success" onclick="clearProductName()">Sin Resultados</a><br/>';
+                        }       
+                    }
+                });
+            }
+        
+
+    </script>
+
+    <script type="text/javascript">
+        function selectProduct(str){
+            var sku = str.split(': ')[1];
+            document.getElementById("product_search_input_sku").value=sku;
+            document.getElementById("livesearch_sku").innerHTML="";
+            document.getElementById("livesearch_sku").style.border="0px";
+        }
+
+        function clearProduct(){
+            document.getElementById("product_search_input_sku").value='';
+            document.getElementById("livesearch_sku").innerHTML="";
+            document.getElementById("livesearch_sku").style.border="0px";
+        }
+
+        function CreateClient(){
+          
+            var str = document.getElementById("product_search_input_sku").value;
+           
+                
+        
+        }
+
+
+
+        function showResultSKU(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_sku").innerHTML="";
+                document.getElementById("livesearch_sku").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_products_sku') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        sku:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var products = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < products.length;i++){
+                                var name = products[i].name
+                                console.log(name);
+                                searchResults += '<a class="text-primary" onclick="selectProduct(this.innerHTML)">'+products[i].name+' : '+products[i].sku+'</a><br/>'
+                            }
+                            document.getElementById("livesearch_sku").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_sku").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_sku").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_sku").innerHTML = '<a class="text-success" onclick="clearProduct()">Sin Resultados</a><br/>';
+                        }       
+                    }
+                });
+            }
+        
+
+    </script>
+
+    <script type="text/javascript">
+
         filterSelection("all");
+        
         function filterSelection(c) {
             var x, i;
             x = document.getElementsByClassName("filterDiv");
-
             if (c === "all") c = "";
             // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
             for (i = 0; i < x.length; i++) {
@@ -283,12 +524,9 @@
 
     </script>
 
+
+
     <script type="text/javascript">
-
-        $(document).ready(function(data){
-
-
-        });
 
         //$(window).on('load', function() {
            // $('#myModal').modal('handleUpdate');
@@ -366,84 +604,6 @@
                 $('#FixedDiv').css('top', $(this).scrollTop());
             });
 
-            
-
-            $(document).on('click', '.myBtn', function(){
-                var client_name = $('#client_name').val();
-                $.ajax({
-                    url:"{{ path('fetch_clients') }}",
-                    type: "POST",
-                    dataType: "text",
-                    data:{
-                        name:client_name
-                    },
-                    success:function (php_result) {
-                        if(php_result !== '[]') {
-                            var obj = jQuery.parseJSON(php_result);
-                            var table = document.querySelector('#clients-table');
-                            $('#clients-table > tbody:last-child').append('<tr><td>' + obj[0].name + '</td><td><div id="client_select" class="btn btn-success my-1 btn-sm">Select</div></td></tr>');
-                            $( "#client_select" ).click(function() {
-                                console.log("Clikc");
-                                $('#myModal').modal('hide');
-
-
-                            });
-
-                        }else{
-                            $('#clients-table > tbody:last-child').append('<tr><td>'+client_name+'</td><td><div id="create_client" class="btn btn-primary my-1 btn-sm">Crear</div></td></tr>');
-                            $( "#create_client" ).click(function() {
-                                $.ajax({
-                                    url:"{{ path('create_client') }}",
-                                    type: "POST",
-
-                                    data:{
-                                        name:client_name
-                                    },
-                                    success:function (php_result) {
-                                        console.log("Clikc");
-                                        $('#myModal').modal('hide');
-                                    }
-                                });
-
-                            });
-                        }
-                    }
-                });
-            });
-
-            $(document).on('click', '.discount_product', function(){
-                var reason = prompt("Ingresar razon de descuento","Descuento");
-                var discount = parseFloat(prompt("Ingresar monto por descontar",""));
-
-                var price = parseFloat($(this).parent().parent().children()[2].innerText);
-                var prodID = $(this).parent().parent().attr('id');
-                var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
-                var total = document.querySelector('#total');
-                var subtotal = document.querySelector('#subtotal');
-                var tax = document.querySelector('#tax');
-                var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
-
-                var discount_cart = $('.cart-discount');
-
-                if (discount!=null && $.isNumeric(discount) && discount < price){
-                    $('.cart-discount > tbody:last-child').prepend('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
-                    $(this).parent().parent().children()[2].innerText = price - discount;
-
-                    if(prodTaxable ==="1"){
-                        tax.innerText = (parseFloat(tax.innerText) - ((((price)*.16) - (price - discount)*.16))).toFixed(2);
-                        total.innerText = (parseFloat(total.innerText) - discount).toFixed(2);
-                        subtotal.innerText = (parseFloat(subtotal.innerText) - (discount - (discount*.16)) ).toFixed(2);
-                    }else{
-                        total.innerText = (parseFloat(total.innerText) - (discount)).toFixed(2);
-                        subtotal.innerText = (parseFloat(subtotal.innerText) - (discount)).toFixed(2);
-                    }
-
-                }
-
-            });
-
-            
-
             $(document).on('click', '.remove_discount', function(){
             var prodID = $(this).parent().parent().attr('id');
             var discount = parseFloat($(this).parent().parent().children()[2].innerText);
@@ -474,8 +634,6 @@
                 }
 
             $(this).parent().parent().remove();
-
-
 
             });
 
@@ -551,22 +709,9 @@
 
                 if(prodTaxable ==="1"){
                     var taxAmt = ((prodPrice) - (prodPrice/1.16)).toFixed(3);
-
-                    if((parseFloat(tax.innerText) - (taxAmt)).toFixed(3) < 0.01){
-                    tax.innerText = '0.00';
-                    }else{
                     tax.innerText = (parseFloat(tax.innerText) - (taxAmt)).toFixed(3);
-                    }
-                    
-                    if( (parseFloat(subtotal.innerText) - (prodPrice - taxAmt).toFixed(3) ).toFixed(3) < 0.01){
-                    subtotal.innerText = '0.00';
-                    }else{
+                    total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(3);
                     subtotal.innerText = (parseFloat(subtotal.innerText) - (prodPrice - taxAmt).toFixed(3) ).toFixed(3);
-                    }   
-                    
-                    
-                    total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(2);
-
                 }else{
                     total.innerText = (parseFloat(total.innerText) - prodPrice).toFixed(3);
                     subtotal.innerText = (parseFloat(subtotal.innerText) - prodPrice).toFixed(3);
@@ -750,9 +895,242 @@
 
             });
 
-            
-
         });
+
+
+            $(document).on('click', '.myBtn', function(){
+                var client_name = $('#client_name').val();
+                $.ajax({
+                    url:"{{ path('fetch_clients') }}",
+                    type: "POST",
+                    dataType: "text",
+                    data:{
+                        name:client_name
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var obj = jQuery.parseJSON(php_result);
+                            var table = document.querySelector('#clients-table');
+                            $('#clients-table > tbody:last-child').append('<tr><td>' + obj[0].name + '</td><td><div id="client_select" class="btn btn-success my-1 btn-sm">Select</div></td></tr>');
+                            $( "#client_select" ).click(function() {
+                                console.log("Clikc");
+                                $('#myModal').modal('hide');
+
+
+                            });
+
+                        }else{
+                            $('#clients-table > tbody:last-child').append('<tr><td>'+client_name+'</td><td><div id="create_client" class="btn btn-primary my-1 btn-sm">Crear</div></td></tr>');
+                            $( "#create_client" ).click(function() {
+                                $.ajax({
+                                    url:"{{ path('create_client') }}",
+                                    type: "POST",
+
+                                    data:{
+                                        name:client_name
+                                    },
+                                    success:function (php_result) {
+                                        console.log("Clikc");
+                                        $('#myModal').modal('hide');
+                                    }
+                                });
+
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.discount_product', function(){
+                var reason = prompt("Ingresar razon de descuento","Descuento");
+                var discount = parseFloat(prompt("Ingresar monto por descontar",""));
+
+                var price = parseFloat($(this).parent().parent().parent().parent().children()[2].innerText);
+                var prodID = $(this).parent().parent().parent().parent().attr('id');
+                var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
+                var total = document.querySelector('#total');
+                var subtotal = document.querySelector('#subtotal');
+                var tax = document.querySelector('#tax');
+                var prodName = $("img[data-id='" + prodID +"']").attr('data-name');
+
+                var discount_cart = $('.cart-discount');
+
+                if (discount!=null && $.isNumeric(discount) && discount < price){
+                    $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="discount_reason">'+ reason +'</td><td id="price">'+ discount +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
+                    $(this).parent().parent().parent().parent().children()[2].innerText = price - discount;
+
+                    if(prodTaxable ==="1"){
+                        var taxPerProduct = parseFloat(((price-discount)/1.16) * 0.16).toFixed(3);
+                        //tax.innerText = (parseFloat(tax.innerText) - ((((price)*.16) - (price - discount)*.16))).toFixed(3);
+                        tax.innerText = (parseFloat(tax.innerText) - (parseFloat(tax.innerText) - taxPerProduct)).toFixed(3) ;
+
+                        total.innerText = (parseFloat(total.innerText) - discount).toFixed(3);
+                        subtotal.innerText = (parseFloat(subtotal.innerText) - (discount/1.16)).toFixed(3);
+                    }else{
+                        total.innerText = (parseFloat(total.innerText) - (discount)).toFixed(3);
+                        subtotal.innerText = (parseFloat(subtotal.innerText) - (discount)).toFixed(3);
+                    }
+
+                }
+
+            });
+
+        function searchName() {
+
+            var name = $('#product_search_input_name').val()
+            $.ajax({
+                url:"{{ path('fetch_product_name') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    name:name,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+//                    console.log(obj.name);
+
+                    if(obj.price !== "") {
+                        var prodAmount = 1;
+                        var cart = $('.cart-table');
+                        var prodName = obj.name;
+                        var prodPrice = parseFloat(obj.price);
+
+                        var prodID = obj.id;
+                        var prodTaxable = obj.tax.toString();
+
+                        var prod_quantity = $(this).parent().parent().find("#product-quantity");
+                        if (prod_quantity[0] !== undefined) {
+                            prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText) - prodAmount;
+                        }
+
+                        var total = document.querySelector('#total');
+                        var subtotal = document.querySelector('#subtotal');
+                        var tax = document.querySelector('#tax');
+
+
+                        var cellVal = $(".cart-table tr td").filter(function () {
+                            return $(this).text() === prodName;
+                        });
+                        if (cellVal.text() === "") {
+                            if (prodAmount === 1) {
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            } else {
+
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            }
+
+                        } else {
+                            var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                            cellVal.parent().children()[1].innerText = quantity + prodAmount;
+
+                            var price = parseFloat(cellVal.parent().children()[2].innerText);
+                            cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
+                        }
+
+                        if(prodTaxable ==="1"){
+                    var taxPerProduct = (prodPrice/1.16) * 0.16;
+                    var taxAmt = (taxPerProduct.toFixed(3) * prodAmount);
+                    var taxDisplay = parseFloat(tax.innerText) + parseFloat(taxAmt);
+                    tax.innerText = parseFloat(taxDisplay).toFixed(3);
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount) - taxAmt ).toFixed(3);
+
+                }else{
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                }
+       
+                    }
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        }
+
+        function searchSKU() {
+
+            var sku = $('#product_search_input_sku').val()
+            $.ajax({
+                url:"{{ path('fetch_product_sku') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    sku:sku,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+//                    console.log(obj.name);
+
+                    if(obj.price !== "") {
+                        var prodAmount = 1;
+                        var cart = $('.cart-table');
+                        var prodName = obj.name;
+                        var prodPrice = parseFloat(obj.price);
+
+                        var prodID = obj.id;
+                        var prodTaxable = obj.tax.toString();
+
+                        var prod_quantity = $(this).parent().parent().find("#product-quantity");
+                        if (prod_quantity[0] !== undefined) {
+                            prod_quantity[0].innerText = parseInt(prod_quantity[0].innerText) - prodAmount;
+                        }
+
+                        var total = document.querySelector('#total');
+                        var subtotal = document.querySelector('#subtotal');
+                        var tax = document.querySelector('#tax');
+
+
+                        var cellVal = $(".cart-table tr td").filter(function () {
+                            return $(this).text() === prodName;
+                        });
+                        if (cellVal.text() === "") {
+                            if (prodAmount === 1) {
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">1</td><td id="price">' + prodPrice + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            } else {
+
+                                $(".cart-table").prepend('<tr id="' + prodID + '"><td >' + prodName + '</td><td id="quantity">' + prodAmount + '</td><td id="price">' + (prodPrice * prodAmount) + '</td><td><div class="remove_product btn btn-danger btn-sm my-1">Borrar</div><div class="remove_all btn btn-warning my-1 btn-sm">Borrar Todo</div><div class="discount_product btn btn-success my-1 btn-sm">Descuento</div></td></tr>');
+
+                            }
+
+                        } else {
+                            var quantity = parseInt(cellVal.parent().children()[1].innerText);
+                            cellVal.parent().children()[1].innerText = quantity + prodAmount;
+
+                            var price = parseFloat(cellVal.parent().children()[2].innerText);
+                            cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
+                        }
+
+                       if(prodTaxable ==="1"){
+                    var taxPerProduct = (prodPrice/1.16) * 0.16;
+                    var taxAmt = (taxPerProduct.toFixed(3) * prodAmount);
+                    var taxDisplay = parseFloat(tax.innerText) + parseFloat(taxAmt);
+                    tax.innerText = parseFloat(taxDisplay).toFixed(3);
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount) - taxAmt ).toFixed(3);
+
+                }else{
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                }
+                       
+
+                    }
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        }
 
         function search(product_id) {
 
@@ -761,7 +1139,7 @@
                 type: "POST",
                 dataType: "text",
                 data:{
-                    id:product_id,
+                    upc:product_id,
                 },
                 success: function(data){
                     var obj = jQuery.parseJSON(data);
@@ -807,16 +1185,21 @@
                             cellVal.parent().children()[2].innerText = price + (prodPrice * prodAmount);
                         }
 
-                        if (prodTaxable === "1") {
-                            tax.innerText = (parseFloat(tax.innerText) + ((prodPrice * prodAmount) * .16)).toFixed(2);
-                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
-                            subtotal.innerText = (parseFloat(subtotal.innerText) + ((prodPrice * prodAmount) - ((prodPrice * prodAmount) * .16))).toFixed(2);
+                      if(prodTaxable ==="1"){
+                    var taxPerProduct = (prodPrice/1.16) * 0.16;
+                    var taxAmt = (taxPerProduct.toFixed(3) * prodAmount);
+                    var taxDisplay = parseFloat(tax.innerText) + parseFloat(taxAmt);
+                    tax.innerText = parseFloat(taxDisplay).toFixed(3);
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount) - taxAmt ).toFixed(3);
 
-                        } else {
-                            total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(2);
-                            subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(2);
+                }else{
+                    total.innerText = (parseFloat(total.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                    subtotal.innerText = (parseFloat(subtotal.innerText) + (prodPrice * prodAmount)).toFixed(3);
+                }
+                      
 
-                        }
+
                     }
                 },
                 error: function(error){
@@ -848,12 +1231,20 @@
                 var total,subtotal,tax;
                 var saleID;
                 var client_name;
+                var client_code;
 
                 client_name = $('#client_name').val();
-                total = $('#cart tr').find('#total').text();
-                subtotal = $('#cart tr').find('#subtotal').text();
-                tax = $('#cart tr').find('#tax').text();
 
+                if($('#client_code').val() !== ''){
+                client_code = $('#client_code').val();
+                }
+
+                total = $('#cart tr').find('#total').text();
+                total = parseFloat(total).toFixed(2);
+                subtotal = $('#cart tr').find('#subtotal').text();
+                subtotal = parseFloat(subtotal).toFixed(2);
+                tax = $('#cart tr').find('#tax').text();
+                tax = parseFloat(tax).toFixed(2);
                 $('#cart tr').each(function(index, tr) {
 
                     if(index>0) {
@@ -895,7 +1286,7 @@
                 }
 
                 $.ajax({
-                    url:"{{ path('sale_edit2') }}",
+                    url:"{{ path('create_sale') }}",
                     type: "POST",
                     data:{
                         products:product_ids,
@@ -908,7 +1299,7 @@
                         discountId:discount_product_ids,
                         reason:reasons,
                         discount:discounts,
-                        saleID:{{ sale.id }}
+                        code:client_code
 
                     },
                     success:function (php_result) {
@@ -930,4 +1321,13 @@
 
     </script>
 
+
 {% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+ {% block pagejs %}
+    {% endblock %}

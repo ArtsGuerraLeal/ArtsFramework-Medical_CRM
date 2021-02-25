@@ -183,6 +183,16 @@ class Company
      */
     private $productOrdereds;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductSoldDiscount::class, mappedBy="company")
+     */
+    private $productSoldDiscounts;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProductStock::class, mappedBy="company")
+     */
+    private $productStocks;
+
 
 
     public function __construct()
@@ -210,6 +220,8 @@ class Company
         $this->providers = new ArrayCollection();
         $this->providerOrders = new ArrayCollection();
         $this->productOrdereds = new ArrayCollection();
+        $this->productSoldDiscounts = new ArrayCollection();
+        $this->productStocks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -1046,6 +1058,66 @@ class Company
             // set the owning side to null (unless already changed)
             if ($productOrdered->getCompany() === $this) {
                 $productOrdered->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductSoldDiscount[]
+     */
+    public function getProductSoldDiscounts(): Collection
+    {
+        return $this->productSoldDiscounts;
+    }
+
+    public function addProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if (!$this->productSoldDiscounts->contains($productSoldDiscount)) {
+            $this->productSoldDiscounts[] = $productSoldDiscount;
+            $productSoldDiscount->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if ($this->productSoldDiscounts->removeElement($productSoldDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productSoldDiscount->getCompany() === $this) {
+                $productSoldDiscount->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductStock[]
+     */
+    public function getProductStocks(): Collection
+    {
+        return $this->productStocks;
+    }
+
+    public function addProductStock(ProductStock $productStock): self
+    {
+        if (!$this->productStocks->contains($productStock)) {
+            $this->productStocks[] = $productStock;
+            $productStock->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductStock(ProductStock $productStock): self
+    {
+        if ($this->productStocks->removeElement($productStock)) {
+            // set the owning side to null (unless already changed)
+            if ($productStock->getCompany() === $this) {
+                $productStock->setCompany(null);
             }
         }
 

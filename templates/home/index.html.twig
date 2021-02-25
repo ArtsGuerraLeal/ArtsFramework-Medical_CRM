@@ -564,14 +564,14 @@
         var clientResult = [], j = -1;
 
 
-         $("span[id*='prodName']").each(function (i, el) {
+            $("span[id*='prodName']").each(function (i, el) {
                 productName.push(el.innerText);
             });
              $("span[id*='prodCount']").each(function (i, el) {
                 productCount.push(parseFloat(el.innerText));
             });
 
-           $("span[id*='clientName']").each(function (i, el) {
+             $("span[id*='clientName']").each(function (i, el) {
                 clientName.push(el.innerText);
             });
              $("span[id*='clientCount']").each(function (i, el) {
@@ -582,10 +582,9 @@
                 saleMonth.push(el.innerText);
             });
              $("span[id*='saleTotal']").each(function (i, el) {
-                saleMonthTotal.unshift(parseFloat(el.innerText));
-                for(var i =0 ; i<saleMonth.length;i++){
-                    saleMonthTotal.pop();
-                }            
+                saleMonthTotal[parseInt(saleMonth[i])-1] = parseFloat(el.innerText)/10
+                saleMonthTotal.pop();
+
             });
 
             for ( var i = 0; i < clientName.length; i++ ) {
@@ -640,7 +639,6 @@
     };
     maxVal = data.series[0];
     
-    
     var largest= 0;
 
     for (i=0; i<=largest;i++){
@@ -651,7 +649,7 @@
 
 
     var options = {
-        high: largest/1.5,
+        high: largest+3000,
         low:0,
         axisX: {
             showGrid: false

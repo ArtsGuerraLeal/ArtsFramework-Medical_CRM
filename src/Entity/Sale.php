@@ -93,12 +93,18 @@ class Sale
      */
     private $clientId;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductSoldDiscount::class, mappedBy="sale")
+     */
+    private $productSoldDiscounts;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
         $this->payments = new ArrayCollection();
         $this->creditSales = new ArrayCollection();
         $this->discounts = new ArrayCollection();
+        $this->productSoldDiscounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -357,6 +363,36 @@ class Sale
     public function setClientId(?Client $clientId): self
     {
         $this->clientId = $clientId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductSoldDiscount[]
+     */
+    public function getProductSoldDiscounts(): Collection
+    {
+        return $this->productSoldDiscounts;
+    }
+
+    public function addProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if (!$this->productSoldDiscounts->contains($productSoldDiscount)) {
+            $this->productSoldDiscounts[] = $productSoldDiscount;
+            $productSoldDiscount->setSale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductSoldDiscount(ProductSoldDiscount $productSoldDiscount): self
+    {
+        if ($this->productSoldDiscounts->removeElement($productSoldDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productSoldDiscount->getSale() === $this) {
+                $productSoldDiscount->setSale(null);
+            }
+        }
 
         return $this;
     }

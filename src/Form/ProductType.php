@@ -63,7 +63,7 @@ class ProductType extends AbstractType
                     return sprintf(' %s', $category->getName());
                 },
                 'placeholder' => 'Escoger categoria ...',
-                'choices' => $this->categoryRepository->findAll(),
+                'choices' => $this->categoryRepository->findByCompany($this->security->getUser()->getCompany()),
                 'required'=>false,
                 'label'=>'Categoria'
             ])

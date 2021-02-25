@@ -22,11 +22,30 @@ class DiscountRepository extends ServiceEntityRepository
     public function findByCompany($companyId)
     {
         return $this->createQueryBuilder('discount')
+            ->addSelect('discount.id')
+            ->addSelect('discount.name')
+            ->addSelect('discount.type')
+            ->addSelect('discount.amount')
             ->andWhere('discount.company = :val')
             ->setParameter('val', $companyId)
             ->orderBy('discount.id', 'ASC')
             ->getQuery()
             ->getResult()
+            ;
+    }
+
+    public function findByCompanyArray($companyId)
+    {
+        return $this->createQueryBuilder('discount')
+            ->addSelect('discount.id')
+            ->addSelect('discount.name')
+            ->addSelect('discount.type')
+            ->addSelect('discount.amount')
+            ->andWhere('discount.company = :val')
+            ->setParameter('val', $companyId)
+            ->orderBy('discount.id', 'ASC')
+            ->getQuery()
+            ->getArrayResult()
             ;
     }
 

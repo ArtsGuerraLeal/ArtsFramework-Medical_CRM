@@ -1,0 +1,25 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}New Category{% endblock %}
+
+{% block body %}
+
+
+<div class="card">
+    <div class="card-header">Categoria
+    </div>
+    
+        <div class="card-body">
+ 
+        {{ include('category/_form.html.twig', {'button_label': 'Guardar'}) }}
+        
+        <a class="btn btn-primary" href="{{ path('category_index') }}">Regresar</a>
+
+        </div>
+
+        
+</div>
+
+
+
+{% endblock %}

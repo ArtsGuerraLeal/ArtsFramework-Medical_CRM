@@ -11,6 +11,7 @@ use App\Entity\ProductSold;
 use App\Entity\PaymentMethod;
 use App\Repository\SaleRepository;
 use App\Repository\UserRepository;
+use App\Entity\ProductSoldDiscount;
 use Doctrine\ORM\NoResultException;
 use App\Repository\ClientRepository;
 use App\Repository\PatientRepository;
@@ -25,6 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ProductSoldDiscountRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -79,10 +81,16 @@ class SaleController extends AbstractController
      */
     private $userRepository;
 
+    /**
+     * @var ProductSoldDiscountRepository
+     */
+    private $productSoldDiscountRepository;
+
+
     private $session;
 
 
-    public function __construct(ClientRepository $clientRepository, UserRepository $userRepository, ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security,SessionInterface $session){
+    public function __construct(ProductSoldDiscountRepository $productSoldDiscountRepository, ClientRepository $clientRepository, UserRepository $userRepository, ProductSoldRepository $productSoldRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, SaleRepository $saleRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security,SessionInterface $session){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
@@ -93,7 +101,7 @@ class SaleController extends AbstractController
         $this->productSoldRepository = $productSoldRepository;
         $this->userRepository = $userRepository;
         $this->clientRepository = $clientRepository;
-
+        $this->productSoldDiscountRepository = $productSoldDiscountRepository;
         $this->session = $session;
 
     }
@@ -114,7 +122,9 @@ class SaleController extends AbstractController
         return $this->render('sale/index.html.twig', [
             'products' => $productRepository->findByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
-            'categories' => $this->categoryRepository->findByCompany($user->getCompany()) 
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany()),
+            'discounts' =>  $this->discountRepository->findByCompany($user->getCompany())
+
         ]);
 
     }
@@ -129,7 +139,7 @@ class SaleController extends AbstractController
 
         $user = $this->security->getUser();
         $sale = $this->saleRepository->findOneBy(['id'=>$id]);
-
+        
         return $this->render('sale/edit_sale.html.twig', [
             'products' => $productRepository->findByCompany($user->getCompany()),
             'sale' => $sale,
@@ -215,7 +225,7 @@ class SaleController extends AbstractController
             'sale' => $sale,
             'products' => $sale->getProducts(),
             'payments'=>$sale->getPayments(),
-            'discounts'=>$sale->getDiscounts()
+            'discounts'=>$sale->getProductSoldDiscounts()
         ]);
 
     }
@@ -259,9 +269,9 @@ class SaleController extends AbstractController
             $client = $request->request->get('client');
             $price = $request->request->get('price');
             $clientCode = $request->request->get('code');
-            $discounts = $request->request->get('discountId');
-            $reason = $request->request->get('reason');
-            $discountAmount = $request->request->get('discount');
+            $productDiscounts = $request->request->get('productDiscountId');
+            $discountIds = $request->request->get('discountId');
+
 
         }
         else {
@@ -331,14 +341,30 @@ class SaleController extends AbstractController
             if($product->getPrice()==0){
                 $productSold->setPrice($price[$count]);
             }else{
-                if($product->getPrice()*$quantity[$count]== $price[$count]){
+                if($product->getPrice()*$quantity[$count] == $price[$count]){
                     $productSold->setPrice($price[$count]);
                 }else{
                     $productSold->setPrice($product->getPrice()*$quantity[$count]);
                     $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
 
                     $discountCount = 0;
+                    foreach ($discountIds as $discount){
+                        if($productDiscounts[$discountCount] == $prod){
+                        $currentDiscount = $this->discountRepository->findByCompanyID($this->security->getUser()->getCompany(),$discount);
+                        
+                        $productDiscount = new ProductSoldDiscount();
+                        $productDiscount->setProductSold($productSold);
+                        $productDiscount->setDiscount($currentDiscount);
+                        $productDiscount->setSale($sale);
+                        $productDiscount->setCompany($this->security->getUser()->getCompany());
 
+                        $totalDiscount = $totalDiscount + $currentDiscount->getAmount();
+
+                        $em->persist($productDiscount);
+                        }
+                        $discountCount++;
+                    }
+                    /*
                     foreach ($discounts as $discount){
 
                         if($discount == $prod){
@@ -357,6 +383,7 @@ class SaleController extends AbstractController
                         $discountCount++;
 
                         }
+                        */
                     $sale->setDiscount($totalDiscount);
                     }
             }

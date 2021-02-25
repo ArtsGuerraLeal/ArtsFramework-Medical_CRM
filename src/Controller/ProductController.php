@@ -5,8 +5,11 @@ namespace App\Controller;
 use Aws\S3\S3Client;
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Entity\ProductStock;
 use App\Form\ProductUploadType;
 use App\Repository\ProductRepository;
+use App\Repository\ProductSoldRepository;
+use App\Repository\ProductStockRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -26,12 +29,25 @@ class ProductController extends AbstractController
   
     private $session;
 
+     /**
+     * @var ProductSoldRepository
+     */
+    private $productSoldRepository;
 
-    public function __construct(Security $security,SessionInterface $session){
+    /**
+     * @var ProductStockRepository
+     */
+    private $productStockRepository;
+
+    public function __construct(ProductStockRepository $productStockRepository, Security $security,SessionInterface $session, ProductSoldRepository $productSoldRepository){
       
         $this->security = $security;
         
         $this->session = $session;
+        
+        $this->productSoldRepository = $productSoldRepository;
+
+        $this->productStockRepository = $productStockRepository;
 
     }
 
@@ -109,6 +125,15 @@ class ProductController extends AbstractController
                 
             }
            $product->setCompany($user->getCompany());
+
+           if($product->getQuantity() != null){
+            $stock = new ProductStock();
+            $stock->setCompany($user->getCompany());
+            $stock->setAmount($product->getQuantity());
+            $stock->setProduct($product);
+            $stock->setTime(new \DateTime());
+            $entityManager->persist($stock);
+        }
 
            $entityManager->persist($product);
            $entityManager->flush();
@@ -251,8 +276,14 @@ class ProductController extends AbstractController
      */
     public function show(Product $product): Response
     {
+        $user = $this->security->getUser();
+        $productSales = $this->productSoldRepository->FindSalesWithProduct($user->getCompany(),$product->getId());
+        $productStocks = $this->productStockRepository->FindStockChangedOfProduct($user->getCompany(),$product->getId());
+
         return $this->render('product/show.html.twig', [
             'product' => $product,
+            'sales' => $productSales,
+            'stocks' => $productStocks
         ]);
     }
 
@@ -262,7 +293,9 @@ class ProductController extends AbstractController
     public function edit(Request $request, Product $product): Response
     {
         $form = $this->createForm(ProductType::class, $product);
-
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $quantity = $product->getQuantity();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -284,8 +317,24 @@ class ProductController extends AbstractController
                             $filename);
                         $product->setImage($filename);
                     }
+                
                 }
+                $newQuantity = $request->request->get('product')['quantity'];
+               if($quantity != $newQuantity){
+                $stock = new ProductStock();
+                $stock->setCompany($user->getCompany());
 
+                if($quantity < $newQuantity){
+                    $stock->setAmount($newQuantity - $quantity);
+
+                }else{
+                    $stock->setAmount(($quantity - $newQuantity)/-1);
+                }
+                $stock->setProduct($product);
+                $stock->setTime(new \DateTime());
+                $entityManager->persist($stock);
+                $entityManager->flush();
+            }
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('product_index');

@@ -11,7 +11,7 @@
 <div class="card">
     <div class="card-header"><i class="fas fa-table"></i>Descuentos</div>
         <div class="card-body">
-          
+          <div class="table-responsive-md">
                  <table class="table table-bordered table-striped order_table" id="zero_config" >
                  <div class="btn btn-primary my-2">
                     <a class="text-white " href="{{ path('discount_new') }}">Nuevo Descuento</a>
@@ -29,11 +29,38 @@
                     </tr>
                     </thead>
                     <tbody>
+
+                    {% for discount in discounts %}
+                     <tr>
+                <td>{{ discount.id }}</td>
+                <td>{{ discount.name }}</td>
+                {% if discount.type == 0 %}
+                <td>Monto</td>
+
+                {% else %}
+                <td>Porcentaje</td>
+
+                {% endif %}
+
+                {% if discount.type == 0 %}
+                <td>${{ discount.amount }}</td>
+
+                {% else %}
+                <td>{{ discount.amount }}%</td>
+
+                {% endif %}
+
+                <td>
+                        <a class="btn btn-primary" href="">Detalles</a>
+                        <a class="btn btn-primary " href="">Edit</a>
+                </td>
+            </tr>
+                    {% endfor %}
                     
                     </tbody>
                     
                 </table>
-            
+             </div>
            </div>
            
         </div>

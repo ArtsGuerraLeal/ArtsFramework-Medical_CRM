@@ -54,7 +54,6 @@ class SalesListController extends AbstractController
 
         return $this->render('sales_list/discount.html.twig', [
             'sales' => $saleRepository->findByCompany($user->getCompany()),
-            'discounts' => $discountRepository->findByCompany($user->getCompany())
         ]);
     }
 
