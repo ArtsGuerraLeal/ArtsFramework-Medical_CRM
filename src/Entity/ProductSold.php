@@ -52,6 +52,7 @@ class ProductSold
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="productSolds")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $company;
 

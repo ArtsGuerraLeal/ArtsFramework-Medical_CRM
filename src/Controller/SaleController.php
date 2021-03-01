@@ -564,9 +564,13 @@ class SaleController extends AbstractController
 
             if($product->getPrice()==0){
                 $productSold->setPrice($price[$count]);
+                $productSold->setCompany($this->security->getUser()->getCompany());
+
             }else{
                 if($product->getPrice()*$quantity[$count]== $price[$count]){
                     $productSold->setPrice($price[$count]);
+                    $productSold->setCompany($this->security->getUser()->getCompany());
+
                 }else{
                     $productSold->setPrice($product->getPrice()*$quantity[$count]);
                     $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);

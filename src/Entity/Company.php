@@ -193,6 +193,56 @@ class Company
      */
     private $productStocks;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $line1;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $line2;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $postalcode;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $city;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $state;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phone1;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phone2;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $legal;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $logotype;
+
 
 
     public function __construct()
@@ -1120,6 +1170,126 @@ class Company
                 $productStock->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLine1(): ?string
+    {
+        return $this->line1;
+    }
+
+    public function setLine1(?string $line1): self
+    {
+        $this->line1 = $line1;
+
+        return $this;
+    }
+
+    public function getLine2(): ?string
+    {
+        return $this->line2;
+    }
+
+    public function setLine2(?string $line2): self
+    {
+        $this->line2 = $line2;
+
+        return $this;
+    }
+
+    public function getPostalcode(): ?string
+    {
+        return $this->postalcode;
+    }
+
+    public function setPostalcode(?string $postalcode): self
+    {
+        $this->postalcode = $postalcode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(?string $state): self
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPhone1(): ?string
+    {
+        return $this->phone1;
+    }
+
+    public function setPhone1(?string $phone1): self
+    {
+        $this->phone1 = $phone1;
+
+        return $this;
+    }
+
+    public function getPhone2(): ?string
+    {
+        return $this->phone2;
+    }
+
+    public function setPhone2(?string $phone2): self
+    {
+        $this->phone2 = $phone2;
+
+        return $this;
+    }
+
+    public function getLegal(): ?string
+    {
+        return $this->legal;
+    }
+
+    public function setLegal(?string $legal): self
+    {
+        $this->legal = $legal;
+
+        return $this;
+    }
+
+    public function getLogotype(): ?int
+    {
+        return $this->logotype;
+    }
+
+    public function setLogotype(?int $logotype): self
+    {
+        $this->logotype = $logotype;
 
         return $this;
     }

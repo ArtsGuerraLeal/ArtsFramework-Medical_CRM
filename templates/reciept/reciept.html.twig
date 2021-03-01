@@ -141,6 +141,11 @@
             height: 100px;
         }
 
+        .logo-pic2 {
+            width: 200px;
+            height: 80px;
+        }
+
 
 
     </style>
@@ -171,11 +176,17 @@
 
 
         {%  if app.user.company.image != null %}
+            {% if app.user.company.logotype == 1 %}
 
             <img class="rounded-circle logo-pic bg-light " src="{{ '/uploads/' ~ app.user.company.image }}" />
             <div class="info">
                 <h2>{{ app.user.company.name }}</h2>
             </div>
+            {% else %}
+            <img class="logo-pic2 bg-light " src="{{ '/uploads/' ~ app.user.company.image }}" />
+            <div class="info">
+            </div>
+            {% endif %}
         {% else %}
             <img class="rounded-circle logo-pic bg-light " src="" />
             <div class="info">
@@ -189,14 +200,14 @@
         <div class="info">
 
             <p><strong>
-                Av. Fundadores 955
+                {{ app.user.company.line1 }}
                 </br>
-                Paseo de Las Privanzas
+                {{ app.user.company.line2 }}
                 </br>
-                64750, Monterrey N.L.</br></br>
-                contacto@clinimedica.com.mx</br>
-                    Tel: 818-486-0458</br>
-                    Citas: 812-107-4142</br>
+                {{ app.user.company.postalcode ~ ", " ~ app.user.company.city ~ " " ~ app.user.company.state }}</br></br>
+                {{ app.user.company.email }}</br>
+                {{ app.user.company.phone1 }}</br>
+                {{ app.user.company.phone2 }}</br>
                 </strong>
             </p>
         </div>
@@ -306,7 +317,7 @@
 
 
         <div id="legalcopy">
-            <p class="legal "><strong>Exelencia y Calidad en Medicina Estetica</strong>
+            <p class="legal "><strong>{{ app.user.company.legal }}</strong>
             </p>
         </div>
 
