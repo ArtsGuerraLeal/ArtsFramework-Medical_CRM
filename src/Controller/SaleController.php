@@ -546,6 +546,10 @@ class SaleController extends AbstractController
         }
 
         foreach ($productsSold as $productSold){
+            $product = $productSold->getProduct();
+            $product->setQuantity($product->getQuantity() + $productSold->getAmount());
+
+            $em->persist($product);
             $em->remove($productSold);
             $em->flush();
         }
