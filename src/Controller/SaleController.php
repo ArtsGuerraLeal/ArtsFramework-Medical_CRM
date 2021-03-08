@@ -123,7 +123,8 @@ class SaleController extends AbstractController
             'products' => $productRepository->findByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
             'categories' => $this->categoryRepository->findByCompany($user->getCompany()),
-            'discounts' =>  $this->discountRepository->findByCompany($user->getCompany())
+            'discounts' =>  $this->discountRepository->findByCompany($user->getCompany()),
+            'sales' => $this->saleRepository->findRecentByCompany($user->getCompany())
 
         ]);
 
@@ -140,12 +141,13 @@ class SaleController extends AbstractController
         $user = $this->security->getUser();
         $sale = $this->saleRepository->findOneBy(['id'=>$id]);
         
-        return $this->render('sale/edit_sale.html.twig', [
+        return $this->render('sale/edit_sale2.html.twig', [
             'products' => $productRepository->findByCompany($user->getCompany()),
             'sale' => $sale,
             'productsold' => $sale->getProducts(),
             'payments'=>$sale->getPayments(),
-            'discounts'=>$sale->getDiscounts(),
+            'discounts'=>$sale->getProductSoldDiscounts(),
+            'baseDiscounts' =>  $this->discountRepository->findByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
             'categories' => $this->categoryRepository->findByCompany($user->getCompany())
         ]);
@@ -493,6 +495,318 @@ class SaleController extends AbstractController
      * @throws Exception
      */
     public function edit2(Request $request):JsonResponse
+    {
+        $totalDiscount = 0;
+        if ($request->getMethod() == 'POST')
+        {
+            $total = $request->request->get('total');
+            $subtotal = $request->request->get('subtotal');
+            $tax = $request->request->get('tax');
+            $products = $request->request->get('products');
+            $quantity = $request->request->get('quantity');
+            $client = $request->request->get('client');
+            $price = $request->request->get('price');
+            $discounts = $request->request->get('discountId');
+            $reason = $request->request->get('reason');
+            $discountAmount = $request->request->get('discount');
+            $saleId = $request->request->get('saleID');
+
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sale = $this->saleRepository->findOneBy(['id'=>$saleId]);
+
+        $sale->setTotal($total);
+        $sale->setSubtotal($subtotal);
+        $sale->setTax($tax);
+
+        if($client == ""){
+            $sale->setClient("Publico en General");
+        }else{
+            $sale->setClient($client);
+        }
+
+        $sale->setTime(new \DateTime());
+        $sale->setUser($this->security->getUser());
+
+        $em->persist($sale);
+        $em->flush();
+
+        $productsSold = $this->productSoldRepository->findBy(['sale'=>$saleId]);
+        $discountsGet = $this->discountRepository->findBy(['sale'=>$saleId]);
+
+        $count = 0;
+
+        foreach ($discountsGet as $discount){
+            $em->remove($discount);
+            $em->flush();
+        }
+
+        foreach ($productsSold as $productSold){
+            $product = $productSold->getProduct();
+            $product->setQuantity($product->getQuantity() + $productSold->getAmount());
+
+            $em->persist($product);
+            $em->remove($productSold);
+            $em->flush();
+        }
+
+        foreach ($products as $prod){
+            $product = $this->productRepository->findOneBy(['id'=>$prod]);
+            $productSold = new ProductSold();
+
+            if($product->getQuantity() != null){
+                $product->setQuantity($product->getQuantity()-$quantity[$count]);
+            }
+
+            $productSold->setProduct($product);
+            $productSold->setAmount($quantity[$count]);
+            $productSold->setSale($sale);
+
+            if($product->getPrice()==0){
+                $productSold->setPrice($price[$count]);
+                $productSold->setCompany($this->security->getUser()->getCompany());
+
+            }else{
+                if($product->getPrice()*$quantity[$count]== $price[$count]){
+                    $productSold->setPrice($price[$count]);
+                    $productSold->setCompany($this->security->getUser()->getCompany());
+
+                }else{
+                    $productSold->setPrice($product->getPrice()*$quantity[$count]);
+                    $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+                    $productSold->setCompany($this->security->getUser()->getCompany());
+
+                    $discountCount = 0;
+
+                    foreach ($discounts as $discount){
+
+                        if($discount == $prod){
+                            $productDiscount = new Discount();
+                            $productDiscount->setProductSold($productSold);
+                            $productDiscount->setName($reason[$discountCount]);
+                            $productDiscount->setAmount($discountAmount[$discountCount]);
+                            $productDiscount->setCompany($this->security->getUser()->getCompany());
+
+                            $productDiscount->setSale($sale);
+                            $totalDiscount = $totalDiscount + $discountAmount[$discountCount];
+                            $em->persist($productDiscount);
+                            
+                        }
+                        $discountCount++;
+
+                    }
+                    $sale->setDiscount($totalDiscount);
+                }
+            }
+
+            $em->persist($sale);
+            $em->persist($productSold);
+
+            $em->persist($product);
+
+            $count++;
+        }
+        $em->flush();
+
+
+        $response = $sale->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/edit4", name="sale_edit4", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function edit4(Request $request):JsonResponse
+    {
+        $totalDiscount = 0;
+        if ($request->getMethod() == 'POST')
+        {
+            $total = $request->request->get('total');
+            $subtotal = $request->request->get('subtotal');
+            $tax = $request->request->get('tax');
+            $products = $request->request->get('products');
+            $quantity = $request->request->get('quantity');
+            $client = $request->request->get('client');
+            $price = $request->request->get('price');
+            $clientCode = $request->request->get('code');
+            $productDiscounts = $request->request->get('productDiscountId');
+            $discountIds = $request->request->get('discountId');
+            $saleId = $request->request->get('saleID');
+
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sale = new Sale();
+
+        $sale->setTotal($total);
+        $sale->setSubtotal($subtotal);
+        $sale->setTax($tax);
+
+        if($client == ""){
+            $sale->setClient("Publico en General");
+            $client = $this->clientRepository->searchOneByName('Publico En General',$this->security->getUser()->getCompany());
+            $sale->setClientId($client);
+        }else{
+            $sale->setClient($client);
+            $clientEntity = $this->clientRepository->searchOneByName($client,$this->security->getUser()->getCompany());
+            if($clientEntity == null){
+                $clientEntity = new Client();
+                $clientEntity->setName($client);
+                if($code != null){
+                    $clientEntity->setCode($code);
+                }
+                $em->persist($clientEntity);
+                $em->flush();
+                $sale->setClientId($clientEntity);
+            }else{
+                $sale->setClientId($clientEntity);
+                $sale->setClient($client);
+            }
+        }
+
+        $sale->setTime(new \DateTime());
+        
+        $user = $this->userRepository->findOneByCompanyUsername($this->security->getUser()->getCompany(),$this->session->get('session-user'));
+       
+        if($user != null){
+            $sale->setUser($user);
+        }else{
+            $sale->setUser($this->security->getUser());
+        }
+        $sale->setCompany($this->security->getUser()->getCompany());
+
+        $em->persist($sale);
+        $em->flush();
+
+        $productsSold = $this->productSoldRepository->findBy(['sale'=>$saleId]);
+        $discountsGet = $this->productSoldDiscountRepository->findBy(['sale'=>$saleId]);
+
+        $count = 0;
+
+        foreach ($discountsGet as $discount){
+            $em->remove($discount);
+            $em->flush();
+        }
+
+        foreach ($productsSold as $productSold){
+            $product = $productSold->getProduct();
+            $product->setQuantity($product->getQuantity() + $productSold->getAmount());
+
+            $em->persist($product);
+            $em->remove($productSold);
+            $em->flush();
+        }
+
+        $count = 0;
+
+        foreach ($products as $prod ){
+            $product = $this->productRepository->findOneBy(['id'=>$prod]);
+            $productSold = new ProductSold();
+
+            if($product->getQuantity() != null){
+                $product->setQuantity($product->getQuantity()-$quantity[$count]);
+            }
+
+            $productSold->setProduct($product);
+            $productSold->setAmount($quantity[$count]);
+            $productSold->setSale($sale);
+            $productSold->setCompany($this->security->getUser()->getCompany());
+
+            if($product->getPrice()==0){
+                $productSold->setPrice($price[$count]);
+            }else{
+                if($product->getPrice()*$quantity[$count] == $price[$count]){
+                    $productSold->setPrice($price[$count]);
+                }else{
+                    $productSold->setPrice($product->getPrice()*$quantity[$count]);
+                    $productSold->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+
+                    $discountCount = 0;
+                    foreach ($discountIds as $discount){
+                        if($productDiscounts[$discountCount] == $prod){
+                        $currentDiscount = $this->discountRepository->findByCompanyID($this->security->getUser()->getCompany(),$discount);
+                        
+                        $productDiscount = new ProductSoldDiscount();
+                        $productDiscount->setProductSold($productSold);
+                        $productDiscount->setDiscount($currentDiscount);
+                        $productDiscount->setSale($sale);
+                        $productDiscount->setCompany($this->security->getUser()->getCompany());
+
+                        $totalDiscount = $totalDiscount + $currentDiscount->getAmount();
+
+                        $em->persist($productDiscount);
+                        }
+                        $discountCount++;
+                    }
+                    /*
+                    foreach ($discounts as $discount){
+
+                        if($discount == $prod){
+                            $productDiscount = new Discount();
+                            $productDiscount->setProductSold($productSold);
+                            $productDiscount->setName($reason[$discountCount]);
+                            $productSold->setDiscountReason($reason[$discountCount]);
+
+                            $productDiscount->setAmount($discountAmount[$discountCount]);
+                            $productDiscount->setCompany($this->security->getUser()->getCompany());
+
+                            $productDiscount->setSale($sale);
+                            $totalDiscount = $totalDiscount + $discountAmount[$discountCount];
+                            $em->persist($productDiscount);
+                        }
+                        $discountCount++;
+
+                        }
+                        */
+                    $sale->setDiscount($totalDiscount);
+                    }
+            }
+
+            $em->persist($sale);
+            $em->persist($productSold);
+
+            $em->persist($product);
+
+            $count++;
+        }
+        $em->flush();
+
+
+        $response = $sale->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/edit3", name="sale_edit3", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function edit3(Request $request):JsonResponse
     {
         $totalDiscount = 0;
         if ($request->getMethod() == 'POST')

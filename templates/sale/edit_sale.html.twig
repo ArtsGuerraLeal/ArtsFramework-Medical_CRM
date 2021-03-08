@@ -130,7 +130,7 @@
 
                         {% for prodsold in productsold %}
 
-                            <tr id="{{ prodsold.product.id }}"><td >{{ prodsold.product.name }}</td><td id="quantity">{{ prodsold.amount }}</td><td id="price">{{ prodsold.price - prodsold.discount }}</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product dropdown-item text-success" type="button">Descuentos</button></div></div></td></tr>
+                            <tr id="{{ prodsold.product.id }}"><td >{{ prodsold.product.name }}</td><td id="quantity">{{ prodsold.amount }}</td><td id="price">{{ prodsold.price - prodsold.discount }}</td><td><div class="btn-group"><button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Opciones</button><div class="dropdown-menu dropdown-menu-right"><button class="remove_product dropdown-item text-danger" type="button">Borrar</button><button class="remove_all dropdown-item text-warning" type="button">Borrar Todos</button><button class="discount_product_1 dropdown-item text-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button></div></div></td></tr>
                         {% endfor %}
 
                             <tr>
@@ -181,37 +181,69 @@
     </div>
     </div>
 
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Clientes</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <table class="clients-table table" id="clients-table" style="overflow-y:scroll;height:300px;display:block" >
-                        <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th style="width: 1%">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+   <!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Descuentos</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
             </div>
-        </div>
-    </div>
+            <div class="modal-body" data-id='-1'>
+                <div class="table-responsive-lg">
+
+            <table class="table table-bordered table-striped order_table" id="zero_config" >
+                    <thead>
+                    
+                    <tr>
+                        <th style="width:10%" >Nombre descuento</th>
+                        <th style="width:10%" >Tipo de Descuento</th>
+                        <th style="width:10%" >Valor</th>
+                        <th style="width:10%" >Acciones</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for discount in baseDiscounts %}
+                     <tr>
+                <td data-id="{{ discount.id }}" data-name="{{ discount.name }}" data-amount="{{ discount.amount }}" data-type="{{ discount.type }}">{{ discount.name }}</td>
+                {% if discount.type == 0 %}
+                <td>Monto</td>
+
+                {% else %}
+                <td>Porcentaje</td>
+
+                {% endif %}
+
+                {% if discount.type == 0 %}
+                <td>${{ discount.amount }}</td>
+
+                {% else %}
+                <td>{{ discount.amount }}%</td>
+
+                {% endif %}
+
+                <td>
+                    <button class="add_discount_1 btn btn-success" >Agregar</button>
+                </td>
+            </tr>
+                    {% endfor %}
+                    
+                    </tbody>
+                    
+                </table>
+</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cerrar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 

@@ -230,9 +230,17 @@
                         <td class="tableitem"><p class="itemtext">{{ product.product.name }}</p>
                             {% if product.discount is not null %}
 
+                            
                                 {% for discount in discounts %}
-                                    {% if product.id == discount.productSold.id %}
-                                    <p class="discounttext">{{ discount.discount.name}} $-{{ discount.productSold.discount }}</p>
+                                    {% if discount.productSold == product %}
+                                        {% if discount.discount.type == 1 %}
+                                        <p class="discounttext">{{ discount.discount.name }}  $-{{ discount.productSold.price * (discount.discount.amount / 100) }}</p>
+
+
+                                        {% else %}
+                                        <p class="discounttext">{{ discount.discount.name}} $-{{ discount.discount.amount }}</p>
+
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
 
@@ -311,7 +319,14 @@
                         <h2  class="paymentmethod">{{ payment.type.name }}  ${{ payment.amount }}</h2>
                 {% endfor %}
                 {% for discount in discounts %}
-                        <h2  class="paymentmethod">{{ discount.discount.name }}  $-{{ discount.productSold.discount }}</h2>
+               
+                        {% if discount.discount.type == 1 %}
+                        <h2  class="paymentmethod">{{ discount.discount.name }}  $-{{ discount.productSold.price * (discount.discount.amount / 100) }}</h2>
+
+                        {% else %}
+                        <h2  class="paymentmethod">{{ discount.discount.name }}  $-{{ discount.discount.amount }}</h2>
+
+                        {% endif %}
 
                 {% endfor %}
             </div>

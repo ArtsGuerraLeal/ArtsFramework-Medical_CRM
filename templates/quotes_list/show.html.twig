@@ -3,7 +3,7 @@
 {% block title %}Quote {{ quote.id }}{% endblock %}
 
 {% block body %}
-    <h1>Product</h1>
+    <h1>Cotización</h1>
 <div class="table-responsive">
     <table class="table table-bordered table-striped " id="dataTable" >
         <tbody>
@@ -20,6 +20,10 @@
             <tr>
                 <th>Fecha</th>
                 <td>{{ quote.time ? quote.time|date('d-m-Y H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Exipracion</th>
+                <td>{{ quote.expirationdate ? quote.expirationdate|date('d-m-Y H:i:s') : '' }}</td>
             </tr>
 
             <tr>
@@ -38,6 +42,7 @@
             <tr>
                 <th>Product</th>
                 <td>{{ product.product.name }}</td>
+                <td>{{ product.product.sku }}</td>
             </tr>
         {% endfor %}
         </tbody>

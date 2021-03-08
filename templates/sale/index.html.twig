@@ -26,6 +26,8 @@
         <div class="card-header">
         <i class="fas fa-table"></i>
         Punto de Venta   
+                <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#myModal2" type="button">Historial</button>
+
         </div>
 
         <div class="card-body">
@@ -200,6 +202,71 @@
            
     </div>
 </div>
+
+<!-- sample modal content -->
+<div id="myModal2" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel2">Ventas</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body" data-id='-1'>
+                <div class="table-responsive-lg">
+
+            <table class="table table-bordered table-striped order_table" id="zero_config2" >
+                    <thead>
+                    
+                    <tr>
+                        <th style="width:10%" >Numero de Venta</th>
+
+                        <th style="width:10%" >Pagada?</th>
+                        <th style="width:10%" >Cliente</th>
+                        <th style="width:10%" >Fecha</th>
+                        <th style="width:10%" >Acciones</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for sale in sales %}
+                     <tr>
+                     <td>{{ sale.id }}</td>
+                     {% if sale.isPaid == 1 %}
+                     <td class="text-success">Pagada</td>
+
+                     {% else %}
+                     <td class="text-danger">Sin Pagar</td>
+
+                     {% endif %}
+                     <td>{{ sale.clientId.name }}</td>
+                     <td>{{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</td>
+                    <td>
+                    {% if sale.isPaid == 1 %}
+                        <button class="btn btn-success" onclick="window.open('/sale/{{sale.id}}/reciept', '_blank')">Ver</button>
+
+                     {% else %}
+                        <button class="btn btn-success" onclick="window.open('/sale/{{sale.id}}/payment', '_blank')">Ver</button>
+
+                     {% endif %}
+                    </td>
+                </tr>
+                    {% endfor %}
+                    
+                    </tbody>
+                    
+                </table>
+</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cerrar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <!-- sample modal content -->
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog"
@@ -995,7 +1062,7 @@
                     }
                         discount = price*(discount/100);
                         console.log(discount);
-                        $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="'+discountId+'" clas="discount_reason">'+ reason +'</td><td id="price">'+ discount.toFixed(2) +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
+                        $('.cart-discount > tbody:last-child').append('<tr id="'+prodID+'"><td>'+prodName+'</td><td id="'+discountId+'" class="discount_reason">'+ reason +'</td><td id="price">'+ discount.toFixed(2) +'</td><td><div class="remove_discount btn btn-warning my-1 btn-sm">Borrar</div></td></tr>');
                         row.children[2].innerText = parseFloat(price - discount).toFixed(2);
 
                         if(prodTaxable ==="1"){
@@ -1409,5 +1476,12 @@
 
  {% block pagejs %}
    <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script>$('#zero_config').DataTable();</script>
+    <script>
+    $('#zero_config').DataTable();
+     $('#zero_config2').DataTable({
+            "order": [
+                [0, "desc"]
+            ]
+        });
+    </script>
     {% endblock %}

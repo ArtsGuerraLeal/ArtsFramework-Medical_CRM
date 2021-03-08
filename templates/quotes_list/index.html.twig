@@ -23,7 +23,7 @@
                     <tbody>
                     {% for quote in quotes %}
                         <tr>
-                            <td>{{ quote.time ? quote.time|date('d-m-Y H:i:s') : '' }}</td>
+                            <td>{{ quote.time ? quote.time|date('Y-m-d H:i:s') : '' }}</td>
 
                             <td>{{ quote.client.name }} </td>
                             <td>${{ quote.total }} MXN</td>

@@ -35,6 +35,18 @@ class SaleRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findRecentByCompany($companyId)
+    {
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->setParameter('val', $companyId)
+            ->orderBy('sale.id', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 
     public function findByCompanyID($companyId,$id)
     {
@@ -48,6 +60,8 @@ class SaleRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
             ;
     }
+
+    
 
     public function findAllByCompanyColumn($companyId,$parameter)
     {

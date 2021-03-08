@@ -145,6 +145,7 @@ class QuoteController extends AbstractController
             $discounts = $request->request->get('discountId');
             $reason = $request->request->get('reason');
             $discountAmount = $request->request->get('discount');
+            $SKUs = $request->request->get('sku');
 
         }
         else {
@@ -179,8 +180,10 @@ class QuoteController extends AbstractController
         }
         
         $time = new \DateTime();
+        $expiration = new \DateTime();
+
         $quote->setTime($time);
-        $quote->setExpirationdate($time->modify('+1 month'));
+        $quote->setExpirationdate($expiration->modify('+1 month'));
 
         $quote->setUser($this->security->getUser());
         $quote->setCompany($this->security->getUser()->getCompany());
@@ -197,6 +200,8 @@ class QuoteController extends AbstractController
                 $tempProduct = new Product();
                 $tempProduct->setName($productName[$count]);
                 $tempProduct->setPrice($price[$count]/$quantity[$count]);
+                $tempProduct->setSKU($SKUs[$count]);
+
                 $tempProduct->setCompany($this->security->getUser()->getCompany());
                 $tempProduct->setIsTaxable(true);
 
