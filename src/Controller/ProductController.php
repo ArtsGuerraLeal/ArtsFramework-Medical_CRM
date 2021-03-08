@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +40,14 @@ class ProductController extends AbstractController
      */
     private $productStockRepository;
 
-    public function __construct(ProductStockRepository $productStockRepository, Security $security,SessionInterface $session, ProductSoldRepository $productSoldRepository){
+
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+
+    public function __construct(ProductRepository $productRepository,ProductStockRepository $productStockRepository, Security $security,SessionInterface $session, ProductSoldRepository $productSoldRepository){
       
         $this->security = $security;
         
@@ -48,6 +56,8 @@ class ProductController extends AbstractController
         $this->productSoldRepository = $productSoldRepository;
 
         $this->productStockRepository = $productStockRepository;
+
+        $this->productRepository = $productRepository;
 
     }
 
@@ -58,6 +68,17 @@ class ProductController extends AbstractController
     {
         $user = $this->security->getUser();
         return $this->render('product/index.html.twig', [
+            'products' => $productRepository->findOneByCompany($user->getCompany())
+        ]);
+    }
+
+    /**
+     * @Route("/inventory", name="inventory_adjustment", methods={"GET"})
+     */
+    public function inventoryAdjustment(ProductRepository $productRepository): Response
+    {
+        $user = $this->security->getUser();
+        return $this->render('product/inventory_adjustment.html.twig', [
             'products' => $productRepository->findOneByCompany($user->getCompany())
         ]);
     }
@@ -358,5 +379,74 @@ class ProductController extends AbstractController
         }
 
         return $this->redirectToRoute('product_index');
+    }
+
+
+    /**
+     * @Route("/adjust", name="adjust_inventory_post", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function adjustInventory(Request $request):JsonResponse
+    {
+        $user = $this->security->getUser();
+
+        if ($request->getMethod() == 'POST')
+        {
+            $productIDs = $request->request->get('productIDs');
+            $quantities = $request->request->get('newInventory');
+           
+
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $count = 0;
+
+        foreach ($productIDs as $productId){
+            $product = $this->productRepository->findOneBy(['id'=>$productId]);
+            if($quantities[$count] != $product->getQuantity()){
+                $quantity = $product->getQuantity();
+                $product->setQuantity($quantities[$count]);
+
+                
+                $newQuantity = $quantities[$count];
+
+                $stock = new ProductStock();
+                $stock->setCompany($user->getCompany());
+
+                if($quantity < $newQuantity){
+                    $stock->setAmount($newQuantity - $quantity);
+
+                }else{
+                    $stock->setAmount(($quantity - $newQuantity)/-1);
+                }
+                $stock->setProduct($product);
+                $stock->setTime(new \DateTime());
+
+                $em->persist($stock);
+                $em->persist($product);
+                
+            }
+
+            $count++;
+
+        }
+        
+        $em->flush();
+
+
+        $response = '1';
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
     }
 }

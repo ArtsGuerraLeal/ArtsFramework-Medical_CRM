@@ -9,9 +9,18 @@
 
 {% block body %}
 <div class="card">
-    <div class="card-header"><i class="fas fa-table"></i>Catalogo</div>
+
+<div class="card-header"><i class="fas fa-table"></i>Catalogo</div>
+    
         <div class="card-body">
+        
            <table class="table table-bordered table-striped " id="zero_config" >
+           <div class="btn btn-primary my-2">
+    <a class="text-white " href="{{ path('product_new') }}">Nuevo Producto</a>
+    </div>
+    <div class="btn btn-primary my-2 mx-2">
+    <a class="text-white " href="{{ path('inventory_adjustment') }}">Ajuste de Inventario</a>
+    </div>
         <thead>
         <tr>
                 <th style="width:10%" >Imagen</th>
@@ -70,9 +79,7 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="btn btn-primary ">
-    <a class="text-white" href="{{ path('product_new') }}">Nuevo Producto</a>
-</div>
+    
 
 {% endblock %}
 

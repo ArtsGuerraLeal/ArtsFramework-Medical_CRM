@@ -1,0 +1,237 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Catalogo de Productos{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
+
+{% block body %}
+<div class="card">
+
+<div class="card-header"><i class="fas fa-table"></i>Inventario</div>
+    
+        <div class="card-body">
+           <table class="table table-bordered table-striped " id="inventoryTable" >
+           
+        <thead>
+        <tr>
+                
+                <th style="width:10%" >Nombre</th>
+                <th style="width:10%" >Existencia en Sistema</th>
+                <th style="width:10%" >Existencia Actual</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+        
+            {% if product.quantity != "" %}
+                <tr id="{{product.id}}">
+                <td>{{ product.name }}</td>
+                <td>{{ product.quantity }}</td>
+                <td><input type="number" id="actual_inventory" value="{{ product.quantity }}"></td>
+               
+            </tr>
+           
+
+            {% endif %}
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button class="myBtn btn btn-primary mr-1 myBtn" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" onclick="checkInventory()">Guardar</button>
+<!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Revisar Inventario</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+            
+            <table class="table table-bordered" id="inventoryTableModal" >
+           
+        <thead>
+        <tr>
+                
+                <th style="width:10%" >Nombre</th>
+                <th style="width:10%" >Existencia Anterior</th>
+                <th style="width:10%" >Existencia Nueva</th>
+                <th style="width:10%" >Cambio</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+        
+            {% if product.quantity != "" %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td id="old_inventory">{{ product.quantity }}</td>
+                <td id="new_inventory"></td>
+                <td id="inventory_change" class="text-white bg-warning"></td>
+            </tr>
+            {% endif %}
+
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success finishInventory" onclick="sumbitInventory()">Terminar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{% endblock %}
+
+
+
+{% block pagejs %}
+    <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+          var inventory = [];
+          var productIDs = [];
+          function checkInventory() {
+            inventory = [];
+            productIDs = [];
+            var row_count = $('#inventoryTable tr').length;
+            
+            
+            
+            $('#inventoryTable tr').each(function(index, tr) {
+
+                if(index > 0) {
+                    
+                        var row = $(tr).closest('tr');
+                        var actualQuantity = row.find('#actual_inventory').val();
+                 //     if(actualQuantity !== undefined){
+
+                        inventory.push(actualQuantity);
+                        productIDs.push(tr.id)
+                //      }
+                      
+                        
+                    
+                }
+
+            });
+
+            $('#inventoryTableModal tr').each(function(index, tr) {
+
+                if(index > 0) {
+                    
+                    var row = $(tr).closest('tr');
+                    var oldQuantity = row.find('#old_inventory');
+                    var newQuantity = row.find('#new_inventory');
+                    var changedQuantity = row.find('#inventory_change');
+
+                    newQuantity.html(inventory[index-1]);
+                    changedQuantity.html( parseInt(inventory[index-1]) - parseInt(oldQuantity.html()));
+
+                    if( parseInt(inventory[index-1]) - parseInt(oldQuantity.html()) < 0){
+                    changedQuantity.removeClass("bg-success");
+                    changedQuantity.removeClass("bg-warning");
+                    changedQuantity.addClass("bg-danger");
+
+                    
+
+
+                    }else if( parseInt(inventory[index-1]) - parseInt(oldQuantity.html()) > 0){
+                    changedQuantity.removeClass("bg-danger");
+                    changedQuantity.removeClass("bg-warning");
+                    changedQuantity.addClass("bg-success");
+
+                    }
+                }
+
+            });
+
+  /*
+                $.ajax({
+                    url:"{{ path('create_quote') }}",
+                    type: "POST",
+                    data:{
+                        products:product_ids,
+                        quantity:quantities,
+                        total:total,
+                        subtotal:subtotal,
+                        tax:tax,
+                        client:client_name,
+                        price:prices,
+                        discountId:discount_product_ids,
+                        reason:reasons,
+                        discount:discounts,
+                        name:productNames,
+                        sku:productSKU
+
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                        saleID = php_result.toString();
+
+                          setTimeout(function(){
+                   //     window.open("/quote/"+saleID.toString()+"/reciept", '_blank');
+                        window.location.replace("/quote");
+                    }, 1050);
+
+
+                    }
+
+                });
+                
+
+            
+            */
+
+        }
+
+        function sumbitInventory() {
+            console.log(inventory);
+
+            console.log(productIDs);
+                $.ajax({
+                    url:"{{path('adjust_inventory_post')}}",
+                    type: "POST",
+                    data:{
+                        newInventory:inventory,
+                        productIDs:productIDs
+                    },
+                    success:function (php_result) {
+                          setTimeout(function(){
+                   //     window.open("/quote/"+saleID.toString()+"/reciept", '_blank');
+                        window.location.replace("/product");
+                    }, 1050);
+
+
+                    }
+
+                });
+                
+
+            
+            
+
+        }
+
+    
+        
+    </script>
+{% endblock %}
+
