@@ -655,7 +655,7 @@ class SaleController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
 
-        $sale = new Sale();
+        $sale = $this->saleRepository->findOneBy(['id'=>$saleId]);
 
         $sale->setTotal($total);
         $sale->setSubtotal($subtotal);
@@ -694,8 +694,7 @@ class SaleController extends AbstractController
         }
         $sale->setCompany($this->security->getUser()->getCompany());
 
-        $em->persist($sale);
-        $em->flush();
+        
 
         $productsSold = $this->productSoldRepository->findBy(['sale'=>$saleId]);
         $discountsGet = $this->productSoldDiscountRepository->findBy(['sale'=>$saleId]);
@@ -715,6 +714,10 @@ class SaleController extends AbstractController
             $em->remove($productSold);
             $em->flush();
         }
+    
+
+        $em->persist($sale);
+        $em->flush();
 
         $count = 0;
 
