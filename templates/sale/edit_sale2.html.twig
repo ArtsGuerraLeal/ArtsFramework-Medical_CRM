@@ -992,6 +992,8 @@
                     }
                 })
                 var price = parseFloat(row.children[2].innerText);
+                var quantity = parseInt(row.children[1].innerText);
+
                 var prodTaxable = $("img[data-id='" + prodID +"']").attr('data-taxable');
                 var total = document.querySelector('#total');
                 var subtotal = document.querySelector('#subtotal');
@@ -1010,8 +1012,16 @@
                         row.children[2].innerText = parseFloat(price - discount).toFixed(2);
 
                         if(prodTaxable ==="1"){
+                            var pricePerProduct = price/quantity;
+                            var oldTax = parseFloat((price/1.16) * 0.16).toFixed(3);
+                            var newTax = parseFloat((row.children[2].innerText/1.16) * 0.16).toFixed(3);
+
                             var taxPerProduct = parseFloat(((price-discount)/1.16) * 0.16).toFixed(3);
-                            tax.innerText = (parseFloat(tax.innerText) - (parseFloat(tax.innerText) - taxPerProduct)).toFixed(3);
+                            tax.innerText = parseFloat(tax.innerText) - parseFloat(oldTax);
+                            tax.innerText = parseFloat(tax.innerText) + parseFloat(newTax);
+                            tax.innerText = parseFloat(tax.innerText).toFixed(3);
+
+                           // tax.innerText = (parseFloat(tax.innerText) - (parseFloat(tax.innerText) - taxPerProduct)).toFixed(3);
                             total.innerText = (parseFloat(total.innerText) - discount).toFixed(3);
                             subtotal.innerText = (parseFloat(subtotal.innerText) - (discount/1.16)).toFixed(3);
                         }else{
@@ -1034,8 +1044,13 @@
                         row.children[2].innerText = parseFloat(price - discount).toFixed(2);
 
                         if(prodTaxable ==="1"){
+                            var oldTax = parseFloat((price/1.16) * 0.16).toFixed(3);
+                            var newTax = parseFloat((row.children[2].innerText/1.16) * 0.16).toFixed(3);
+
                             var taxPerProduct = parseFloat(((price-discount)/1.16) * 0.16).toFixed(3);
-                            tax.innerText = (parseFloat(tax.innerText) - (parseFloat(tax.innerText) - taxPerProduct)).toFixed(3);
+                            tax.innerText = parseFloat(tax.innerText) - parseFloat(oldTax);
+                            tax.innerText = parseFloat(tax.innerText) + parseFloat(newTax);
+                            tax.innerText = parseFloat(tax.innerText).toFixed(3);
                             total.innerText = (parseFloat(total.innerText) - discount).toFixed(3);
                             subtotal.innerText = (parseFloat(subtotal.innerText) - (discount/1.16)).toFixed(3);
                         }else{
