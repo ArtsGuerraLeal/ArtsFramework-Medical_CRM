@@ -121,7 +121,6 @@
                 <h3>Carrito</h3>
                 
                 <div id="dragable_product_order">
-                
                 </div>
                 
                     <table id="cart" class="cart-table table table-bordered table-striped table-sm" style="overflow-y:scroll;height:330px;display:block;" >
@@ -130,12 +129,12 @@
                         <div class="row">
                             <div class="col-sm-3 pr-0">
                                 <div class="form-group">
-                                    <input type="text" id="client_code" class="form-control " placeholder="Codigo" onkeyup="showResultCode(this.value)">
+                                    <input type="text" id="client_code" class="form-control " placeholder="Codigo" value="{{ sale.clientid.code }}" onkeyup="showResultCode(this.value)">
                                 </div>
-                            </div>
+                            </div>                
                             <div class="col-sm-9 pl-0">
                                 <div class="form-group">
-                                    <input type="text" id="client_name" class="form-control" placeholder="Nombre" onkeyup="showResultClient(this.value)">
+                                    <input type="text" id="client_name" class="form-control" placeholder="Nombre"  value="{{ sale.clientid.name }}" onkeyup="showResultClient(this.value)">
                                 </div>
                             </div>
                         </div>
