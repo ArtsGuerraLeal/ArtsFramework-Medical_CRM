@@ -85,6 +85,7 @@ class SaleRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('sale')
             ->andWhere('sale.company = :val')
             ->andWhere('sale.time BETWEEN :from AND :to')
+            ->andWhere('sale.isPaid = 1')
             ->setParameter('val', $companyId)
             ->setParameter('from', $from )
             ->setParameter('to', $to)
@@ -123,6 +124,19 @@ class SaleRepository extends ServiceEntityRepository
             ->setParameter('val', $companyId)
             ->setParameter('from', $from )
             ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findAllByCompanyToday($companyId)
+    {
+
+        
+        return $this->createQueryBuilder('sale')
+            ->andWhere('sale.company = :val')
+            ->andWhere('cast(sale.time as Date) = cast(getdate() as Date)')
+            ->setParameter('val', $companyId)
             ->getQuery()
             ->getResult()
             ;

@@ -1,0 +1,160 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Ventas con Descuento{% endblock %}
+
+{% block breadcrumb %}
+   
+
+{% endblock %}
+
+{% block body %}
+
+{% set total = 0 %}
+{% set consultation = 0 %}
+
+{% set cash = 0 %}
+{% set debit = 0 %}
+{% set credit = 0 %}
+{% set cheque = 0 %}
+{% set transfer = 0 %}
+{% set clip = 0 %}
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Ventas</div>
+        <div class="card-body">
+           <table class="table table-bordered table-striped order_table" id="zero_config" >
+                    <thead>
+                    <tr>
+                        <th style="width:10%" >ID</th>
+                        <th style="width:10%" >Cliente</th>
+
+                        <th style="width:10%" >Total</th>
+                        <th style="width:10%" >Pagos</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                    {% for sale in sales %}
+                        {% set total = total + sale.subtotal %}
+                        <tr>
+                            <td>{{ sale.id }}</td>
+                            <td>{{ sale.clientid.code ~ ' ' ~ sale.clientid.name }}</td>
+                            <td>${{ sale.subtotal }} MXN</td>
+                            <td>
+                            {% for payment in sale.payments %}
+                            {{ payment.type.name ~': $'~ payment.amount}} MXN<br>
+
+                            {% if payment.type.id == 1 %}
+                                {% set cash = cash + payment.amount %}
+
+                            {% elseif payment.type.id == 2 %}
+                                {% set debit = debit + payment.amount %}
+                            
+                            {% elseif payment.type.id == 3 %}
+                                {% set credit = credit + payment.amount %}
+
+                            {% elseif payment.type.id == 4 %}
+                                {% set cheque = cheque + payment.amount %}
+
+                            {% elseif payment.type.id == 5 %}
+                                {% set transfer = transfer + payment.amount %}
+
+                            {% elseif payment.type.id == 6 %}
+                                {% set clip = clip + payment.amount %}
+
+                            {% else %}
+
+
+                            {% endif %}
+
+                            {% endfor %}
+                            {% for discount in sale.productSoldDiscounts %}
+                            {% if discount.discount.id == 78 %}
+                            {{ discount.discount.name ~': $'~ discount.discount.amount }} MXN<br>
+                            {% set consultation = consultation + discount.discount.amount %}
+
+                            {% endif %}
+                            {% endfor %}
+                            </td>
+
+
+                            
+
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>Total: $ {{ total }} MXN </td>
+                            <td></td>
+                        </tr>
+                        
+                        
+                        
+                    </tfoot>
+                </table>
+
+                <table class="table table-bordered table-striped my-5" >
+                    <thead>
+                    <tr>
+                        <th style="width:10%" >Efectivo</th>
+                        <th style="width:10%" >Debito</th>
+                        <th style="width:10%" >Credito</th>
+                        <th style="width:10%" >Transfer</th>
+                        <th style="width:10%" >Cheque</th>
+                        <th style="width:10%" >Clip</th>
+                        <th style="width:10%" >Consultas</th>
+                        <th style="width:10%" >Total</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>$ {{ cash }} MXN </td>
+                            <td>$ {{ debit }} MXN </td>
+                            <td>$ {{ credit }} MXN </td>
+                            <td>$ {{ transfer }} MXN </td>
+                            <td>$ {{ cheque }} MXN </td>
+                            <td>$ {{ clip }} MXN </td>
+                            <td>$ {{ consultation }} MXN </td>
+                            <td>$ {{ total }} MXN </td>
+
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+           
+        </div>
+    </div>
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.js') }}"></script>
+
+
+{% endblock %}
+
+{% block pagejs %}
+
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script>
+
+        $('#zero_config').DataTable({
+            "order": [
+                [0, "desc"]
+            ]
+        });
+    
+    </script>
+    {% endblock %}
+

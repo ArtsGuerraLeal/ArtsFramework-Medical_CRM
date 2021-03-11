@@ -57,6 +57,21 @@ class SalesListController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/daily", name="sales_daily_list")
+     * @param SaleRepository $saleRepository
+     * @return Response
+     */
+    public function DailySales(SaleRepository $saleRepository)
+    {
+        $user = $this->security->getUser();
+        $date = new \DateTime();
+
+        return $this->render('sales_list/daily.html.twig', [
+            'sales' => $saleRepository->findAllByCompanyDate($user->getCompany(),$date),
+        ]);
+    }
+
 
     /**
      * @Route("/{id}", name="sales_list_show", methods={"GET"})
