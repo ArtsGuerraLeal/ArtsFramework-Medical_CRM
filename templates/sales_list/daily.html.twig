@@ -77,7 +77,7 @@
 
                             {% endfor %}
                             {% for discount in sale.productSoldDiscounts %}
-                            {% if discount.discount.id == 78 %}
+                            {% if discount.discount.id == 2402 %}
                             {{ discount.discount.name ~': $'~ discount.discount.amount }} MXN<br>
                             {% set consultation = consultation + discount.discount.amount %}
 
