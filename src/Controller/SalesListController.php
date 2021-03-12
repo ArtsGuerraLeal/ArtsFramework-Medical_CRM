@@ -66,6 +66,13 @@ class SalesListController extends AbstractController
     {
         $user = $this->security->getUser();
         $date = new \DateTime();
+   
+        if(isset($_GET['ReportDate'])){
+
+            $reportDate = $_GET['ReportDate'];
+            $date = new \DateTime($reportDate);
+        }
+
 
         return $this->render('sales_list/daily.html.twig', [
             'sales' => $saleRepository->findAllByCompanyDate($user->getCompany(),$date),

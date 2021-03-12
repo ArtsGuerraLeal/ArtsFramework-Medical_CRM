@@ -98,6 +98,11 @@ class Sale
      */
     private $productSoldDiscounts;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $consecutive;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -393,6 +398,18 @@ class Sale
                 $productSoldDiscount->setSale(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getConsecutive(): ?int
+    {
+        return $this->consecutive;
+    }
+
+    public function setConsecutive(int $consecutive): self
+    {
+        $this->consecutive = $consecutive;
 
         return $this;
     }

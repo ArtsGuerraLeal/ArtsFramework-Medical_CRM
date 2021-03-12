@@ -22,6 +22,11 @@
 <div class="card">
     <div class="card-header"><i class="fas fa-table"></i>Ventas</div>
         <div class="card-body">
+        <div class="input-group my-1">
+        <p class="my-2 mx-2">Fecha:</p>
+        <input type="date" id="report_date" onchange="SetReportDate(event);">
+        <a class="btn btn-primary text-white" onclick="SetReportToday();">Hoy</a>
+        </div>
            <table class="table table-bordered table-striped order_table" id="zero_config" >
                     <thead>
                     <tr>
@@ -147,7 +152,15 @@
 {% block pagejs %}
 
     <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script>
+    <script type="text/javascript">
+
+        function SetReportDate(e){
+        window.location.replace("daily?ReportDate="+e.target.value);
+        }
+
+        function SetReportToday(){
+        window.location.replace("daily");
+        }
 
         $('#zero_config').DataTable({
             "order": [
