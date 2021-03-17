@@ -15,8 +15,10 @@
             }
         }
         #invoice-POS {
+            box-shadow: 0 0 0.7in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
             margin: 0 auto;
-            width: 80mm;
+            width: 53mm;
             background: #FFF;
         }
         #invoice-POS ::selection {
@@ -78,7 +80,6 @@
             border-radius: 50px;
         }
         #invoice-POS .info {
-            font-size: 1.2em;
             display: block;
             margin-left: 0;
             text-align:center ;
@@ -95,18 +96,18 @@
             border-collapse: collapse;
         }
         #invoice-POS .tabletitle {
-            font-size: 1em;
+            font-size: .7em;
             background-color: #D5D5D5;
         }
 
         #invoice-POS .paymentmethod {
-            font-size: 1em;
+            font-size: .7em;
             text-align: left;
 
         }
 
         #invoice-POS .tabletotal {
-            font-size: 1em;
+            font-size: .8em;
             line-height: 0.9em;
         }
 
@@ -122,7 +123,7 @@
             width: 24mm;
         }
         #invoice-POS .itemtext {
-            font-size: 1em;
+            font-size: .7em;
         }
 
         #invoice-POS .discounttext {
@@ -212,7 +213,7 @@
     </div><!--End Invoice Mid-->
 
     <div id="bot">
-        <h5>Cliente: {{ sale.client }}</h5>
+        <p>Cliente: {{ sale.client }}</p>
 
         <div id="table">
             <table>

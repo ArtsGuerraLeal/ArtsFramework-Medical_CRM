@@ -207,16 +207,19 @@
                         <!-- ============================================================== -->
                         <!-- Search -->
                         <!-- ============================================================== -->
-                        <li class="nav-item d-none d-md-block">
-                            <a class="nav-link" href="javascript:void(0)">
-                                <form>
-                                    <div class="customize-input">
-                                        <input class="form-control custom-shadow custom-radius border-0 bg-white"
-                                            type="search" placeholder="Search" aria-label="Search">
-                                        <i class="form-control-icon" data-feather="search"></i>
-                                    </div>
-                                </form>
+                       
+                       <li class="nav-item dropdown ">
+                            <a class="nav-link text-dark" href="javascript:void(0)" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                {{app.user.company}}
                             </a>
+                            <div class="dropdown-menu dropdown-menu-right user-dd animated flipInY">
+                                
+                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="credit-card"
+                                        class="svg-icon mr-2 ml-1"></i>
+                                    Switch</a>
+                            </div>
+                            
                         </li>
                         <!-- ============================================================== -->
                         <!-- User profile and search -->

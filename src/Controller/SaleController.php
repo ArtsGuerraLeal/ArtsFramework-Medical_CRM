@@ -223,12 +223,28 @@ class SaleController extends AbstractController
         {
             $this->container->get('profiler')->disable();
         }
-        return $this->render('reciept/reciept.html.twig', [
-            'sale' => $sale,
-            'products' => $sale->getProducts(),
-            'payments'=>$sale->getPayments(),
-            'discounts'=>$sale->getProductSoldDiscounts()
-        ]);
+
+        if($user->getCompany()->getId() == 6){
+            return $this->render('reciept/reciept.html.twig', [
+                'sale' => $sale,
+                'products' => $sale->getProducts(),
+                'payments'=>$sale->getPayments(),
+                'discounts'=>$sale->getProductSoldDiscounts()
+            ]);
+
+        }else{
+            return $this->render('reciept/reciept_old.html.twig', [
+                'sale' => $sale,
+                'products' => $sale->getProducts(),
+                'payments'=>$sale->getPayments(),
+                'discounts'=>$sale->getProductSoldDiscounts()
+            ]);
+
+        }
+
+        
+
+        
 
     }
 

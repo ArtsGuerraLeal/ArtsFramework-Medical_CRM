@@ -139,7 +139,7 @@
                             <input type="text" id="client_name" class="form-control" placeholder="Nombre" onkeyup="showResult(this.value)">
                     
                             <div class="input-group-append">
-                                <button class="myBtn btn btn-primary mr-1 " id="myBtn" type="button" data-toggle="modal" data-target="#myModal2">Editar</button>
+                                <button class="editClient btn btn-primary mr-1 " id="editClient" type="button" data-toggle="modal" data-target="#myModal2">Editar</button>
                             </div>
                             
                         </div>
@@ -212,33 +212,36 @@
             </div>
             <div class="modal-body">
             <h4 class="card-title">Nombre</h4>
-            <input id="clientName" class="clientName form-control rounded my-1" type="text" placeholder="Nombre">
+                <input id="clientName" class="clientName form-control rounded my-1" type="text" placeholder="Nombre">
             <h4 class="card-title">Correo</h4>
-            <input id="clientEmail" class="clientEmail form-control rounded my-1" type="text" placeholder="Correo">
+                <input id="clientEmail" class="clientEmail form-control rounded my-1" type="text" placeholder="Correo">
             <h4 class="card-title">Telefono</h4>
-            <input id="clientTelephone" class="clientTelephone form-control rounded my-1" type="text" placeholder="Telefono">
+                <input id="clientPhone" class="clientPhone form-control rounded my-1" type="text" placeholder="Telefono">
             <h4 class="card-title">Celular</h4>
-            <input id="clientCellphone" class="clientCellphone form-control rounded my-1" type="text" placeholder="Celular">
+                <input id="clientCellphone" class="clientCellphone form-control rounded my-1" type="text" placeholder="Celular">
             <h4 class="card-title">Compañia</h4>
-            <input id="clientBusiness" class="clientBusiness form-control rounded my-1" type="text" placeholder="Compañia">
+                <input id="clientBusiness" class="clientBusiness form-control rounded my-1" type="text" placeholder="Compañia">
             <h4 class="card-title">RFC</h4>
-            <input id="clientTaxID" class="clientTaxID form-control rounded my-1" type="text" placeholder="RFC">
+                <input id="clientTaxID" class="clientTaxID form-control rounded my-1" type="text" placeholder="RFC">
             <h4 class="card-title">Direccion</h4>
-            <input id="clientLine1" class="clientLine1 form-control rounded my-1" type="text" placeholder="Direccion">
+                <input id="clientLine1" class="clientLine1 form-control rounded my-1" type="text" placeholder="Direccion">
             <h4 class="card-title">Colonia</h4>
-            <input id="clientLine2" class="clientLine2 form-control rounded my-1" type="text" placeholder="Colonia">
+                <input id="clientLine2" class="clientLine2 form-control rounded my-1" type="text" placeholder="Colonia">
             <h4 class="card-title">Ciudad</h4>
-            <input id="clientCity" class="clientCity form-control rounded my-1" type="text" placeholder="Ciudad">
+                <input id="clientCity" class="clientCity form-control rounded my-1" type="text" placeholder="Ciudad">
             <h4 class="card-title">Estado</h4>
-            <input id="clientState" class="clientState form-control rounded my-1" type="text" placeholder="Estado">
+                <input id="clientState" class="clientState form-control rounded my-1" type="text" placeholder="Estado">
             <h4 class="card-title">Codigo Postal</h4>
-            <input id="clientPC" class="clientPC form-control rounded my-1" type="text" placeholder="C.P">
+                <input id="clientPC" class="clientPC form-control rounded my-1" type="text" placeholder="C.P">
             <h4 class="card-title">Pais</h4>
-            <input id="clientCountry" class="clientCountry form-control rounded my-1" type="text" placeholder="Pais">
+                <input id="clientCountry" class="clientCountry form-control rounded my-1" type="text" placeholder="Pais">
             <h4 class="card-title">Tipo</h4>
-            <input id="clientType" class="clientType form-control rounded my-1" type="text" placeholder="Tipo">
+                <input id="clientType" class="clientType form-control rounded my-1" type="text" placeholder="Tipo">
+            <h4 class="card-title">Nota</h4>
+                <input id="clientNote" class="clientNote form-control rounded my-1" type="text" placeholder="Nota">
+            
             <h4 class="card-title">Codigo</h4>
-            <input id="clientCode" class="clientCode form-control rounded my-1" type="text" placeholder="Codigo">
+                <input id="clientCode" class="clientCode form-control rounded my-1" type="text" placeholder="Codigo">
                     
                      
             </div>
@@ -700,6 +703,72 @@
                 }
 
 
+            });
+
+            $(document).on('click', '.editClient', function(){
+                var name = $('#client_name').val();
+                console.log(name);
+                $.ajax({
+                    url:"{{ path('fetch_client') }}",
+                    type: "POST",
+                    dataType: "text",
+                    data:{
+                        name:name
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var obj = jQuery.parseJSON(php_result);
+                            console.log(obj);
+                            $('#clientName').val(obj.name);
+                            $('#clientEmail').val(obj.email);
+                            $('#clientPhone').val(obj.phone);
+                            $('#clientCellphone').val(obj.cellphone);
+                            $('#clientBusiness').val(obj.business);
+                            $('#clientTaxID').val(obj.taxid);
+                            $('#clientLine1').val(obj.line1);
+                            $('#clientLine2').val(obj.line2);
+                            $('#clientCity').val(obj.city);
+                            $('#clientState').val(obj.state);
+                            $('#clientCountry').val(obj.country);
+                            $('#clientPC').val(obj.postalcode);
+                            $('#clientType').val(obj.type);
+                            $('#clientCode').val(obj.code);
+                            $('#clientNote').val(obj.note);
+
+                        }else{
+                          
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.clientSave', function(){
+
+                $.ajax({
+                    url:"{{ path('save_client') }}",
+                    type: "POST",
+                    dataType: "text",
+                    data:{
+                        name:$('#clientName').val(),
+                        email:$('#clientEmail').val(),
+                        phone:$('#clientPhone').val(),
+                        cellphone:$('#clientCellphone').val(),
+                        business:$('#clientBusiness').val(),
+                        taxID:$('#clientTaxID').val(),
+                        line1:$('#clientLine1').val(),
+                        line2:$('#clientLine2').val(),
+                        city:$('#clientCity').val(),
+                        state:$('#clientState').val(),
+                        country:$('#clientCountry').val(),
+                        postalcode:$('#clientPC').val(),
+                        type:$('#clientType').val(),
+                        code:$('#clientCode').val(),
+                        note:$('#clientNote').val(),
+                    },
+                    success:function (php_result) {
+                       
+                    }
+                });
             });
 
             $(document).on('click', '.myBtn2', function(){

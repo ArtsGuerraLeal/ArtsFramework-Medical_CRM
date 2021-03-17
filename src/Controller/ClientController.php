@@ -200,6 +200,124 @@ class ClientController extends AbstractController
     }
 
     /**
+     * @Route("/fetchclient", name="fetch_client", methods={"POST"})
+     * @param Request $request
+     * @param ClientRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function fetchClient(Request $request, ClientRepository $repository):JsonResponse
+    {
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $client = $request->request->get('name');
+        }
+        else {
+            die();
+       }
+
+        $results = $this->clientRepository->searchOneByName($client,$this->security->getUser()->getCompany());
+        
+        if($results != null){
+            $response = '{"name":"'.$results->getName().
+                '","email":"'.$results->getEmail().
+                '","phone":"'.$results->getPhone().
+                '","cellphone":"'.$results->getCellphone().
+                '","business":"'.$results->getBusiness().
+                '","taxid":"'.$results->getTaxID().
+                '","note":"'.$results->getNote().
+                '","line1":"'.$results->getLine1().
+                '","line2":"'.$results->getLine2().
+                '","city":"'.$results->getCity().
+                '","state":"'.$results->getState().
+                '","postalcode":"'.$results->getPostalcode().
+                '","country":"'.$results->getCountry().
+                '","type":"'.$results->getType().
+                '","code":"'.$results->getCode().'"}';
+
+        }else{
+            $response = 1;
+        }
+
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/saveclient", name="save_client", methods={"POST"})
+     * @param Request $request
+     * @param ClientRepository $repository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function saveClient(Request $request, ClientRepository $repository):JsonResponse
+    {
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $name = $request->request->get('name');
+            $email = $request->request->get('email');
+            $phone = $request->request->get('phone');
+            $cellphone = $request->request->get('cellphone');
+            $business = $request->request->get('business');
+            $taxID = $request->request->get('taxID');
+            $line1 = $request->request->get('line1');
+            $line2 = $request->request->get('line2');
+            $city = $request->request->get('city');
+            $state = $request->request->get('state');
+            $postalcode = $request->request->get('postalcode');
+            $country = $request->request->get('country');
+            $type = $request->request->get('type');
+            $note = $request->request->get('note');
+            $code = $request->request->get('code');
+
+        }
+        else {
+            die();
+       }
+
+        $client = $this->clientRepository->searchOneByName($name,$this->security->getUser()->getCompany());
+        
+        $em = $this->getDoctrine()->getManager();
+
+        $client->setName($name);
+        $client->setEmail($email);
+        $client->setPhone($phone);
+        $client->setCellphone($cellphone);
+        $client->setBusiness($business);
+        $client->setTaxID($taxID);
+        $client->setLine1($line1);
+        $client->setLine2($line2);
+        $client->setCity($city);
+        $client->setState($state);
+        $client->setCountry($country);
+        $client->setPostalcode($postalcode);
+        $client->setType($type);
+        $client->setNote($note);
+        $client->setCode($code);
+
+        $em->persist($client);
+        $em->flush();
+
+        $response = 1;
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
      * @Route("/fetchclientscode", name="fetch_clients_code", methods={"POST"})
      * @param Request $request
      * @param ClientRepository $repository
