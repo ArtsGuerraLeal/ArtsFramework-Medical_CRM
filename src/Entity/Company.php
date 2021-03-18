@@ -243,6 +243,11 @@ class Company
      */
     private $logotype;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductQuoteDiscount::class, mappedBy="company")
+     */
+    private $productQuoteDiscounts;
+
 
 
     public function __construct()
@@ -272,6 +277,7 @@ class Company
         $this->productOrdereds = new ArrayCollection();
         $this->productSoldDiscounts = new ArrayCollection();
         $this->productStocks = new ArrayCollection();
+        $this->productQuoteDiscounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -1290,6 +1296,36 @@ class Company
     public function setLogotype(?int $logotype): self
     {
         $this->logotype = $logotype;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductQuoteDiscount[]
+     */
+    public function getProductQuoteDiscounts(): Collection
+    {
+        return $this->productQuoteDiscounts;
+    }
+
+    public function addProductQuoteDiscount(ProductQuoteDiscount $productQuoteDiscount): self
+    {
+        if (!$this->productQuoteDiscounts->contains($productQuoteDiscount)) {
+            $this->productQuoteDiscounts[] = $productQuoteDiscount;
+            $productQuoteDiscount->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductQuoteDiscount(ProductQuoteDiscount $productQuoteDiscount): self
+    {
+        if ($this->productQuoteDiscounts->removeElement($productQuoteDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productQuoteDiscount->getCompany() === $this) {
+                $productQuoteDiscount->setCompany(null);
+            }
+        }
 
         return $this;
     }

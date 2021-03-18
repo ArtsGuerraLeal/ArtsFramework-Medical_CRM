@@ -80,10 +80,16 @@ class Quote
      */
     private $expirationdate;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductQuoteDiscount::class, mappedBy="quote")
+     */
+    private $productQuoteDiscounts;
+
     public function __construct()
     {
         $this->productQuotes = new ArrayCollection();
         $this->discounts = new ArrayCollection();
+        $this->productQuoteDiscounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -269,6 +275,36 @@ class Quote
     public function setExpirationdate(?\DateTimeInterface $expirationdate): self
     {
         $this->expirationdate = $expirationdate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductQuoteDiscount[]
+     */
+    public function getProductQuoteDiscounts(): Collection
+    {
+        return $this->productQuoteDiscounts;
+    }
+
+    public function addProductQuoteDiscount(ProductQuoteDiscount $productQuoteDiscount): self
+    {
+        if (!$this->productQuoteDiscounts->contains($productQuoteDiscount)) {
+            $this->productQuoteDiscounts[] = $productQuoteDiscount;
+            $productQuoteDiscount->setQuote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductQuoteDiscount(ProductQuoteDiscount $productQuoteDiscount): self
+    {
+        if ($this->productQuoteDiscounts->removeElement($productQuoteDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productQuoteDiscount->getQuote() === $this) {
+                $productQuoteDiscount->setQuote(null);
+            }
+        }
 
         return $this;
     }

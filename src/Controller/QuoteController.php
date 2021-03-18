@@ -10,6 +10,7 @@ use App\Entity\Discount;
 use App\Entity\ProductQuote;
 use App\Repository\SaleRepository;
 use App\Repository\QuoteRepository;
+use App\Entity\ProductQuoteDiscount;
 use App\Repository\ClientRepository;
 use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
@@ -91,10 +92,30 @@ class QuoteController extends AbstractController
 
         $user = $this->security->getUser();
 
-        return $this->render('quote/index.html.twig', [
+        return $this->render('quote/index_new.html.twig', [
             'products' => $productRepository->findOneByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
-            'categories' => $this->categoryRepository->findByCompany($user->getCompany())
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany()),
+            'discounts' =>  $this->discountRepository->findByCompany($user->getCompany())
+        ]);
+
+    }
+
+    /**
+     * @Route("/new", name="quote_new", methods={"GET"})
+     * @param ProductRepository $productRepository
+     * @return Response
+     */
+    public function newQuote(ProductRepository $productRepository): Response
+    {
+
+        $user = $this->security->getUser();
+
+        return $this->render('quote/index_new.html.twig', [
+            'products' => $productRepository->findOneByCompany($user->getCompany()),
+            'paymentMethods' => $this->paymentMethodRepository->findAll(),
+            'categories' => $this->categoryRepository->findByCompany($user->getCompany()),
+            'discounts' =>  $this->discountRepository->findByCompany($user->getCompany())
         ]);
 
     }
@@ -244,6 +265,160 @@ class QuoteController extends AbstractController
                             $totalDiscount = $totalDiscount + $discountAmount[$discountCount];
                             $em->persist($productDiscount);
                         }
+                        $discountCount++;
+
+                    }
+                    $quote->setDiscount($totalDiscount);
+                }
+                $quote->setDiscount($totalDiscount);
+
+            }
+
+            $em->persist($quote);
+            $em->persist($productQuote);
+
+
+            $count++;
+        }
+        $em->flush();
+
+
+        $response = $quote->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/create2", name="create_quote_2", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function create2(Request $request):JsonResponse
+    {
+        $totalDiscount = 0;
+        if ($request->getMethod() == 'POST')
+        {
+            $total = $request->request->get('total');
+            $subtotal = $request->request->get('subtotal');
+            $tax = $request->request->get('tax');
+            $products = $request->request->get('products');
+            $quantity = $request->request->get('quantity');
+            $clientData = $request->request->get('client');
+            $clientCode = $request->request->get('code');
+
+            $price = $request->request->get('price');
+            $productName = $request->request->get('name');
+            $discounts = $request->request->get('discountId');
+            $reason = $request->request->get('reason');
+            $discountAmount = $request->request->get('discount');
+            $SKUs = $request->request->get('sku');
+            
+            $productDiscounts = $request->request->get('productDiscountId');
+            $discountIds = $request->request->get('discountId');
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $quote = new Quote();
+
+        $quote->setTotal($total);
+        $quote->setSubtotal($subtotal);
+        $quote->setTax($tax);
+
+
+        if($clientData == ""){
+            $client = $this->clientRepository->searchOneByName('Publico En General',$this->security->getUser()->getCompany());
+            $quote->setClient($client);
+        }else{
+            $client = $this->clientRepository->searchOneByName($clientData,$this->security->getUser()->getCompany());
+
+            if($client == null){
+                $client = new Client();
+                $client->setName($clientData);
+                $em->persist($client);
+                $em->flush();
+                $quote->setClient($client);
+            }else{
+                $quote->setClient($client);
+            }
+        }
+        
+        $time = new \DateTime();
+        $expiration = new \DateTime();
+
+        $quote->setTime($time);
+        $quote->setExpirationdate($expiration->modify('+1 month'));
+
+        $quote->setUser($this->security->getUser());
+        $quote->setCompany($this->security->getUser()->getCompany());
+
+        $company = $this->security->getUser()->getCompany();
+        $em->persist($quote);
+        $em->flush();
+
+        $count = 0;
+
+        foreach ($products as $prod ){
+
+            if($prod == -1){
+                $tempProduct = new Product();
+                $tempProduct->setName($productName[$count]);
+                $tempProduct->setPrice($price[$count]/$quantity[$count]);
+                $tempProduct->setSKU($SKUs[$count]);
+
+                $tempProduct->setCompany($this->security->getUser()->getCompany());
+                $tempProduct->setIsTaxable(true);
+
+                $em->persist($tempProduct);
+                $em->flush();
+                $prod = $tempProduct->getId();
+            }
+
+            $product = $this->productRepository->findOneBy(['id'=>$prod]);
+            $productQuote = new ProductQuote();
+
+            $productQuote->setProduct($product);
+            $productQuote->setAmount($quantity[$count]);
+            $productQuote->setQuote($quote);
+            $productQuote->setCompany($company);
+
+
+            if($product->getPrice()==0){
+                $productQuote->setPrice($price[$count]);
+            }else{
+                if($product->getPrice()*$quantity[$count]== $price[$count]){
+                    $productQuote->setPrice($price[$count]);
+                }else{
+                    $productQuote->setPrice($product->getPrice()*$quantity[$count]);
+                    $productQuote->setDiscount(($product->getPrice() * $quantity[$count]) - $price[$count]);
+                    $productQuote->setCompany($company);
+
+                    $discountCount = 0;
+
+                    foreach ($discountIds as $discount){
+
+                        if($productDiscounts[$discountCount] == $prod){
+                            $currentDiscount = $this->discountRepository->findByCompanyID($this->security->getUser()->getCompany(),$discount);
+                            
+                            $productDiscount = new ProductQuoteDiscount();
+                            $productDiscount->setProductQuote($productQuote);
+                            $productDiscount->setDiscount($currentDiscount);
+                            $productDiscount->setQuote($quote);
+                            $productDiscount->setCompany($this->security->getUser()->getCompany());
+    
+                            $totalDiscount = $totalDiscount + $currentDiscount->getAmount();
+    
+                            $em->persist($productDiscount);
+                            }
                         $discountCount++;
 
                     }

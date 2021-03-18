@@ -219,8 +219,8 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
                 <td class="border" style="text-align:center;">{{ product.amount }}</td>
                 <td class="border">{{ product.product.sku }}</td>
                 <td class="border">{{ product.product.name }}</td>
-                <td class="border">$ {{ product.product.price|number_format(2, '.', ',') }}</td>
-                <td class="border">$ {{ (product.amount * product.product.price)|number_format(2, '.', ',')  }}</td>
+                <td class="border">$ {{ (product.product.price - ( product.discount / product.amount) )|number_format(2, '.', ',') }}</td>
+                <td class="border">$ {{ ((product.amount * product.product.price ) - product.discount  )|number_format(2, '.', ',')  }}</td>
             </tr>
             {% endfor %}
         {% if quote.productQuotes.count < 15 %}

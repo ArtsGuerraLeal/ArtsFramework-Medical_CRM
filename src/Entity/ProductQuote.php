@@ -56,9 +56,15 @@ class ProductQuote
      */
     private $discounts;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductQuoteDiscount::class, mappedBy="productquote")
+     */
+    private $productQuoteDiscounts;
+
     public function __construct()
     {
         $this->discounts = new ArrayCollection();
+        $this->productQuoteDiscounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,6 +169,36 @@ class ProductQuote
             // set the owning side to null (unless already changed)
             if ($discount->getProductQuote() === $this) {
                 $discount->setProductQuote(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductQuoteDiscount[]
+     */
+    public function getProductQuoteDiscounts(): Collection
+    {
+        return $this->productQuoteDiscounts;
+    }
+
+    public function addProductQuoteDiscount(ProductQuoteDiscount $productQuoteDiscount): self
+    {
+        if (!$this->productQuoteDiscounts->contains($productQuoteDiscount)) {
+            $this->productQuoteDiscounts[] = $productQuoteDiscount;
+            $productQuoteDiscount->setProductquote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductQuoteDiscount(ProductQuoteDiscount $productQuoteDiscount): self
+    {
+        if ($this->productQuoteDiscounts->removeElement($productQuoteDiscount)) {
+            // set the owning side to null (unless already changed)
+            if ($productQuoteDiscount->getProductquote() === $this) {
+                $productQuoteDiscount->setProductquote(null);
             }
         }
 
