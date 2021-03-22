@@ -4,6 +4,10 @@
 
 {% block body %}
     <h1>Product</h1>
+    {% if sale.isCancelled != 1 %}
+        <a class="btn btn-danger text-white cancel_sale">Canelar Venta</a>
+    {% endif %}
+
 <div class="table-responsive">
     <table class="table table-bordered table-striped " id="dataTable" >
         <tbody>
@@ -44,4 +48,44 @@
 
 
 
+{% endblock %}
+
+{% block pagejs %}
+
+    <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+
+    <script type="text/javascript">
+
+        $('#zero_config').DataTable({
+            "order": [
+                [0, "desc"]
+            ]
+        });
+
+          $(document).on('click', '.cancel_sale', function(){
+
+              if (confirm("Deseas cancelar esta venta? El inventario se ajustara. Presiona OK para continuar")) {
+
+                $.ajax({
+                    url:"{{ path('sale_cancel') }}",
+                    type: "POST",
+                    data:{
+                        saleID:{{ sale.id }}
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                        location.reload();
+
+                    }
+
+                });
+
+                }
+              
+
+            });
+
+        
+    
+    </script>
 {% endblock %}

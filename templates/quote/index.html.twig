@@ -248,7 +248,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-light"
                     data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-success clientSave">Guardar</button>
+                <button type="button" class="btn btn-success clientSave" >Guardar</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -743,6 +743,8 @@
             });
 
             $(document).on('click', '.clientSave', function(){
+                        console.log("clicked");
+
 
                 $.ajax({
                     url:"{{ path('save_client') }}",
@@ -766,9 +768,12 @@
                         note:$('#clientNote').val(),
                     },
                     success:function (php_result) {
-                       
+
                     }
                 });
+
+
+
             });
 
             $(document).on('click', '.myBtn2', function(){

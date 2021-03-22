@@ -676,6 +676,135 @@ class OrderController extends AbstractController
     }
 
     /**
+     * @Route("/pdf/multiple/compose/grouped", name="order_pdf_compose_multiple_grouped", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function ComposeMultiplePdfGrouped(ProviderOrderRepository $providerOrderRepository): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+        $oids = $_GET['oids'];
+
+        
+        $orderArray = explode(",",$oids);
+        $groupedOrderArray = array();
+        $groupedOrderArrayIDs = array();
+        $singleOrderArray = array();
+        $singleOrderArrayIDs = array();
+        $orderIDs = array();
+        $orderClients = array();
+
+        $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+
+        foreach($orders as $order){
+            array_push($orderIDs,$order->getId());
+            array_push($orderClients,$order->getClient());
+            
+        }
+
+        $count = 0;
+
+        foreach($orderClients as $client){
+
+            if(array_count_values($orderClients)[$client] > 1){
+                array_push($groupedOrderArray, $client);
+                array_push($groupedOrderArrayIDs, $orderIDs[$count]);
+                
+            }
+            if(array_count_values($orderClients)[$client] == 1){
+                array_push($singleOrderArray, $client);
+                array_push($singleOrderArrayIDs, $orderIDs[$count]);
+                
+            }
+            $count++;
+                
+        }
+
+      //  var_dump($groupedOrderArray);
+      //  var_dump($groupedOrderArrayIDs);
+      //  var_dump($singleOrderArray);
+      //  var_dump($singleOrderArrayIDs);
+
+
+     
+
+
+       
+        foreach($singleOrderArrayIDs as $id){
+            $this->createSinglePDF($providerOrderRepository,'',$id);
+        }
+
+            $this->createGroupedPDF($providerOrderRepository,'',$groupedOrderArrayIDs);
+
+
+        return $this->render('order/compose_grouped.html.twig', [
+            'oidsArray' => $orderArray,
+            'oids' => $oids,
+            'orders' => $orders
+        ]);
+    }
+
+   
+
+    public function createGroupedPDF($providerOrderRepository,$note, $oids)
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        //Order IDs
+        
+
+        
+            $orderArray = $oids;
+            $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+            $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $orders[0]);
+    
+
+        
+        
+
+        //foreach($orders as $ord){
+        //$order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
+        //}
+
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf();
+        $dompdf->setOptions($pdfOptions);
+        $dompdf->set_base_path("/public/");
+        $base = $this->renderView('base.html.twig');
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('order/purchase_order_multiple.html.twig', [
+            'title' => "Welcome to our PDF Test",
+            'order' => $order,
+            'orders' => $orders,
+            'note' => $note
+        
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        $filename = $user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf";
+        
+        $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
+
+    }
+
+    /**
      * @Route("/pdf/multiple/compose", name="order_pdf_compose_multiple", methods={"GET","POST"})
      * @param Request $request
      * @return Response

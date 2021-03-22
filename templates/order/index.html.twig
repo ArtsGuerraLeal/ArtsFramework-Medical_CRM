@@ -51,6 +51,7 @@
   
             <button class="send-together btn btn-primary" >Enviar Unidas</button>
             <button class="send-separate btn btn-primary" >Enviar Por Separado</button>
+            <button class="send-grouped btn btn-primary" >Enviar Agrupadas por Cliente</button>
 
         </div>                    
 </div>
@@ -110,6 +111,33 @@
 
                 console.log(order_ids.toString());
                 window.location.replace('/order/pdf/multiple/compose/separate?oids='+order_ids.toString());
+
+                              
+            });
+
+            $(document).on('click','.send-grouped', function(){
+
+                var order_ids = [];
+                var row_count = $('.order_table tr').length;
+
+                 $('.order_table tr').each(function(index, tr) {
+
+                    if(index>0) {
+                        if(index < row_count) {
+                            var row = $(tr).closest('tr');
+
+                            var checkbox = row.find('#order_check');
+
+                            if(checkbox.is(":checked")){
+                            order_ids.push(parseInt(checkbox.val()));
+
+                            }
+                      
+                        }
+                    }
+
+                });
+                window.location.replace('/order/pdf/multiple/compose/grouped?oids='+order_ids.toString());
 
                               
             });

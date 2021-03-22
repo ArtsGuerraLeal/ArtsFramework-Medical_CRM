@@ -8,6 +8,7 @@ use App\Entity\Patient;
 use App\Entity\Payment;
 use App\Entity\Discount;
 use App\Entity\ProductSold;
+use App\Entity\ProductStock;
 use App\Entity\PaymentMethod;
 use App\Repository\SaleRepository;
 use App\Repository\UserRepository;
@@ -242,10 +243,6 @@ class SaleController extends AbstractController
 
         }
 
-        
-
-        
-
     }
 
     /**
@@ -264,6 +261,67 @@ class SaleController extends AbstractController
             'paymentMethods' => $this->paymentMethodRepository->findAll(),
             'sale' => $sale
         ]);
+
+    }
+
+    /**
+     * @Route("/cancel", name="sale_cancel", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function CancelSale(Request $request):JsonResponse
+    {
+        $user = $this->security->getUser();
+        if ($request->getMethod() == 'POST')
+        {
+         
+            $saleId = $request->request->get('saleID');
+
+        }
+        else {
+            die();
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sale = $this->saleRepository->findOneBy(['id'=>$saleId]);
+
+        $productsSold = $this->productSoldRepository->findBy(['sale'=>$saleId]);
+      
+        $sale->setIsCancelled(true);
+        foreach ($productsSold as $productSold){
+           $product = $productSold->getProduct();
+           $quantity = $product->getQuantity();
+           $newQuantity = $quantity + $productSold->getAmount();
+           $product->setQuantity($newQuantity);
+           $stock = new ProductStock();
+            $stock->setCompany($user->getCompany());
+
+            if($quantity < $newQuantity){
+                $stock->setAmount($newQuantity - $quantity);
+            }else
+            {
+                $stock->setAmount(($quantity - $newQuantity)/-1);
+            }
+            $stock->setProduct($product);
+            $stock->setTime(new \DateTime());
+
+            $em->persist($stock);
+            $em->persist($product);
+
+        }
+
+        $em->persist($sale);
+        $em->flush();
+
+        $response = $sale->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
 
     }
 

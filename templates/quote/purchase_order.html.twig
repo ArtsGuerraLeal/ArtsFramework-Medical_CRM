@@ -241,6 +241,9 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
     <h3 class="subtotal">
     Subtotal: ${{ quote.subtotal|number_format(2, '.', ',') }}<br>
     IVA: ${{ quote.tax|number_format(2, '.', ',') }}<br>
+    {% if quote.discount > 0 %}
+    Descuento: ${{ quote.discount|number_format(2, '.', ',') }}<br>
+    {% endif %}
     Total: ${{ quote.total|number_format(2, '.', ',') }}<br></h5>
 
 </div>

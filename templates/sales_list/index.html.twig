@@ -30,13 +30,21 @@
                     {% for sale in sales %}
                         <tr>
                             <td>{{ sale.id }}</td>
-
+                        {% if sale.isCancelled != 1 %}
                             {% if sale.isPaid == 1 %}
                             <td style="color: #0ba360">Pagado</td>
                             {% else %}
-                                <td style="color: #a71d2a">No Pagado</td>
+                                <td class="text-warning">No Pagado</td>
 
                             {% endif %}
+
+
+                            {% else %}
+                                <td style="color: #a71d2a">Cancelada</td>
+
+                            {% endif %}
+
+                            
                             <td>{{ sale.client }} </td>
                             <td>${{ sale.total + sale.commission }} MXN</td>
                             <td>${{ sale.commission}} MXN</td>

@@ -103,6 +103,11 @@ class Sale
      */
     private $consecutive;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isCancelled;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -410,6 +415,18 @@ class Sale
     public function setConsecutive(int $consecutive): self
     {
         $this->consecutive = $consecutive;
+
+        return $this;
+    }
+
+    public function getIsCancelled(): ?bool
+    {
+        return $this->isCancelled;
+    }
+
+    public function setIsCancelled(?bool $isCancelled): self
+    {
+        $this->isCancelled = $isCancelled;
 
         return $this;
     }
