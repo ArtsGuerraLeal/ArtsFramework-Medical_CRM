@@ -130,6 +130,9 @@
 </head>
 
 {% block body %}
+
+{% set totalDiscount = 0 %}
+
 <div class="headers">
         <img class="logo" height="60px" width="180px" style="float:left; padding-bottom:30px" src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" alt="">
 
@@ -213,7 +216,8 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
         </tr>
 
            {% for product in quote.productQuotes %}
-           
+           {% set totalDiscount = totalDiscount + product.discount %}
+
             <tr class="border">
            
                 <td class="border" style="text-align:center;">{{ product.amount }}</td>
@@ -242,7 +246,7 @@ Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de
     Subtotal: ${{ quote.subtotal|number_format(2, '.', ',') }}<br>
     IVA: ${{ quote.tax|number_format(2, '.', ',') }}<br>
     {% if quote.discount > 0 %}
-    Descuento: ${{ quote.discount|number_format(2, '.', ',') }}<br>
+    Descuento: ${{ totalDiscount|number_format(2, '.', ',') }}<br>
     {% endif %}
     Total: ${{ quote.total|number_format(2, '.', ',') }}<br></h5>
 

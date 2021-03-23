@@ -86,6 +86,7 @@ class SaleRepository extends ServiceEntityRepository
             ->andWhere('sale.company = :val')
             ->andWhere('sale.time BETWEEN :from AND :to')
             ->andWhere('sale.isPaid = 1')
+            ->andWhere('sale.isCancelled != 1')
             ->setParameter('val', $companyId)
             ->setParameter('from', $from )
             ->setParameter('to', $to)
