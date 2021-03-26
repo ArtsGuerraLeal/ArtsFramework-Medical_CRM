@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Sale;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Sale|null find($id, $lockMode = null, $lockVersion = null)
@@ -86,7 +86,7 @@ class SaleRepository extends ServiceEntityRepository
             ->andWhere('sale.company = :val')
             ->andWhere('sale.time BETWEEN :from AND :to')
             ->andWhere('sale.isPaid = 1')
-            ->andWhere('sale.isCancelled != 1')
+            ->andWhere('sale.isCancelled is null')
             ->setParameter('val', $companyId)
             ->setParameter('from', $from )
             ->setParameter('to', $to)
