@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Category|null find($id, $lockMode = null, $lockVersion = null)
@@ -49,6 +49,25 @@ class CategoryRepository extends ServiceEntityRepository
             ->setParameter('company', $companyId)
             ->setParameter('id', $id)
             ->orderBy('category.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
+    /**
+     * @param $companyId
+     * @param $name
+     * @return Category
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanyName($companyId,$name)
+    {
+        return $this->createQueryBuilder('category')
+            ->andWhere('category.company = :company')
+            ->andWhere('category.name = :name')
+            ->setParameter('company', $companyId)
+            ->setParameter('name', $name)
+            ->orderBy('category.name', 'ASC')
             ->getQuery()
             ->getOneOrNullResult()
             ;

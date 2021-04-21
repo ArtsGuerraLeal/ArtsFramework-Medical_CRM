@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Qipsius\TCPDFBundle\Controller\TCPDFController;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -24,12 +25,15 @@ class QuotesListController extends AbstractController
   
     private $session;
 
+    private TCPDFController $tcpdf;
 
-    public function __construct(Security $security,SessionInterface $session){
+
+    public function __construct(Security $security,SessionInterface $session,TCPDFController $tcpdf){
       
         $this->security = $security;
         
         $this->session = $session;
+        $this->tcpdf = $tcpdf;
 
     }
 
@@ -209,12 +213,13 @@ class QuotesListController extends AbstractController
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
         $pdfOptions->setIsRemoteEnabled(true);
-
+        //$pdfOptions->setIsHtml5ParserEnabled(true);
         // Instantiate Dompdf with our options
         $dompdf = new Dompdf();
+        
         $dompdf->setOptions($pdfOptions);
-        $dompdf->set_base_path("/public/");
-        $base = $this->renderView('base.html.twig');
+        //$dompdf->set_base_path("/public/");
+        //$base = $this->renderView('base.html.twig');
 
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('quote/purchase_order.html.twig', [
@@ -236,6 +241,8 @@ class QuotesListController extends AbstractController
             //Show download box on open
             "Attachment" => false
         ]);
+
+        
 
     }
 
@@ -332,4 +339,25 @@ class QuotesListController extends AbstractController
         $file = file_put_contents($this->getParameter('temp_storage_dir').$filename, $output);
 
     }
+
+    public function returnPDFResponseFromHTML($html){
+        //set_time_limit(30); uncomment this line according to your needs
+        // If you are not in a controller, retrieve of some way the service container and then retrieve it
+        //$pdf = $this->container->get("white_october.tcpdf")->create('vertical', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        //if you are in a controlller use :
+        $pdf = $this->tcpdf->create('vertical', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetAuthor('Our Code World');
+        $pdf->SetTitle(('Our Code World Title'));
+        $pdf->SetSubject('Our Code World Subject');
+        $pdf->setFontSubsetting(true);
+        $pdf->SetFont('helvetica', '', 11, '', true);
+        //$pdf->SetMargins(20,20,40, true);
+        $pdf->AddPage();
+        
+        $filename = 'ourcodeworld_pdf_demo';
+        
+        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+        $pdf->Output($filename.".pdf",'I'); // This will output the PDF as a response directly
+}
+
 }

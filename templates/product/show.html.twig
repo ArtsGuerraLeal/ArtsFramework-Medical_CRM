@@ -3,6 +3,8 @@
 {% block title %}Product{% endblock %}
 
 {% block body %}
+{% set startQuantity = product.quantity %}
+
 <div class="card">
     <div class="card-header"><i class=""></i>Producto
     </div>
@@ -80,7 +82,8 @@
         <tr>
                 <th style="width:10%" >Fecha</th>
                 <th style="width:10%" >Venta</th>
-                <th style="width:10%" >Cantidad</th>
+                <th style="width:10%" >Cambio</th>
+                <th style="width:10%" >Cantidad Anterior</th>
                 <th style="width:10%" >Subtotal</th>
                 <th style="width:10%" >Descuento</th>
                 <th style="width:10%" >Total</th>
@@ -96,6 +99,7 @@
                 <td>{{ productSale.sale.id }}</td>
 
                 <td class="table-danger">-{{ productSale.amount }}</td>
+                <td>{{ startQuantity }}</td>
 
                 <td>${{ productSale.price }}</td>
                 <td>${{ productSale.discount }}</td>
@@ -105,7 +109,6 @@
                 <td>
                     <div class="btn btn-primary btn-sm my-1">
                         <a class="text-white" href="{{ path('sales_list_show', {'id': productSale.sale.id}) }}">Detalles</a>
-
                     </div>
                    
                 </td>
@@ -120,12 +123,13 @@
                 {% if stock.amount < 0 %}
 
                 <td class="table-danger">{{ stock.amount }}</td>
+                <td>{{ startQuantity }}</td>
 
 
                 {% else %}
 
                 <td class="table-success">{{ stock.amount }}</td>
-
+                <td>{{ startQuantity }}</td>
 
                 {% endif %}
 
@@ -228,7 +232,7 @@
 
 {% block pagejs %}
  <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
- <script>
+ <script >
  $('#zero_config').DataTable({
             "order": [
                 [0, "desc"]

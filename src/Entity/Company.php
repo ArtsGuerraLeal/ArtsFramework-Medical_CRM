@@ -248,6 +248,11 @@ class Company
      */
     private $productQuoteDiscounts;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Vendor::class, mappedBy="company")
+     */
+    private $vendors;
+
 
 
     public function __construct()
@@ -278,6 +283,7 @@ class Company
         $this->productSoldDiscounts = new ArrayCollection();
         $this->productStocks = new ArrayCollection();
         $this->productQuoteDiscounts = new ArrayCollection();
+        $this->vendors = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -1324,6 +1330,36 @@ class Company
             // set the owning side to null (unless already changed)
             if ($productQuoteDiscount->getCompany() === $this) {
                 $productQuoteDiscount->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Vendor[]
+     */
+    public function getVendors(): Collection
+    {
+        return $this->vendors;
+    }
+
+    public function addVendor(Vendor $vendor): self
+    {
+        if (!$this->vendors->contains($vendor)) {
+            $this->vendors[] = $vendor;
+            $vendor->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVendor(Vendor $vendor): self
+    {
+        if ($this->vendors->removeElement($vendor)) {
+            // set the owning side to null (unless already changed)
+            if ($vendor->getCompany() === $this) {
+                $vendor->setCompany(null);
             }
         }
 

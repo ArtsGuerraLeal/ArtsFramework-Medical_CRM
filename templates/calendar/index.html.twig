@@ -3,5 +3,37 @@
 {% block title %}Hello CalendarController!{% endblock %}
 
 {% block body %}
+ <div class="card">
+    <div class="card-header"><i class=""></i>Producto</div>
+        <div class="card-body">
+    <div id='calendar'></div>
+</div>
+</div></div>
 
+{% endblock %}
+
+{% block pagejs %}
+  <script src='{{ asset('lib/main.js') }}'></script>
+    <script>
+
+    function render(){
+
+              var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth'
+                });
+                calendar.render();
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+         setTimeout(function(){ render(); }, 100);
+    
+    });
+
+                
+       
+            
+
+    </script>
 {% endblock %}

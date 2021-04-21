@@ -122,9 +122,58 @@
                 </table>
             </div>
         </div>
-  
+  <table class="table table-bordered table-striped order_table" id="zero_config" >
+                    <thead>
+                    <tr>
+                        <th style="width:10%" >ID</th>
+                        <th style="width:10%" >Estatus de Pago</th>
+                        <th style="width:10%" >Total</th>
+                        <th style="width:10%">Fecha</th>
+                        <th style="width:10%">Acciones</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.id }}</td>
+                        {% if sale.isCancelled != 1 %}
+                            {% if sale.isPaid == 1 %}
+                            <td style="color: #0ba360">Pagado</td>
+                            {% else %}
+                                <td class="text-warning">No Pagado</td>
+
+                            {% endif %}
+
+
+                            {% else %}
+                                <td style="color: #a71d2a">Cancelada</td>
+
+                            {% endif %}
+
+                            
+                            <td>${{ sale.total + sale.commission }} MXN</td>
+                            <td>{{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</td>
+                            <td>
+                                <div class="btn btn-primary btn-sm">
+                                    <a class="text-white" href="{{ path('sales_list_show', {'id': sale.id}) }}">Detalles</a>
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
     
 </div>
+
+
     
     
 

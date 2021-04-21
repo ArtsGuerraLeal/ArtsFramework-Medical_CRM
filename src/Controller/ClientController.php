@@ -65,9 +65,11 @@ class ClientController extends AbstractController
     {
         $user = $this->security->getUser();
         $client = $clientRepository->findByCompanyID($user->getCompany(), $id);
-      
+        $sales = $client->getSales();
+
         return $this->render('client/show.html.twig', [
-            'client' => $client
+            'client' => $client,
+            'sales' => $sales
         ]);
     }
 

@@ -53,6 +53,11 @@ class ProductType extends AbstractType
                 'label'=>'Precio'
 
             ])
+            ->add('cost',NumberType::class,[
+                'required' => false,
+                'label'=>'Costo'
+
+            ])
             ->add('isTaxable',CheckboxType::class,[
                 'required' => false,
                 'label'=>'Incluye IVA?'

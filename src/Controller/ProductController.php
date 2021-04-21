@@ -3,11 +3,15 @@
 namespace App\Controller;
 
 use Aws\S3\S3Client;
+use App\Entity\Vendor;
 use App\Entity\Product;
+use App\Entity\Category;
 use App\Form\ProductType;
 use App\Entity\ProductStock;
 use App\Form\ProductUploadType;
+use App\Repository\VendorRepository;
 use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
 use App\Repository\ProductSoldRepository;
 use App\Repository\ProductStockRepository;
 use Symfony\Component\Filesystem\Filesystem;
@@ -46,8 +50,17 @@ class ProductController extends AbstractController
      */
     private $productRepository;
 
+    /**
+     * @var VendorRepository
+     */
+    private $vendorRepository;
 
-    public function __construct(ProductRepository $productRepository,ProductStockRepository $productStockRepository, Security $security,SessionInterface $session, ProductSoldRepository $productSoldRepository){
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+
+    public function __construct(CategoryRepository $categoryRepository, VendorRepository $vendorRepository, ProductRepository $productRepository,ProductStockRepository $productStockRepository, Security $security,SessionInterface $session, ProductSoldRepository $productSoldRepository){
       
         $this->security = $security;
         
@@ -58,6 +71,11 @@ class ProductController extends AbstractController
         $this->productStockRepository = $productStockRepository;
 
         $this->productRepository = $productRepository;
+
+        $this->vendorRepository = $vendorRepository;
+
+        $this->categoryRepository = $categoryRepository;
+
 
     }
 
@@ -146,6 +164,9 @@ class ProductController extends AbstractController
                 
             }
            $product->setCompany($user->getCompany());
+           if($product->getUpc() == null){
+               $product->setUpc(rand(1000000,9999999));
+           }
 
            if($product->getQuantity() != null){
             $stock = new ProductStock();
@@ -217,6 +238,36 @@ class ProductController extends AbstractController
                             if($c==1){
                                 $product->setName($data[$c]);
                             }
+                            if($c==3){
+                                $vendor = $this->vendorRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                if($vendor == null){
+                                    $vendor = new Vendor;
+                                    $vendor->setName($data[$c]);
+                                    $vendor->setCompany($user->getCompany());
+                                    $entityManager->persist($vendor);
+
+                                    $product->setVendor($vendor);
+                                }else{
+                                    $product->setVendor($vendor);
+
+                                }
+                            }
+                            
+                            if($c==4){
+                                $category = $this->categoryRepository->findOneByCompanyName($data[$c]);
+                                if($category !== null){
+                                    $category = new Category;
+                                    $category->setName($data[$c]);
+                                    $category->setCompany($user->getCompany());
+                                    $entityManager->persist($category);
+
+                                    $product->setCategory($category);
+                                }else{
+                                    $product->setCategory($category);
+
+                                }
+                            }
+                            
                             if($c==13){
                                 $s = $data[$c];
                                

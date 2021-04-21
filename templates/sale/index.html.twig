@@ -27,6 +27,7 @@
         <i class="fas fa-table"></i>
         Punto de Venta   
                 <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#myModal2" type="button">Historial</button>
+                <button class="discount_product_1 btn btn-success" id="myBtn" type="button" data-toggle="modal" data-target="#myModal" type="button">Descuentos</button>
 
         </div>
 
@@ -64,6 +65,57 @@
 
 
                 <div id="catalog" class = "row">
+
+                {% for product in products %}
+
+                     {%  if product.category != null %}
+                        <div class="col-lg-3 col-md-6 filterDiv {{ product.category.name }}" style="max-height: 500px">
+                            {% else %}
+                            <div class="col-lg-3 col-md-6 filterDiv General">
+                                {% endif %}
+
+                                <div class="card ">
+                                    <div class="card-body">
+                                    {%  if product.image != null %}
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
+                                    {% else %}
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" alt="image"/>
+                                    {% endif %}
+                                        <h4 class="card-title">{{ product.name }}</h4>
+                                       {%  if product.quantity is not null %}
+                                        <h6 class="text-muted">Existencia: <p class="my-0"id="product-quantity">{{ product.quantity }}</p></h6>
+                                    {% else %}
+                                        <h6 class="text-muted">Existencia Ilimitada <p class="my-0"id="product-quantity">999</p></h6>
+                                    {% endif %}
+
+
+                                    {%  if product.price is not null %}
+                                        <h4 class="text-danger">${{ product.price }}</h4>
+                                    {% else %}
+                                    <div class="add-button input-group">
+                                        <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
+                                    </div>
+                                        {% endif %}
+
+                                    <div class="add-button input-group">
+                                        {%  if product.price is not null %}
+
+                                            <button id="add_product" class="mx-1 add_product btn btn-sm btn-primary">Agregar</button>
+                                            <input id="product_amount" class="form-control rounded my-1" type="number" pattern="[0-9]" value="1">
+
+                                        {% else %}
+
+                                            <button id="add_service" class="mx-auto add_service btn btn-primary my-2">Agregar</button>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                    {% endfor %}
                     
                     {% for product in products %}
 

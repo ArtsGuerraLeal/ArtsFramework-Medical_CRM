@@ -186,8 +186,8 @@
                 if (cellVal.text() === "") {
                     if (parseFloat(paymentAmount.val()) > parseFloat(remaining.innerText)) {
                         $(".cart-table").prepend('<tr id="' + paymentID + '" data-commission="'+ paymentCommission +'"><td>' + paymentName + '</td><td id="quantity">' + remaining.innerText + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
+                        alert("Cambio:$"+(-1*(parseFloat(remaining.innerText) - payment))+"MXN");
                     } else {
-
                         $(".cart-table").prepend('<tr id="' + paymentID + '" data-commission="'+ paymentCommission +'" ><td>' + paymentName + '</td><td id="quantity">' + payment + '</td><td><div class="remove_product btn btn-danger btn-sm">Borrar</div></td></tr>');
                     }
                 } else {

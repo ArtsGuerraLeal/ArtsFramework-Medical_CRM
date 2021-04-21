@@ -87,6 +87,8 @@ class SaleController extends AbstractController
      */
     private $productSoldDiscountRepository;
 
+    
+
 
     private $session;
 

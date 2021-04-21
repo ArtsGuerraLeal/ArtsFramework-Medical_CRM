@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\ProductSold;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method ProductSold|null find($id, $lockMode = null, $lockVersion = null)
@@ -111,9 +111,10 @@ class ProductSoldRepository extends ServiceEntityRepository
             ;
     }
 
+   
+
     public function FindSalesWithProduct($companyId,$productId){
   
-
         return $this->createQueryBuilder('productSold')
             ->andWhere('productSold.company = :val')
             ->andWhere('productSold.product = :id')

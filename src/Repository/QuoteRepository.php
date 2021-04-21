@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Quote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Quote|null find($id, $lockMode = null, $lockVersion = null)

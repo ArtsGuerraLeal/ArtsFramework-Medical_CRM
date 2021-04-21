@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Vendor{% endblock %}
+
+{% block body %}
+    <h1>Edit Vendor</h1>
+
+    {{ include('vendor/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('vendor_index') }}">back to list</a>
+
+    {{ include('vendor/_delete_form.html.twig') }}
+{% endblock %}

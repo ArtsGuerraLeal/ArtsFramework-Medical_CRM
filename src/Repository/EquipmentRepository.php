@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Equipment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\NonUniqueResultException;
 
 class EquipmentRepository extends ServiceEntityRepository
