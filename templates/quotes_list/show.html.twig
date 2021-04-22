@@ -3,8 +3,12 @@
 {% block title %}Quote {{ quote.id }}{% endblock %}
 
 {% block body %}
-    <h1>Cotización</h1>
-<div class="table-responsive">
+<div class="card">
+ <div class="card-header"><i class=""></i>Cotización
+    </div>
+    <div class="card-body">
+
+    <div class="table-responsive">
     <table class="table table-bordered table-striped " id="dataTable" >
         <tbody>
             
@@ -13,8 +17,19 @@
                 <td>{{ quote.client.name }}</td>
             </tr>
             <tr>
+                <th>Subtotal</th>
+                <td>${{ quote.subtotal }}</td>
+            </tr>
+           
+            <tr>
+                <th>IVA</th>
+                <td>${{ quote.tax }}</td>
+            </tr>
+
+
+            <tr>
                 <th>Total</th>
-                <td>{{ quote.total }}</td>
+                <td>${{ quote.total }}</td>
             </tr>
 
             <tr>
@@ -35,26 +50,67 @@
         </tbody>
     </table>
 
-     <table class="table table-bordered table-striped " id="dataTable2" >
-        <tbody>
-         
-            {% for product in quote.productQuotes %}
+    <table class="table table-bordered table-striped " id="dataTable2" >
+      <thead>
             <tr>
-                <th>Product</th>
+                <th style="width:10%" >Imagen</th>
+                <th style="width:10%" >UPC</th>
+                <th style="width:10%" >SKU</th>
+                <th style="width:10%" >Nombre</th>
+                <th style="width:10%" >Precio Total</th>
+                <th style="width:10%" >Descuento</th>
+                <th style="width:10%" >Cantidad</th>
+
+            <th style="width:10%">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        {% for product in quote.productQuotes %}
+            <tr>
+                {%  if product.product.image != null %}
+                    <td><img class="img-thumbnail rounded mx-auto d-block" width="70px" height="70px" style="height:70px" src="{{ '/uploads/' ~ product.product.image }}" />
+                    </td>
+
+                    {% else %}
+                        <td><img class="img-fluid img-thumbnail rounded mx-auto d-block" width="70px" height="70px" src="{{ asset('assets/images/product_placeholder.jpg') }}" />
+                        </td>
+
+                {% endif %}                
+                <td>{{ product.product.UPC }}</td>
+                <td>{{ product.product.SKU }}</td>
                 <td>{{ product.product.name }}</td>
-                <td>{{ product.product.sku }}</td>
+                <td>${{ product.price - product.discount }}</td>
+                <td>${{ product.discount }}</td>
+                <td>{{ product.amount }}</td>
+
+                <td>
+                    <div class="btn btn-primary btn-sm my-1">
+                        <a class="text-white" href="{{ path('product_show', {'id': product.product.id}) }}">Detalles</a>
+
+                    </div>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('product_edit', {'id': product.product.id}) }}">Editar</a>
+                    </div>
+                </td>
             </tr>
         {% endfor %}
+            
         </tbody>
     </table>
+
+
 
     <a class = "btn btn-primary" href="{{ path('quotes_list') }}">Regresar</a>
     <a class = "btn btn-primary" href="{{ path('quote_pdf_preview', {'id': quote.id}) }}">Preview</a>
     <a class = "btn btn-primary" href="{{ path('quote_pdf_download', {'id': quote.id}) }}">Descargar Pdf</a>
     <a class = "btn btn-primary" href="{{ path('quote_compose', {'id': quote.id}) }}">Enviar</a>
 
+    </div>
+
 </div>
-</div>
+
+
     <a href="{{ path('quotes_list') }}">back to list</a>
 
 
