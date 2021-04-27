@@ -292,7 +292,9 @@ class OrderController extends AbstractController
             die();
         }
 
-
+        $new_recipient = str_replace(' ', '', $recipient);
+        $recipientArray = explode(',', $new_recipient);
+        array_push($recipientArray,$sender);
         if($note != ''){
             if($oids != ''){
                 $this->createMultiplePDF($providerOrderRepository,$note,$oids);
@@ -328,7 +330,7 @@ class OrderController extends AbstractController
             $message = (new \Swift_Message($subject))
             ->setFrom([$postmaster => $usr->getFirstname() . ' ' . $usr->getLastname()])
             ->setReplyTo($sender)
-            ->setTo([$recipient, $sender => 'Me'])
+            ->setTo($recipientArray)
             ->setBody($body)
             ->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf"))
             ;
@@ -430,6 +432,10 @@ class OrderController extends AbstractController
             die();
         }
 
+        $new_recipient = str_replace(' ', '', $recipient);
+        $recipientArray = explode(',', $new_recipient);
+        array_push($recipientArray,$sender);
+
         $orderArray = explode(",",$oids);
 
         if($note != ''){
@@ -464,7 +470,7 @@ class OrderController extends AbstractController
             $message = (new \Swift_Message($subject))
             ->setFrom([$postmaster => $usr->getFirstname() . ' ' . $usr->getLastname()])
             ->setReplyTo($sender)
-            ->setTo([$recipient, $sender => 'Me'])
+            ->setTo($recipientArray)
             ->setBody($body);
 
             foreach ($orderArray as $id) {
