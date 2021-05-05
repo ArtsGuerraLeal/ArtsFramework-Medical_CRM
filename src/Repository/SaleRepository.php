@@ -201,6 +201,128 @@ class SaleRepository extends ServiceEntityRepository
             ;
     }
 
+    public function countElements($companyId)
+    {
+        try {
+            return $this->createQueryBuilder('sale')
+                ->select("count(sale.id)")
+                ->where('sale.company = :val')
+                ->setParameter('val', $companyId)
+                ->orderBy('sale.id', 'DESC')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException $e) {
+        } catch (NonUniqueResultException $e) {
+        }
+    }
+
+    /**
+     * @param $start
+     * @param $length
+     * @param $search
+     * @param $orders
+     * @param $columns
+     * @param $companyId
+     * @return Sale[] Returns an array of Patient objects
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function findDataTable($start, $length,$search,$orders,$columns,$companyId)
+    {
+
+        $query = $this->createQueryBuilder('sale');
+        $countQuery = $this->createQueryBuilder('sale');
+
+        $countQuery->select('COUNT(sale)');
+
+            $query->select('sale.id')
+                ->addSelect('sale.isPaid')
+                ->addSelect('sale.isCancelled')
+                ->addSelect('sale.client')
+                ->addSelect('sale.total')
+                ->addSelect('sale.commission')
+                ->addSelect('sale.time')
+                ->where('sale.company = :val');
+
+        $searchQuery = null;
+
+        if ($search['value'] != '') {
+
+
+            if(is_numeric($search['value'])){
+                $searchItem = $search['value'];
+
+                $searchQuery = 'sale.id LIKE \'%' . $searchItem . '%\'';
+
+            }elseif(!is_numeric($search['value'])){
+
+                $searchItem = $search['value'];
+
+                $searchQuery = 'sale.client LIKE \'%' . $searchItem;
+
+            }
+        }
+
+
+        if ($searchQuery !== null) {
+            $query->andWhere($searchQuery);
+            $countQuery->andWhere($searchQuery);
+        }
+
+/*
+        foreach ($columns as $key => $column)
+        {
+            if ($search['value'] != '') {
+
+                // $searchItem is what we are looking for
+                $searchItem = $search['value'];
+                $searchQuery = null;
+
+                // $column['name'] is the name of the column as sent by the JS
+                switch ($column['data']) {
+                    case 'id':
+                    {
+                        $searchQuery = 'patient.id LIKE \'%' . $searchItem . '%\'';
+                        break;
+                    }
+                    case 'firstName':
+                    {
+                        $searchQuery = 'patient.firstName LIKE \'%' . $searchItem . '%\'';
+                        break;
+                    }
+                    case 'lastName':
+                    {
+                        $searchQuery = 'patient.lastName LIKE \'%' . $searchItem . '%\'';
+                        break;
+                    }
+                }
+
+                if ($searchQuery !== null) {
+                    $query->andWhere($searchQuery);
+                    $countQuery->andWhere($searchQuery);
+                }
+            }
+        }
+
+       */
+
+            $query
+            ->setParameter('val', $companyId)
+            ->setFirstResult($start)
+            ->setMaxResults($length)
+            ->orderBy('sale.id', 'DESC');
+
+        $results = $query->getQuery()->getArrayResult();
+        $countResult = $countQuery->getQuery()->getSingleScalarResult();
+
+        return array(
+            "results" 		=> $results,
+            "countResult"	=> $countResult
+        );
+
+
+    }
+
 
     public function GetMostSoldProducts(){
 

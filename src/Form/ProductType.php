@@ -2,18 +2,20 @@
 
 namespace App\Form;
 
-use App\Entity\Category;
+use App\Entity\Vendor;
 use App\Entity\Product;
+use App\Entity\Category;
+use App\Repository\VendorRepository;
 use App\Repository\CategoryRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ProductType extends AbstractType
 {
@@ -22,12 +24,17 @@ class ProductType extends AbstractType
      */
     private $categoryRepository;
     /**
+     * @var VendorRepository
+     */
+    private $vendorRepository;
+    /**
      * @var Security
      */
     private $security;
-    public function __construct(CategoryRepository $categoryRepository, Security $security)
+    public function __construct(VendorRepository $vendorRepository, CategoryRepository $categoryRepository, Security $security)
     {
         $this->categoryRepository = $categoryRepository;
+        $this->vendorRepository = $vendorRepository;
         $this->security = $security;
 
     }
@@ -71,6 +78,16 @@ class ProductType extends AbstractType
                 'choices' => $this->categoryRepository->findByCompany($this->security->getUser()->getCompany()),
                 'required'=>false,
                 'label'=>'Categoria'
+            ])
+            ->add('vendor',EntityType::class, [
+                'class' => Vendor::class,
+                'choice_label' => function(Vendor $vendor) {
+                    return sprintf(' %s', $vendor->getName());
+                },
+                'placeholder' => 'Escoger Proveedor ...',
+                'choices' => $this->vendorRepository->findByCompany($this->security->getUser()->getCompany()),
+                'required'=>false,
+                'label'=>'Proveedor'
             ])
             ->add('quantity',NumberType::class,[
                 'required' => false,

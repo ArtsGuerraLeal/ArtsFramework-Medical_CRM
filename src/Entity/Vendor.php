@@ -39,9 +39,15 @@ class Vendor
      */
     private $products;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProviderOrder::class, mappedBy="vendor")
+     */
+    private $providerOrders;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->providerOrders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +115,36 @@ class Vendor
             // set the owning side to null (unless already changed)
             if ($product->getVendor() === $this) {
                 $product->setVendor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProviderOrder[]
+     */
+    public function getProviderOrders(): Collection
+    {
+        return $this->providerOrders;
+    }
+
+    public function addProviderOrder(ProviderOrder $providerOrder): self
+    {
+        if (!$this->providerOrders->contains($providerOrder)) {
+            $this->providerOrders[] = $providerOrder;
+            $providerOrder->setVendor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProviderOrder(ProviderOrder $providerOrder): self
+    {
+        if ($this->providerOrders->removeElement($providerOrder)) {
+            // set the owning side to null (unless already changed)
+            if ($providerOrder->getVendor() === $this) {
+                $providerOrder->setVendor(null);
             }
         }
 

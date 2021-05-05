@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ProviderOrder;
 use App\Entity\ProductOrdered;
 use App\Repository\UserRepository;
+use App\Repository\VendorRepository;
 use App\Repository\CompanyRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ProviderRepository;
@@ -52,7 +53,11 @@ class WebhookController extends AbstractController
      * @var CompanyRepository
      */
     private $companyRepository;
-
+     /**
+     * @var VendorRepository
+     */
+    private $vendorRepository;
+    
     private $security;
     
      /**
@@ -61,7 +66,7 @@ class WebhookController extends AbstractController
     private $userRepository;
 
     private $session;
-    public function __construct(CompanyRepository $companyRepository, ProductOrderedRepository $productOrderedRepository, ProviderOrderRepository $providerOrderRepository, ProviderRepository $providerRepository, UserRepository $userRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager, Security $security,SessionInterface $session){
+    public function __construct(VendorRepository $vendorRepository, CompanyRepository $companyRepository, ProductOrderedRepository $productOrderedRepository, ProviderOrderRepository $providerOrderRepository, ProviderRepository $providerRepository, UserRepository $userRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager, Security $security,SessionInterface $session){
         $this->entityManager = $entityManager;
         $this->productRepository = $productRepository;
         $this->security = $security;
@@ -71,6 +76,7 @@ class WebhookController extends AbstractController
         $this->providerOrderRepository = $providerOrderRepository;
         $this->providerRepository = $providerRepository;
         $this->companyRepository = $companyRepository;
+        $this->vendorRepository = $vendorRepository;
 
     }
 
@@ -105,61 +111,82 @@ class WebhookController extends AbstractController
             die();
         }
 
-        //if we recieve webhook with data create an order
         $em = $this->getDoctrine()->getManager();
 
-        $order = new ProviderOrder();
-        
-        $orderTotal = 0;
-        
-      //  $provider = $this->providerRepository->findByCompany();
-        $company = $this->companyRepository->findOneBy(['id'=>5]);
-        $order->setCompany($company);
-        $order->setTotal($orderTotal);
-        $order->setClient($customer['first_name'].' '.$customer['last_name']);
-        $order->setTelephone($shippingAddress['phone']);
-        $order->setFirstName($shippingAddress['first_name']);
-        $order->setLastName($shippingAddress['last_name']);
-        $order->setLine1($shippingAddress['address1']);
-        if($shippingAddress['address2'] != null){
-            $order->setLine2($shippingAddress['address2']);
-        }else{
-            $order->setLine2('');
-        }
+        $vendorsRepeating = array();
 
-        $order->setCity($shippingAddress['city']);
-        $order->setState($shippingAddress['province']);
-        $order->setPostalCode($shippingAddress['zip']);
-        $order->setOrderNumber($orderNumber);
-        $order->setTime(new \DateTime());
-
-        $em->persist($order);
-        $em->flush();
-
-        
-        
-        foreach ($items as $item ){
-
+        //Find and set Order Vendors
+        foreach ($items as $item){
             $product = $this->productRepository->findOneByCompanySKU($company,$item['sku']);
-            
             if($product != null){
-            $orderTotal = $orderTotal + ($product->getCost() * $item['quantity']);
-            $productOrdered = new ProductOrdered();
-            $productOrdered->setProduct($product);
-            $productOrdered->setProviderOrder($order);
-            $productOrdered->setCompany($company);
-            $productOrdered->setAmount($item['quantity']);
-
-            $em->persist($productOrdered);
-            $em->flush();
+                if($product->getVendor() != null){
+                    array_push($vendors,$product->getVendor());
+                }
             }
+        }
+        $vendors = array_unique($vendorsRepeating);
 
+        foreach ($vendors as $vendor) {
+            
+            //if we recieve webhook with data create an order
+    
+            $order = new ProviderOrder();
+            
+            $orderTotal = 0;
+            
+          //  $provider = $this->providerRepository->findByCompany();
+            $company = $this->companyRepository->findOneBy(['id'=>5]);
+            $order->setCompany($company);
+            $order->setTotal($orderTotal);
+            $order->setClient($customer['first_name'].' '.$customer['last_name']);
+            $order->setTelephone($shippingAddress['phone']);
+            $order->setFirstName($shippingAddress['first_name']);
+            $order->setLastName($shippingAddress['last_name']);
+            $order->setLine1($shippingAddress['address1']);
+            $order->setVendor($vendor);
+            if($shippingAddress['address2'] != null){
+                $order->setLine2($shippingAddress['address2']);
+            }else{
+                $order->setLine2('');
+            }
+    
+            $order->setCity($shippingAddress['city']);
+            $order->setState($shippingAddress['province']);
+            $order->setPostalCode($shippingAddress['zip']);
+            if($orderNumber != null){
+                $order->setOrderNumber($orderNumber);
+            }else{
+                $order->setOrderNumber('');
+            }
+            $order->setTime(new \DateTime());
+    
+            $em->persist($order);
+            $em->flush();
+    
+            foreach ($items as $item){
+    
+                $product = $this->productRepository->findOneByCompanySKU($company,$item['sku']);
+                
+                if($product != null){                   
+                    $orderTotal = $orderTotal + ($product->getCost() * $item['quantity']);
+                    $productOrdered = new ProductOrdered();
+                    $productOrdered->setProduct($product);
+                    $productOrdered->setProviderOrder($order);
+                    $productOrdered->setCompany($company);
+                    $productOrdered->setAmount($item['quantity']);
+    
+                    $em->persist($productOrdered);
+                    $em->flush();
+                }
+    
+            }
+    
+            $order->setTotal($orderTotal);
+            $em->persist($order);
+            $em->flush();
         }
 
-        $order->setTotal($orderTotal);
-        $em->persist($order);
-        $em->flush();
-        //$order->setProvider();
+
 
 
 

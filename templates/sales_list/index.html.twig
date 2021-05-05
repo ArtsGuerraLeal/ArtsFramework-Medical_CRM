@@ -11,11 +11,13 @@
 <div class="card">
     <div class="card-header"><i class="fas fa-table"></i>Ordenes</div>
         <div class="card-body">
-           <table class="table table-bordered table-striped order_table" id="zero_config" >
+           <table class="table table-bordered table-striped order_table" id="example" >
                     <thead>
                     <tr>
                         <th style="width:10%" >ID</th>
                         <th style="width:10%" >Estatus de Pago</th>
+                        <th style="width:10%" >Estatus de Pago</th>
+
                         <th style="width:10%" >Cliente</th>
 
                         <th style="width:10%" >Total</th>
@@ -26,43 +28,7 @@
 
                     </tr>
                     </thead>
-                    <tbody>
-                    {% for sale in sales %}
-                        <tr>
-                            <td>{{ sale.id }}</td>
-                        {% if sale.isCancelled != 1 %}
-                            {% if sale.isPaid == 1 %}
-                            <td style="color: #0ba360">Pagado</td>
-                            {% else %}
-                                <td class="text-warning">No Pagado</td>
-
-                            {% endif %}
-
-
-                            {% else %}
-                                <td style="color: #a71d2a">Cancelada</td>
-
-                            {% endif %}
-
-                            
-                            <td>{{ sale.client }} </td>
-                            <td>${{ sale.total + sale.commission }} MXN</td>
-                            <td>${{ sale.commission}} MXN</td>
-                            <td>{{ sale.time ? sale.time|date('d-m-Y H:i:s') : '' }}</td>
-                            <td>
-                                <div class="btn btn-primary btn-sm">
-                                    <a class="text-white" href="{{ path('sales_list_show', {'id': sale.id}) }}">Detalles</a>
-                                </div>
-
-                            </td>
-
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="5">no records found</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
+                        
                 </table>
                  
             </div>
@@ -77,12 +43,99 @@
     <script src="{{ asset('theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 
     <script>
+    $(document).ready(function() {
+            $('#example').DataTable( {
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url":"{{ path('fetch_sales')}}",
+                    "type": "POST"
+                },
+                "columns":[
+                    {"data":"id","name":"id"},
+                    {"data":"isCancelled","visible":false},
+                    {"data":"isPaid","name":"isPaid",
+                    render: function ( data, type, row ) {
+                         if(row.isCancelled == null){
+                            if(data != null){
+                              
+                                return '<div style="color: #0ba360">Pagado</div>';
 
-        $('#zero_config').DataTable({
-            "order": [
-                [0, "desc"]
-            ]
-        });
+                            }else {
+                                return '<div class="text-warning"> No Pagado</div>';
+                            }
+                         }else{
+                                return '<div class="text-danger">Cancelada</div>';
+
+                         }
+                            
+                        }
+                    },
+                    {"data":"client","name":"client"},
+                    {"data":"total","name":"total",
+                    render: function ( data, type, row ) {
+                        if(data != null){
+                            if(data===0){
+                            return "";
+                            }else{
+                            return "$" + data;
+
+                            }
+                        }else {
+                            return "";
+                        }
+                    }
+                            
+                    },
+                    {"data":"commission","name":"commission",
+                    render: function ( data, type, row ) {
+                        if(data != null){
+                            if(data===0){
+                            return "";
+                            }else{
+                            return "$" + data;
+
+                            }
+                        }else {
+                            return "";
+                        }
+                    }
+                            
+                    },
+                    
+                    {"data": "time.date","name":"time",
+                        render: function ( data, type, row ) {
+
+                            if(data != null){
+                                data = data.split(" ");
+                                time = data[1].split(".");
+                                return data[0] + " " + time[0];
+
+                            }else {
+                                return "";
+                            }
+                        }
+                    },
+                    {
+                        "orderable":      false,
+                        "data":           "id",
+                        render: function ( data, type, row ) {
+                            ID = data;
+                            return '<div class="btn btn-primary btn-sm"><a class="text-white" href="'+ID+'">Detalles</a></div> ';
+                        }
+                    }
+
+
+                ]
+
+            } );
+        } );
+
+     //   $('#zero_config').DataTable({
+     //       "order": [
+     //           [0, "desc"]
+    //        ]
+     //   });
     
     </script>
 {% endblock %}

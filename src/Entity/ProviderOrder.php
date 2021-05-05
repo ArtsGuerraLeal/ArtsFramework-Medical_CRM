@@ -100,6 +100,11 @@ class ProviderOrder
      */
     private $note;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Vendor::class, inversedBy="providerOrders")
+     */
+    private $vendor;
+
     public function __construct()
     {
         $this->productOrdereds = new ArrayCollection();
@@ -316,6 +321,18 @@ class ProviderOrder
     public function setNote(?string $note): self
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getVendor(): ?Vendor
+    {
+        return $this->vendor;
+    }
+
+    public function setVendor(?Vendor $vendor): self
+    {
+        $this->vendor = $vendor;
 
         return $this;
     }

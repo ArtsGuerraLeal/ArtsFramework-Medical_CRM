@@ -19,6 +19,22 @@ class VendorRepository extends ServiceEntityRepository
         parent::__construct($registry, Vendor::class);
     }
 
+     /**
+     * @param $companyId
+     * @return Vendor
+     * @throws NonUniqueResultException
+     */
+    public function findByCompany($companyId)
+    {
+        return $this->createQueryBuilder('vendor')
+            ->andWhere('vendor.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('vendor.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     /**
      * @param $companyId
      * @param $name

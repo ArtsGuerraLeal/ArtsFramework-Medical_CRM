@@ -6,15 +6,22 @@ use App\Entity\Vendor;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class VendorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('email')
-            ->add('company')
+        ->add('name', TextType::class,[
+            'label'=>'Nombre'
+
+        ])
+        ->add('email', EmailType::class,[
+            'label'=>'Email'
+
+        ])
         ;
     }
 

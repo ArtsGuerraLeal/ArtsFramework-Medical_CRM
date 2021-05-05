@@ -38,7 +38,7 @@ class SalesListController extends AbstractController
         $user = $this->security->getUser();
 
         return $this->render('sales_list/index.html.twig', [
-            'sales' => $saleRepository->findByCompany($user->getCompany()),
+          //  'sales' => $saleRepository->findByCompany($user->getCompany()),
         ]);
     }
 
