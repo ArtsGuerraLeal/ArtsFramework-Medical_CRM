@@ -37,6 +37,25 @@ class VendorRepository extends ServiceEntityRepository
 
     /**
      * @param $companyId
+     * @param $id
+     * @return Vendor
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('vendor')
+            ->andWhere('vendor.company = :company')
+            ->andWhere('vendor.id = :id')
+            ->setParameter('company', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('vendor.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
+    /**
+     * @param $companyId
      * @param $name
      * @return Vendor
      * @throws NonUniqueResultException

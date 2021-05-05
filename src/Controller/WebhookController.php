@@ -101,7 +101,7 @@ class WebhookController extends AbstractController
         if ($request->getMethod() == 'POST')
         {
             $order_id = $request->request->get('order_id');
-            $status = $request->request->get('status');
+           // $status = $request->request->get('status');
             $items =  $request->request->get('line_items');
             $shippingAddress = $request->request->get('shipping_address');
             $customer = $request->request->get('customer');
@@ -112,19 +112,20 @@ class WebhookController extends AbstractController
         }
 
         $em = $this->getDoctrine()->getManager();
+        $company = $this->companyRepository->findOneBy(['id'=>$id]);
 
-        $vendorsRepeating = array();
+        $vendorIDs = array();
 
         //Find and set Order Vendors
         foreach ($items as $item){
             $product = $this->productRepository->findOneByCompanySKU($company,$item['sku']);
             if($product != null){
                 if($product->getVendor() != null){
-                    array_push($vendors,$product->getVendor());
+                    array_push($vendorIDs,$product->getVendor()->getId());
                 }
             }
         }
-        $vendors = array_unique($vendorsRepeating);
+        $vendors = array_unique($vendorIDs);
 
         foreach ($vendors as $vendor) {
             
@@ -135,7 +136,6 @@ class WebhookController extends AbstractController
             $orderTotal = 0;
             
           //  $provider = $this->providerRepository->findByCompany();
-            $company = $this->companyRepository->findOneBy(['id'=>5]);
             $order->setCompany($company);
             $order->setTotal($orderTotal);
             $order->setClient($customer['first_name'].' '.$customer['last_name']);
@@ -143,7 +143,8 @@ class WebhookController extends AbstractController
             $order->setFirstName($shippingAddress['first_name']);
             $order->setLastName($shippingAddress['last_name']);
             $order->setLine1($shippingAddress['address1']);
-            $order->setVendor($vendor);
+            $v = $this->vendorRepository->findOneByCompanyID($company,$vendor);
+            $order->setVendor($v);
             if($shippingAddress['address2'] != null){
                 $order->setLine2($shippingAddress['address2']);
             }else{
@@ -167,16 +168,19 @@ class WebhookController extends AbstractController
     
                 $product = $this->productRepository->findOneByCompanySKU($company,$item['sku']);
                 
-                if($product != null){                   
-                    $orderTotal = $orderTotal + ($product->getCost() * $item['quantity']);
-                    $productOrdered = new ProductOrdered();
-                    $productOrdered->setProduct($product);
-                    $productOrdered->setProviderOrder($order);
-                    $productOrdered->setCompany($company);
-                    $productOrdered->setAmount($item['quantity']);
-    
-                    $em->persist($productOrdered);
-                    $em->flush();
+                if($product != null){         
+                    if($product->getVendor() == $order->getVendor()){
+
+                        $orderTotal = $orderTotal + ($product->getCost() * $item['quantity']);
+                        $productOrdered = new ProductOrdered();
+                        $productOrdered->setProduct($product);
+                        $productOrdered->setProviderOrder($order);
+                        $productOrdered->setCompany($company);
+                        $productOrdered->setAmount($item['quantity']);
+                        
+                        $em->persist($productOrdered);
+                        $em->flush();
+                    }          
                 }
     
             }
@@ -191,6 +195,6 @@ class WebhookController extends AbstractController
 
 
 
-        return new JsonResponse(['HTTPStatus' => 200,'Order_id'=>$order_id,'Status'=>$status,'Items'=>count($items)]);
+        return new JsonResponse(['HTTPStatus' => 200,'Order_id'=>$orderNumber,'Items'=>count($items)]);
     }
 }
