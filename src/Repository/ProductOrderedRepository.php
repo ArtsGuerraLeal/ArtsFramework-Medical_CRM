@@ -19,6 +19,25 @@ class ProductOrderedRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductOrdered::class);
     }
 
+    /**
+     * @param $companyId
+     * @param $id
+     * @return ProductOrdered
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('product_order')
+            ->andWhere('product_order.company = :company')
+            ->andWhere('product_order.id = :id')
+            ->setParameter('company', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('product_order.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
     // /**
     //  * @return ProductOrdered[] Returns an array of ProductOrdered objects
     //  */

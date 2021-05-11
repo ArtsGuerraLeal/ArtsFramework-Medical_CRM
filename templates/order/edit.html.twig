@@ -61,41 +61,48 @@
 
         </tbody>
     </table>
+            <button class = "btn btn-success" onclick="save()">Guardar</button>
+
     <h2>Productos</h2>
      <table class="table table-bordered products_table" id="zero_config" >
           <thead>
                     <tr>
                         <th style="width:10%" >Nombre</th>
                         <th style="width:10%" >Cantidad</th>
+                        <th style="width:10%" >Costo</th>
                         <th style="width:10%" >Acciones</th>                
                     </tr>
         </thead>
         <tbody>
            
             {% for product in order.productOrdereds %}
-            <tr id="{{product.product.id}}">
+            <tr id="{{product.product.id}}" data-id="{{product.id}}">
                 <th>
-                <select class="custom-select mr-sm-2 text-dark" id="product-selector">
-                    <option selected>{{ product.product.name }}</option>
-                    {% for prod in products %}
-                    <option value="{{prod.id}}">{{prod.name}}</option>
-                    {% endfor %}
-                                            
-                </select>
-                 </th>
-                <td><input type="number" id="quantity" name="quantity" min="1" value ="{{ product.amount}}"></td>
+                {{product.product.name}}
+                </th>
+                <th><input type="number" id="quantity" name="quantity" min="1" value ="{{ product.amount}}"></th>
+                <th>{{product.product.cost * product.amount}}</th>
+
                 <td> <button class = "btn btn-danger remove_product" >Borrar</button></td>
             </tr>
             
             {% endfor %}
              <tr>
-                <td> <button class = "btn btn-success add_product" >+</button></td>
+                <td> 
+                <div class="search-button-name input-group">
+                <input id="product_search_input_name" class="form-control rounded my-1" type="text" placeholder="Nombre del Producto" onkeyup="showResultName(this.value)">
+                <button class="btn btn-success btn-sm add_product" onclick="searchName()">Agregar</button>
+                </div>
+                <div class="" id="livesearch_name" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
+
+                </td>
+
             </tr>
+
         </tbody>
         
     </table>
         <a class = "btn btn-primary" href="{{ path('order_list') }}">Regresar</a>
-        <button class = "btn btn-success" onclick="save()">Guardar</button>
 
 </div>
 
@@ -105,21 +112,162 @@
 
 <script type="text/javascript">
 
+function selectProductName(str){
+            document.getElementById("product_search_input_name").value=str;
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function clearProductName(){
+            document.getElementById("product_search_input_name").value='';
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function showResultName(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_name").innerHTML="";
+                document.getElementById("livesearch_name").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_products_name') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var products = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < products.length;i++){
+                                var name = products[i].name
+                                
+                                searchResults += '<a class="text-primary" onclick="selectProductName(this.innerHTML)">'+products[i].name+'</a><br/>'
+                            }
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = '<a class="text-success" onclick="clearProductName()">Sin Resultados</a><br/>';
+                        }       
+                    }
+                });
+            }
+
+
+    function searchName() {
+
+        
+
+
+    }
 
     //add on change to product selector too
-    $(document).on('change', '.quantity', function(data){
-      //  console.log($(this).val());
+    $(document).on('change', '#quantity', function(data){
+        var productOrderedID= $(this).parent().parent().attr('data-id');
+        var productQuantity= $(this).val();
+
+        $.ajax({
+            url:"{{ path('order_change_quantity') }}",
+            type: "POST",
+            dataType: "text",
+            data:{
+                id:productOrderedID,
+                orderID:{{ order.id }},
+                quantity:productQuantity   
+                },
+                    success: function(data){
+         
+                    console.log("success");
+                    },
+                    error: function(error){
+                        console.log("Error:");
+                        console.log(error);
+                    }
+                });
+
     });
 
     $(document).on('click', '.remove_product', function(){
         $(this).parent().parent().remove();
+         var productOrderedID= $(this).parent().parent().attr('data-id');
+
+        $.ajax({
+            url:"{{ path('order_delete_product') }}",
+            type: "POST",
+            dataType: "text",
+            data:{
+                id:productOrderedID,
+                orderID:{{ order.id }}
+                },
+                    success: function(data){
+         
+                    console.log("success");
+                    },
+                    error: function(error){
+                        console.log("Error:");
+                        console.log(error);
+                    }
+                });
     });
 
     $(document).on('click', '.add_product', function(){
         var products_table = $('.products_table > tbody:last-child');
 
-        //Get products from fetch
-        products_table.prepend('<tr><th> <select class="custom-select mr-sm-2 text-dark" id="product-selector"> <option selected="0">Product</option> <option value="815">Balero para las Tapas</option> <option value="816">Balero para el Carrete</option> <option value="817">Balero Interno para Orillador McLane</option> <option value="818">Balero Externo para Llanta de Orillador</option> <option value="819">Balero con Funda para la Banda</option> <option value="820">Balero de Soporte para el Eje</option> <option value="821">Balero de Contencion</option> <option value="822">Balero 1002</option> <option value="823">Balero Para Portacuhcilla</option> <option value="824">Armazon Portacuchilla</option> <option value="825">Arandela de Friccion</option> <option value="826">Arandela 2052</option> <option value="827">Abrazadera para el Protector de Cuchilla</option> <option value="828">Abrazadera para el Rodillo</option> <option value="829">Abrazadera en U</option> <option value="830">Balero Para La Llanta Trasera</option> <option value="831">Balero para Carrete California Trimmer</option> <option value="832">Arandela 3/8 Plana Z (929)</option> <option value="833">Arandela Plana 5/16 Z (928)</option> <option value="834">Arandela Grande 25313</option> <option value="835">Arandela Especial H0929</option> <option value="836">Arandela Especial H0930</option> <option value="837">Arandela Espaciador 25302</option> <option value="838">Arandela de Acelerador Nylon (H0925)</option> <option value="839">Arandela Chica 25312</option> <option value="840">Arandela 5/16 SPLIT LOCK (927)</option> <option value="841">Arandela 25906</option> <option value="842">Arandela 1/4 SAE Plana Z (948)</option> <option value="843">Arandela 1/2 SAE Plana G9 Z (930)</option> <option value="844">Anillo Sin Roscado 20/25"</option> <option value="845">Anillo Con Roscado 20/25"</option> <option value="846">Adaptador Para Levantar Altura de Corte en Podadora Flotante</option> <option value="847">Abrazadera de Rodillo</option> <option value="848">Banda 1060 para Podadoras McLane</option> <option value="849">Armazón del Clutch</option> <option value="850">Arandela McLane 1051</option> <option value="851">Arandela McLane 1099</option> <option value="852">Arandela McLane 1106</option> <option value="853">Arandela McLane 1007</option> <option value="854">Abrazadera Para el Cable del Acelerador</option> <option value="855">Arandela Especial H0928</option> <option value="856">Arandela H0923</option> <option value="857">Adaptador para Manguera Cub Cadet</option> <option value="858">Aceite Motor 4 Tiempos 5W-30 1 Litro</option> <option value="859">Aceite Para Motor 2 Tiempos 1 Litro</option> <option value="860">Aceite Para Motor 4 Tiempos 600ml</option> <option value="861">Arnés Para Desbrozadora</option> <option value="862">Aceite Para Motor 2 Tiempos 100ml (1:100)</option> <option value="863">Aceite Para Motor 2 Tiempos (50:1)</option> <option value="864">Aceite Para Motosierra 1 Litro</option> </select> </th> <td><input type="number" id="quantity" name="quantity" min="1" max="5" value="1"></td> <td> <button class="btn btn-danger remove_product">Borrar</button></td></tr>');
+        var name = $('#product_search_input_name').val();
+        $.ajax({
+                url:"{{ path('fetch_product_name') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    name:name,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+//                    console.log(obj.name);
+
+                    if(obj.cost !== "") {
+                      
+                        var prodName = obj.name;
+                        var prodPrice = parseFloat(obj.price);
+                        var prodCost = parseFloat(obj.cost);
+                        var prodID = obj.id;
+
+                        //products_table.prepend('<tr id="'+obj.id+'"><th>'+ prodName +'</th> <td><input type="number" id="quantity" name="quantity" min="1" max="5" value="1"></td> <td>'+obj.cost+'</td> <td> <button class="btn btn-danger remove_product">Borrar</button></td></tr>');
+
+                        $.ajax({
+                            url:"{{ path('order_add_product') }}",
+                            type: "POST",
+                            dataType: "text",
+                            data:{
+                                id:obj.id,
+                                orderID:{{ order.id }}      
+                            },
+                            success: function(order_data){
+         
+                            products_table.prepend('<tr id="'+obj.id+'" data-id="'+order_data+'"><th>'+ prodName +'</th> <td><input type="number" id="quantity" name="quantity" min="1" max="5" value="1"></td> <td>'+obj.cost+'</td> <td> <button class="btn btn-danger remove_product">Borrar</button></td></tr>');
+   
+                            },
+                            error: function(error){
+                                console.log("Error:");
+                                console.log(error);
+                            }
+
+                        });
+
+                    }
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        //Get products from if product is valid add to list...
 
     });
 

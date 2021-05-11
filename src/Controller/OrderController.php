@@ -827,7 +827,7 @@ class OrderController extends AbstractController
         
         $orderArray = explode(",",$oids);
        
-        $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);;
+        $orders = $providerOrderRepository->findBy(['id' => $orderArray,'company'=>$user->getCompany()]);
 
         //foreach($orders as $ord){
         //$order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
@@ -872,6 +872,155 @@ class OrderController extends AbstractController
             'oids' => $oids
             
         ]);
+    }
+
+    /**
+     * @Route("/orderaddproduct", name="order_add_product", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $productRepository
+     * @param ProviderOrderRepository $providerOrderRepository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function OrderAddProduct(Request $request, ProductRepository $productRepository, ProviderOrderRepository $providerOrderRepository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('id');
+            $orderID = $request->request->get('orderID');
+        }
+        else {
+            die();
+        }
+
+        $product = $productRepository->findOneByCompanyID($user->getCompany(),$id);
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(),$orderID);
+
+        if($product != null && $order != null){
+            
+            $productOrdered = new ProductOrdered();
+            $productOrdered->setProduct($product);
+            $productOrdered->setProviderOrder($order);
+            $productOrdered->setCompany($user->getCompany());
+            $productOrdered->setAmount(1);
+            $order->setTotal($order->getTotal()+$product->getCost());
+            $em->persist($productOrdered);
+            $em->persist($order);
+            $em->flush();
+            
+        
+        }
+
+        $response = $productOrdered->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/orderchangequantity", name="order_change_quantity", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $productRepository
+     * @param ProviderOrderRepository $providerOrderRepository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function OrderChangeQuantity(Request $request, ProductRepository $productRepository, ProviderOrderRepository $providerOrderRepository, ProductOrderedRepository $productOrderedRepository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('id');
+            $orderID = $request->request->get('orderID');
+            $quantity = $request->request->get('quantity');
+        }
+        else {
+            die();
+        }
+
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(),$orderID);
+        $productOrdered = $productOrderedRepository->findOneByCompanyID($user->getCompany(),$id);
+        $product = $productOrdered->getProduct();
+
+        $originalQuantity = $productOrdered->getAmount();
+        $originalTotal = $order->getTotal();
+
+        $total = $originalTotal - ($originalQuantity * $product->getCost());
+
+        $productOrdered->setAmount($quantity);
+        $order->setTotal($total + ($quantity * $product->getCost()));
+        $em->persist($productOrdered);
+        $em->persist($order);
+        $em->flush();
+            
+        
+        $response = $productOrdered->getId();
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/orderdeleteproduct", name="order_delete_product", methods={"POST"})
+     * @param Request $request
+     * @param ProductRepository $productRepository
+     * @param ProviderOrderRepository $providerOrderRepository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function OrderDeleteProduct(Request $request, ProductRepository $productRepository, ProviderOrderRepository $providerOrderRepository, ProductOrderedRepository $productOrderedRepository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $id = $request->request->get('id');
+            $orderID = $request->request->get('orderID');
+        }
+        else {
+            die();
+        }
+
+        $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(),$orderID);
+        $productOrdered = $productOrderedRepository->findOneByCompanyID($user->getCompany(),$id);
+        $product = $productOrdered->getProduct();
+
+        $originalQuantity = $productOrdered->getAmount();
+        $originalTotal = $order->getTotal();
+
+        $total = $originalTotal - ($originalQuantity * $product->getCost());
+        $order->setTotal($total);
+
+        $em->remove($productOrdered);
+        $em->persist($order);
+        $em->flush();
+            
+        
+        $response = 1;
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
     }
 
      /**

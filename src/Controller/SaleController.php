@@ -1258,7 +1258,7 @@ class SaleController extends AbstractController
 
         if($results != null){
             $name = addslashes($results->getName());
-            $response = '{"id":"'.$results->getId().'","name":"'.$name.'","tax":"'.$results->getIsTaxable().'","price":"'.$results->getPrice().'"}';
+            $response = '{"id":"'.$results->getId().'","name":"'.$name.'","tax":"'.$results->getIsTaxable().'","cost":"'.$results->getCost().'","price":"'.$results->getPrice().'"}';
 
         }else{
             $response = 1;
@@ -1272,6 +1272,8 @@ class SaleController extends AbstractController
         return $returnResponse;
 
     }
+
+    
 
     /**
      * @Route("/fetchproductsname", name="fetch_products_name", methods={"POST"})
