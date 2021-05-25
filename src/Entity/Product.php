@@ -103,12 +103,18 @@ class Product
      */
     private $vendor;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Recipe::class, mappedBy="product")
+     */
+    private $recipes;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
         $this->productQuotes = new ArrayCollection();
         $this->productOrdereds = new ArrayCollection();
         $this->productStocks = new ArrayCollection();
+        $this->recipes = new ArrayCollection();
     }
 
     public function __toString() {
@@ -394,6 +400,36 @@ class Product
     public function setVendor(?Vendor $vendor): self
     {
         $this->vendor = $vendor;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Recipe[]
+     */
+    public function getRecipes(): Collection
+    {
+        return $this->recipes;
+    }
+
+    public function addRecipe(Recipe $recipe): self
+    {
+        if (!$this->recipes->contains($recipe)) {
+            $this->recipes[] = $recipe;
+            $recipe->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecipe(Recipe $recipe): self
+    {
+        if ($this->recipes->removeElement($recipe)) {
+            // set the owning side to null (unless already changed)
+            if ($recipe->getProduct() === $this) {
+                $recipe->setProduct(null);
+            }
+        }
 
         return $this;
     }

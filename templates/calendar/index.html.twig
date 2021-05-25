@@ -3,37 +3,119 @@
 {% block title %}Hello CalendarController!{% endblock %}
 
 {% block body %}
- <div class="card">
-    <div class="card-header"><i class=""></i>Producto</div>
-        <div class="card-body">
-    <div id='calendar'></div>
-</div>
-</div></div>
+<style>
+
+</style>
+        
+<div class="card">
+    <div class="row">
+        <div class="col-lg-2 border-right pr-0">
+            <div class="card-body border-bottom">
+                <h4 class="card-title mt-2">Calendarios</h4>
+            </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="calendar-events" class="">
+                                <div class="calendar-events mb-3" data-class="bg-info"><i
+                                        class="fa fa-circle text-info mr-2"></i>Event One</div>
+                                <div class="calendar-events mb-3" data-class="bg-success"><i
+                                        class="fa fa-circle text-success mr-2"></i> Event Two
+                                </div>
+                            </div>
+                            <!-- checkbox -->
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input"
+                                    id="drop-remove">
+                                <label class="custom-control-label" for="drop-remove">Remove
+                                    after drop</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="col-lg-10">
+            <div class="card-body b-l calender-sidebar">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+ </div>
+       
+    
+
+
+                    
+                                        
 
 {% endblock %}
 
 {% block pagejs %}
   <script src='{{ asset('lib/main.js') }}'></script>
-    <script>
 
-    function render(){
+  <script>
+  function render(){
+  var Calendar = FullCalendar.Calendar;
+  var Draggable = FullCalendar.Draggable;
 
-              var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth'
-                });
-                calendar.render();
+  var containerEl = document.getElementById('calendar-events');
+  var calendarEl = document.getElementById('calendar');
+  var checkbox = document.getElementById('drop-remove');  
 
+  // initialize the external events
+  // -----------------------------------------------------------------
+
+  new Draggable(containerEl, {
+    itemSelector: '.calendar-events',
+    eventData: function(eventEl) {
+      return {
+        title: eventEl.innerText
+      };
+    }
+  });
+
+  // initialize the calendar
+  // -----------------------------------------------------------------
+
+  var calendar = new Calendar(calendarEl, {
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    slotMinTime: "07:00:00",
+    slotMaxTime: "23:00:00",
+    slotDuration: '00:30:00',
+    themeSystem: 'bootstrap',
+    locale: 'en',
+    dayMaxEvents: true,
+    eventMaxStack: 3,
+    buttonText: {month:'Mes',week:'Semana',day:'Dia',today:'Hoy'},
+    nowIndicator:true,
+    initialView: 'timeGridWeek',
+    editable: true,
+    displayEventEnd :false,
+    droppable: true, // this allows things to be dropped onto the calendar
+    eventContent: function(arg) {
+        return { html: '<p>'+arg.event.title+'-'+arg.event.start.getHours()+':'+(arg.event.start.getMinutes()<10?'0':'') + arg.event.start.getMinutes()+'</p>' }
+    },  
+    drop: function(info) {
+      // is the "remove after drop" checkbox checked?
+      if (checkbox.checked) {
+        // if so, remove the element from the "Draggable Events" list
+        info.draggedEl.parentNode.removeChild(info.draggedEl);
+      }
+    },
+    eventClick: function(calEvent, jsEvent, view) {
+           alert("test click");
+        }
+  });
+
+  calendar.render();
     }
 
-    document.addEventListener("DOMContentLoaded", function(){
-         setTimeout(function(){ render(); }, 100);
-    
-    });
+    setTimeout(function(){ render(); }, 100);
 
-                
-       
-            
+  </script>
 
-    </script>
 {% endblock %}

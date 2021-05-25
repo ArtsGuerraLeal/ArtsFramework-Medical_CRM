@@ -55,10 +55,16 @@ class Treatment
      */
     private $simpleAppointments;
 
+    /**
+     * @ORM\OneToMany(targetEntity=EventTreatment::class, mappedBy="treatment")
+     */
+    private $eventTreatments;
+
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
         $this->simpleAppointments = new ArrayCollection();
+        $this->eventTreatments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -183,6 +189,36 @@ class Treatment
             // set the owning side to null (unless already changed)
             if ($simpleAppointment->getTreatment() === $this) {
                 $simpleAppointment->setTreatment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EventTreatment[]
+     */
+    public function getEventTreatments(): Collection
+    {
+        return $this->eventTreatments;
+    }
+
+    public function addEventTreatment(EventTreatment $eventTreatment): self
+    {
+        if (!$this->eventTreatments->contains($eventTreatment)) {
+            $this->eventTreatments[] = $eventTreatment;
+            $eventTreatment->setTreatment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventTreatment(EventTreatment $eventTreatment): self
+    {
+        if ($this->eventTreatments->removeElement($eventTreatment)) {
+            // set the owning side to null (unless already changed)
+            if ($eventTreatment->getTreatment() === $this) {
+                $eventTreatment->setTreatment(null);
             }
         }
 

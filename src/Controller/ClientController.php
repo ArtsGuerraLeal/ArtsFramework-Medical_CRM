@@ -134,7 +134,7 @@ class ClientController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
 
         $client = $this->clientRepository->findByCompanyID($user->getCompany(), $id);
-
+        $client->setName($name);
         $client->setPhone($phone);
         $client->setEmail($email);
         $client->setCellphone($cellphone);

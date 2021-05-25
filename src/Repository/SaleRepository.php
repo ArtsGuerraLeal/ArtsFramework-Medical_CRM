@@ -250,15 +250,21 @@ class SaleRepository extends ServiceEntityRepository
 
 
             if(is_numeric($search['value'])){
-                $searchItem = $search['value'];
 
-                $searchQuery = 'sale.id LIKE \'%' . $searchItem . '%\'';
-
+                    $searchItem = $search['value'];
+                    $searchQuery = 'sale.id LIKE \'%' . $searchItem . '%\'';
+                
             }elseif(!is_numeric($search['value'])){
 
-                $searchItem = $search['value'];
+                if(strpos($search['value'],'-')){
+                    $searchItem = $search['value'];
+                    $searchQuery = 'sale.time LIKE \'%' . $searchItem . '%\'';
+                }else{
+                    $searchItem = $search['value'];
+                    $searchQuery = 'sale.client LIKE \'%' . $searchItem. '%\'';
+                }
 
-                $searchQuery = 'sale.client LIKE \'%' . $searchItem;
+                
 
             }
         }

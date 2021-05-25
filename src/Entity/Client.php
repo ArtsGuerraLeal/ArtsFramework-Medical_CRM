@@ -124,11 +124,17 @@ class Client
      */
     private $sales;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Event::class, mappedBy="client")
+     */
+    private $events;
+
     public function __construct()
     {
         $this->creditSales = new ArrayCollection();
         $this->quotes = new ArrayCollection();
         $this->sales = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -438,6 +444,36 @@ class Client
             // set the owning side to null (unless already changed)
             if ($sale->getClientId() === $this) {
                 $sale->setClientId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Event[]
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getClient() === $this) {
+                $event->setClient(null);
             }
         }
 

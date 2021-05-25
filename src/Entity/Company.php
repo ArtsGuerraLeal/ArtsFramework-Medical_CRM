@@ -253,6 +253,36 @@ class Company
      */
     private $vendors;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Material::class, mappedBy="company")
+     */
+    private $materials;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Ensamble::class, mappedBy="company")
+     */
+    private $ensambles;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Recipe::class, mappedBy="company")
+     */
+    private $recipes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Calendar::class, mappedBy="company")
+     */
+    private $calendars;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Event::class, mappedBy="company")
+     */
+    private $events;
+
+    /**
+     * @ORM\OneToMany(targetEntity=EventTreatment::class, mappedBy="company")
+     */
+    private $eventTreatments;
+
 
 
     public function __construct()
@@ -284,6 +314,12 @@ class Company
         $this->productStocks = new ArrayCollection();
         $this->productQuoteDiscounts = new ArrayCollection();
         $this->vendors = new ArrayCollection();
+        $this->materials = new ArrayCollection();
+        $this->ensambles = new ArrayCollection();
+        $this->recipes = new ArrayCollection();
+        $this->calendars = new ArrayCollection();
+        $this->events = new ArrayCollection();
+        $this->eventTreatments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -1360,6 +1396,186 @@ class Company
             // set the owning side to null (unless already changed)
             if ($vendor->getCompany() === $this) {
                 $vendor->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Material[]
+     */
+    public function getMaterials(): Collection
+    {
+        return $this->materials;
+    }
+
+    public function addMaterial(Material $material): self
+    {
+        if (!$this->materials->contains($material)) {
+            $this->materials[] = $material;
+            $material->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMaterial(Material $material): self
+    {
+        if ($this->materials->removeElement($material)) {
+            // set the owning side to null (unless already changed)
+            if ($material->getCompany() === $this) {
+                $material->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Ensamble[]
+     */
+    public function getEnsambles(): Collection
+    {
+        return $this->ensambles;
+    }
+
+    public function addEnsamble(Ensamble $ensamble): self
+    {
+        if (!$this->ensambles->contains($ensamble)) {
+            $this->ensambles[] = $ensamble;
+            $ensamble->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnsamble(Ensamble $ensamble): self
+    {
+        if ($this->ensambles->removeElement($ensamble)) {
+            // set the owning side to null (unless already changed)
+            if ($ensamble->getCompany() === $this) {
+                $ensamble->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Recipe[]
+     */
+    public function getRecipes(): Collection
+    {
+        return $this->recipes;
+    }
+
+    public function addRecipe(Recipe $recipe): self
+    {
+        if (!$this->recipes->contains($recipe)) {
+            $this->recipes[] = $recipe;
+            $recipe->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecipe(Recipe $recipe): self
+    {
+        if ($this->recipes->removeElement($recipe)) {
+            // set the owning side to null (unless already changed)
+            if ($recipe->getCompany() === $this) {
+                $recipe->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Calendar[]
+     */
+    public function getCalendars(): Collection
+    {
+        return $this->calendars;
+    }
+
+    public function addCalendar(Calendar $calendar): self
+    {
+        if (!$this->calendars->contains($calendar)) {
+            $this->calendars[] = $calendar;
+            $calendar->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCalendar(Calendar $calendar): self
+    {
+        if ($this->calendars->removeElement($calendar)) {
+            // set the owning side to null (unless already changed)
+            if ($calendar->getCompany() === $this) {
+                $calendar->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Event[]
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getCompany() === $this) {
+                $event->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EventTreatment[]
+     */
+    public function getEventTreatments(): Collection
+    {
+        return $this->eventTreatments;
+    }
+
+    public function addEventTreatment(EventTreatment $eventTreatment): self
+    {
+        if (!$this->eventTreatments->contains($eventTreatment)) {
+            $this->eventTreatments[] = $eventTreatment;
+            $eventTreatment->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventTreatment(EventTreatment $eventTreatment): self
+    {
+        if ($this->eventTreatments->removeElement($eventTreatment)) {
+            // set the owning side to null (unless already changed)
+            if ($eventTreatment->getCompany() === $this) {
+                $eventTreatment->setCompany(null);
             }
         }
 

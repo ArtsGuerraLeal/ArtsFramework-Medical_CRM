@@ -50,9 +50,14 @@
 
                 {% endif %}
 
-                <td>
-                        <a class="btn btn-primary" href="">Detalles</a>
-                        <a class="btn btn-primary " href="">Edit</a>
+                 <td>
+                    <div class="btn btn-primary btn-sm my-1">
+                        <a class="text-white" href="{{ path('discount_show', {'id': discount.id}) }}">Detalles</a>
+
+                    </div>
+                    <div class="btn btn-primary btn-sm">
+                        <a class="text-white" href="{{ path('discount_edit', {'id': discount.id}) }}">Editar</a>
+                    </div>
                 </td>
             </tr>
                     {% endfor %}

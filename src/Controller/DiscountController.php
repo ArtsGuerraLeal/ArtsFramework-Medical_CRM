@@ -56,6 +56,8 @@ class DiscountController extends AbstractController
         ]);
     }
 
+    
+
     /**
      * @Route("/new", name="discount_new", methods={"GET","POST"})
      * @return Response
@@ -80,6 +82,51 @@ class DiscountController extends AbstractController
         }
 
         return $this->render('discount/new.html.twig', [
+            'discount' => $discount,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/{id}", name="discount_show", methods={"GET"})
+     * @param DiscountRepository $discountRepository
+     * @param $id
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function show(DiscountRepository $discountRepository, $id): Response
+
+    {
+        $user = $this->security->getUser();
+        $discount = $discountRepository->findByCompanyID($user->getCompany(), $id);
+        return $this->render('discount/show.html.twig', [
+            'discount' => $discount,
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/edit", name="discount_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param DiscountRepository $discountRepository
+     * @param $id
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function edit(Request $request, DiscountRepository $discountRepository, $id): Response
+    {
+        $user = $this->security->getUser();
+        $discount = $discountRepository->findByCompanyID($user->getCompany(), $id);
+
+        $form = $this->createForm(DiscountType::class, $discount);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('discount_index');
+        }
+
+        return $this->render('discount/edit.html.twig', [
             'discount' => $discount,
             'form' => $form->createView(),
         ]);

@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Entity\Sale;
 use App\Entity\Quote;
+use App\Entity\ProductSold;
+use App\Entity\ProductSoldDiscount;
 use App\Repository\QuoteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -358,6 +361,60 @@ class QuotesListController extends AbstractController
         
         $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
         $pdf->Output($filename.".pdf",'I'); // This will output the PDF as a response directly
+}
+
+/**
+     * @Route("/{id}/convert/sale", name="quote_convert_sale", methods={"GET","POST"})
+     * @param QuoteRepository $quoteRepository
+     * @param $id
+     * @param Request $request
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function QuoteConvertSale(QuoteRepository $quoteRepository, $id, Request $request): Response
+    {
+
+        $user = $this->security->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $quote = $quoteRepository->findByCompanyID($user->getCompany(), $id);
+        $productsQuoted = $quote->getProductQuotes();
+        $em = $this->getDoctrine()->getManager();
+
+        $sale = new Sale();
+
+        $sale->setTotal($quote->getTotal());
+        $sale->setSubtotal($quote->getSubtotal());
+        $sale->setTax($quote->getTax());
+        $sale->setCompany($this->security->getUser()->getCompany());
+        $sale->setTime(new \DateTime());
+        $sale->setClientId($quote->getClient());
+        $sale->setClient($quote->getClient()->getName());
+        
+        foreach ($productsQuoted as $prod){
+            $product = $prod->getProduct();
+            $productSold = new ProductSold();
+            
+            if($product->getQuantity() != null){
+                $product->setQuantity($product->getQuantity() - $prod->getAmount());
+            }
+
+            $productSold->setProduct($product);
+            $productSold->setAmount($prod->getAmount());
+            $productSold->setSale($sale);
+            $productSold->setCompany($this->security->getUser()->getCompany());
+            $productSold->setPrice($product->getPrice() * $prod->getAmount());
+
+        $em->persist($product);
+        $em->persist($productSold);
+        
+
+        
+
+    }
+        $em->persist($sale);
+        $em->flush();
+    return $this->redirectToRoute('unpaid_sale_edit',['id'=>$sale->getId()]);
+
 }
 
 }
