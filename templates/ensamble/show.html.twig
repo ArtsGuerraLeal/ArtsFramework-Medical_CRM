@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ensamble{% endblock %}
+
+{% block body %}
+    <h1>Ensamble</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ ensamble.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ ensamble.name }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ ensamble.price }}</td>
+            </tr>
+            <tr>
+                <th>Cost</th>
+                <td>{{ ensamble.cost }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('ensamble_index') }}">back to list</a>
+
+    <a href="{{ path('ensamble_edit', {'id': ensamble.id}) }}">edit</a>
+
+    {{ include('ensamble/_delete_form.html.twig') }}
+{% endblock %}

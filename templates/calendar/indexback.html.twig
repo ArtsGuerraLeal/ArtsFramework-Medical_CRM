@@ -1,0 +1,182 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hello CalendarController!{% endblock %}
+
+{% block body %}
+
+<style>
+
+
+#external-events {
+  z-index: 2;
+  top: 20px;
+  left: 20px;
+  width: 150px;
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  background: #eee;
+}
+
+#external-events .fc-event {
+  cursor: move;
+}
+
+}
+
+</style>
+<div class="card">
+    <div class="card-body">
+    <div class="row">
+        <div class="col-2">
+
+                <div id='external-events'>
+                <div id="external-eventsheader"><p>
+                    <strong>Draggable Events</strong>
+                </p></div>
+                
+
+                <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' >
+                    <div class='fc-event-main'>My Event 1</div>
+                </div>
+                <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
+                    <div class='fc-event-main'>My Event 2</div>
+                </div>
+                <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
+                    <div class='fc-event-main'>My Event 3</div>
+                </div>
+                <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
+                    <div class='fc-event-main'>My Event 4</div>
+                </div>
+                <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
+                    <div class='fc-event-main'>My Event 5</div>
+                </div>
+
+                <p>
+                    <input type='checkbox' id='drop-remove' />
+                    <label for='drop-remove'>remove after drop</label>
+                </p>
+            </div>
+        </div>
+        <div class="col-10">
+    <div id='calendar'></div>
+        </div>
+        </div>
+    </div>
+</div>
+
+                    
+                                        
+
+{% endblock %}
+
+{% block pagejs %}
+  <script src='{{ asset('lib/main.js') }}'></script>
+
+  <script>
+dragElement(document.getElementById("external-events"));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+  </script>
+
+  <script>
+  function render(){
+  var Calendar = FullCalendar.Calendar;
+  var Draggable = FullCalendar.Draggable;
+
+  var containerEl = document.getElementById('external-events');
+  var calendarEl = document.getElementById('calendar');
+  var checkbox = document.getElementById('drop-remove');
+  
+
+  // initialize the external events
+  // -----------------------------------------------------------------
+
+  new Draggable(containerEl, {
+    itemSelector: '.fc-event',
+    eventData: function(eventEl) {
+      return {
+        title: eventEl.innerText
+      };
+    }
+  });
+
+  
+
+  // initialize the calendar
+  // -----------------------------------------------------------------
+
+  var calendar = new Calendar(calendarEl, {
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    slotMinTime: "07:00:00",
+    slotMaxTime: "23:00:00",
+    slotDuration: '00:30:00',
+    themeSystem: 'bootstrap',
+    locale: 'es',
+    buttonText: {month:'Mes',week:'Semana',day:'Dia',today:'Hoy'},
+    nowIndicator:true,
+    initialView: 'timeGridWeek',
+    editable: true,
+    droppable: true, // this allows things to be dropped onto the calendar
+    drop: function(info) {
+      // is the "remove after drop" checkbox checked?
+      if (checkbox.checked) {
+        // if so, remove the element from the "Draggable Events" list
+        info.draggedEl.parentNode.removeChild(info.draggedEl);
+      }
+    },
+    eventClick: function(calEvent, jsEvent, view) {
+           alert("test click");
+        }
+  });
+
+  calendar.render();
+    }
+
+    setTimeout(function(){ render(); }, 100);
+
+  </script>
+
+{% endblock %}

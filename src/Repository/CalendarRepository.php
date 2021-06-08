@@ -19,6 +19,26 @@ class CalendarRepository extends ServiceEntityRepository
         parent::__construct($registry, Calendar::class);
     }
 
+    /**
+     * @param $name
+     * @param $companyId
+     * @return Calendar[] Returns an array of Calendar objects
+     */
+    public function searchOneByName($name,$companyId)
+    {
+
+        return $this->createQueryBuilder('calendar')
+            ->andWhere('calendar.company = :val')
+            ->andWhere('calendar.name = :name')
+            ->setParameter('val', $companyId)
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+            ;
+
+    }
+
     // /**
     //  * @return Calendar[] Returns an array of Calendar objects
     //  */

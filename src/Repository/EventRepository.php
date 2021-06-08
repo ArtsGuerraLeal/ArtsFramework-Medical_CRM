@@ -19,6 +19,44 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
+    public function findByCompanyID($companyId,$id)
+    {
+        return $this->createQueryBuilder('event')
+            ->andWhere('event.company = :val')
+            ->andWhere('event.id = :id')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('event.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
+    public function findAllByCompanyDate($companyId,$start,$end)
+    {
+        
+        $from = new \DateTime($start->format("Y-m-d")." 00:00:00");
+        $to   = new \DateTime($end->format("Y-m-d")." 23:59:59");
+
+        return $this->createQueryBuilder('event')
+            ->Select('event.id')
+            ->addSelect('event.start')
+            ->addSelect('event.end')
+            ->addSelect('event.title')
+            ->addSelect('calendar.color as color')
+            ->addSelect('client.name as clientName')
+            ->andWhere('event.company = :val')
+            ->andWhere('event.start BETWEEN :from AND :to')
+            ->Join('event.calendar', 'calendar')
+            ->Join('event.client', 'client')
+            ->setParameter('val', $companyId)
+            ->setParameter('from', $from )
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getArrayResult()
+            ;
+    }
+
     // /**
     //  * @return Event[] Returns an array of Event objects
     //  */

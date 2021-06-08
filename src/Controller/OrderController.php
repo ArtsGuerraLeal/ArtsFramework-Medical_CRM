@@ -304,6 +304,11 @@ class OrderController extends AbstractController
         }
 
         $order = $providerOrderRepository->findOneByCompanyID($usr->getCompany(), $id);
+        $order->setIsSent(true);
+        $order->setDateSent(new \DateTime());
+
+        $this->entityManager->persist($order);
+        $this->entityManager->flush();
 
         $config = parse_ini_file('../MailConfig.ini');
 
@@ -395,6 +400,11 @@ class OrderController extends AbstractController
             ;
 
             $mailer->send($message);
+    
+            $order->setIsSent(true);
+            $order->setDateSent(new \DateTime());
+            $entityManager->persist($order);
+            $entityManager->flush();
         
 
     
@@ -475,6 +485,10 @@ class OrderController extends AbstractController
 
             foreach ($orderArray as $id) {
                 $order = $providerOrderRepository->findOneByCompanyID($usr->getCompany(), $id);
+                $order->setIsSent(true);
+                $order->setDateSent(new \DateTime());
+                $this->entityManager->persist($order);
+                $this->entityManager->flush();
                 $message->attach(\Swift_Attachment::fromPath($this->getParameter('temp_storage_dir').$usr->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf"));
 
             }
@@ -513,6 +527,7 @@ class OrderController extends AbstractController
         foreach($orders as $ord){
         
         $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $ord);
+        
         
         }
        
@@ -730,16 +745,6 @@ class OrderController extends AbstractController
                 
         }
 
-      //  var_dump($groupedOrderArray);
-      //  var_dump($groupedOrderArrayIDs);
-      //  var_dump($singleOrderArray);
-      //  var_dump($singleOrderArrayIDs);
-
-
-     
-
-
-       
         foreach($singleOrderArrayIDs as $id){
             $this->createSinglePDF($providerOrderRepository,'',$id);
         }

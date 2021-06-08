@@ -1,6 +1,6 @@
 {% extends 'base_admin.html.twig' %}
 
-{% block title %}Hello CalendarController!{% endblock %}
+{% block title %}Calendario{% endblock %}
 
 {% block body %}
 <style>
@@ -8,28 +8,50 @@
 </style>
         
 <div class="card">
+   
     <div class="row">
         <div class="col-lg-2 border-right pr-0">
             <div class="card-body border-bottom">
                 <h4 class="card-title mt-2">Calendarios</h4>
+                    <button class="myBtn btn btn-success mr-1 myBtn" id="myBtn" type="button" data-toggle="modal" data-target="#myModal">Crear Cita</button>
             </div>
+            
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
                             <div id="calendar-events" class="">
-                                <div class="calendar-events mb-3" data-class="bg-info"><i
-                                        class="fa fa-circle text-info mr-2"></i>Event One</div>
-                                <div class="calendar-events mb-3" data-class="bg-success"><i
-                                        class="fa fa-circle text-success mr-2"></i> Event Two
-                                </div>
+                            
+                                {% for calendar in calendars %}
+                                    {% if calendar.color == '4bb863'%}
+                                        <div class="calendar-events mb-3" data-class="4bb863">
+                                        <i class="fa fa-circle text-success mr-2"></i>{{ calendar.name }}</div>
+                                    {% elseif calendar.color == '074beb' %}
+                                        <div class="calendar-events mb-3" data-class="074beb">
+                                        <i class="fa fa-circle text-primary mr-2"></i>{{ calendar.name }}</div>
+                                    {% elseif calendar.color == 'e01d1d' %}
+                                        <div class="calendar-events mb-3" data-class="e01d1d">
+                                        <i class="fa fa-circle text-danger mr-2"></i>{{ calendar.name }}</div>
+                                    {% elseif calendar.color == 'ab34eb' %}
+                                        <div class="calendar-events mb-3" data-class="ab34eb">
+                                        <i class="fa fa-circle mr-2" style='color:#ab34eb'></i>{{ calendar.name }}</div>
+                                    {% elseif calendar.color == '55c7d9' %}
+                                        <div class="calendar-events mb-3" data-class="55c7d9">
+                                        <i class="fa fa-circle mr-2" style='color:#55c7d9'></i>{{ calendar.name }}</div>
+                                    {% elseif calendar.color == 'f28633' %}
+                                        <div class="calendar-events mb-3" data-class="f28633">
+                                        <i class="fa fa-circle mr-2" style='color:#f28633'></i>{{ calendar.name }}</div>
+                                    {% elseif calendar.color == '2e2e2e' %}
+                                        <div class="calendar-events mb-3" data-class="2e2e2e">
+                                        <i class="fa fa-circle text-dark mr-2" ></i>{{ calendar.name }}</div>
+                                    {% endif %}
+
+                                    
+                                
+                                
+                                {% endfor %}
                             </div>
                             <!-- checkbox -->
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input"
-                                    id="drop-remove">
-                                <label class="custom-control-label" for="drop-remove">Remove
-                                    after drop</label>
-                            </div>
+                          
                         </div>
                     </div>
                 </div>
@@ -41,6 +63,101 @@
         </div>
     </div>
  </div>
+ 
+   <!-- Warning Alert Modal -->
+<div id="eventConflictModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <i class="dripicons-warning h1 text-warning"></i>
+                    <h4 class="mt-2">Conflicto de Cita</h4>
+                    <p class="mt-3">Ya hay una cita con esta equipo a esta hora. Deseas agregar la cita de todas formas?</p>
+                    <button type="button" class="eventConfirmCreate btn btn-warning my-2"
+                        data-dismiss="modal">Continue</button>
+                        <button type="button" class="eventConfirmCancel btn btn-warning my-2"
+                        data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+ <!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Crear Cita</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+            <h4 class="card-title">Paciente</h4>
+            <div class="row">
+                <div class="col-sm-3 pr-0">
+                    <div class="form-group">
+                        <input type="text" id="client_code" class="form-control " placeholder="Codigo" onkeyup="showResultCode(this.value)">
+                    </div>
+                </div>
+                <div class="col-sm-9 pl-0">
+                    <div class="form-group">
+                        <input type="text" id="client_name" class="eventName form-control" placeholder="Nombre" onkeyup="showResultClient(this.value)">
+                    </div>
+                </div>
+            </div>
+            <div class="" id="livesearch_client" style="border-radius: 5px; position: absolute; top: 95px; background: white none repeat scroll 0% 0%; width: 95%;"></div>
+
+
+            <h4 class="card-title">Tratamiento</h4>
+            <select name="treatments" id="treatments" onchange="selectTreatment(this)">
+            {% for treatment in treatments %}
+            <option value="{{treatment.id}}">{{treatment.name}}</option>
+            {% endfor %}
+            </select>
+            <input id="eventTreatment" class="eventTreatment form-control rounded my-1" type="hidden" placeholder="Tratamiento">
+            <h4 class="card-title">Dia</h4>
+            <input id="eventDay" class="eventDay form-control rounded my-1" type="date">
+            <h4 class="card-title">Hora</h4>
+            <input id="eventTime" class="eventTime form-control rounded my-1" type="time" step="300">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="eventCancel btn btn-light"
+                    data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success eventAdd">Crear Cita</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+ <!-- sample modal content -->
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Modificar Cita</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+            <h4 class="card-title">Paciente</h4>
+
+            <h4 class="card-title">Tratamiento</h4>
+           
+            <h4 class="card-title">Dia</h4>
+            <h4 class="card-title">Hora</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success">Guardar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
        
     
 
@@ -51,70 +168,457 @@
 {% endblock %}
 
 {% block pagejs %}
+  <script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
   <script src='{{ asset('lib/main.js') }}'></script>
-
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@5.5.0/main.global.min.js'></script>
   <script>
-  function render(){
-  var Calendar = FullCalendar.Calendar;
-  var Draggable = FullCalendar.Draggable;
 
-  var containerEl = document.getElementById('calendar-events');
-  var calendarEl = document.getElementById('calendar');
-  var checkbox = document.getElementById('drop-remove');  
+  function selectTreatment(treatment){
+      var treat = treatment.value;
+      console.log(treat);
 
-  // initialize the external events
-  // -----------------------------------------------------------------
+  }
 
-  new Draggable(containerEl, {
-    itemSelector: '.calendar-events',
-    eventData: function(eventEl) {
-      return {
-        title: eventEl.innerText
-      };
-    }
-  });
+  function showResultCode(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_client").innerHTML="";
+                document.getElementById("livesearch_client").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_clients_code') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        code:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var clients = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < clients.length;i++){
+                                var name = clients[i].name
+                                console.log(name);
+                               if(clients[i].code !== null){
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+':'+clients[i].code+'</a><br/>'
+                               }else{
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
+                               }                            }
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_client").innerHTML = searchResults;
+                        }
+                        else{
+                            if(document.getElementById("client_name").value !== ''){
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2";
+                            document.getElementById("livesearch_client").innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
 
-  // initialize the calendar
-  // -----------------------------------------------------------------
+                            }
+                        }       
+                    }
+                });
+            }
 
-  var calendar = new Calendar(calendarEl, {
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    slotMinTime: "07:00:00",
-    slotMaxTime: "23:00:00",
-    slotDuration: '00:30:00',
-    themeSystem: 'bootstrap',
-    locale: 'en',
-    dayMaxEvents: true,
-    eventMaxStack: 3,
-    buttonText: {month:'Mes',week:'Semana',day:'Dia',today:'Hoy'},
-    nowIndicator:true,
-    initialView: 'timeGridWeek',
-    editable: true,
-    displayEventEnd :false,
-    droppable: true, // this allows things to be dropped onto the calendar
-    eventContent: function(arg) {
-        return { html: '<p>'+arg.event.title+'-'+arg.event.start.getHours()+':'+(arg.event.start.getMinutes()<10?'0':'') + arg.event.start.getMinutes()+'</p>' }
-    },  
-    drop: function(info) {
-      // is the "remove after drop" checkbox checked?
-      if (checkbox.checked) {
-        // if so, remove the element from the "Draggable Events" list
-        info.draggedEl.parentNode.removeChild(info.draggedEl);
-      }
-    },
-    eventClick: function(calEvent, jsEvent, view) {
-           alert("test click");
+  function selectClient(str){
+            
+            if(str.includes(':')){
+            var code = str.split(':')[1];
+            document.getElementById("client_code").value=code;
+            document.getElementById("client_name").value=str.split(':')[0];
+            }else{
+            document.getElementById("client_name").value=str;
+            }
+        
+
+            document.getElementById("livesearch_client").innerHTML="";
+            document.getElementById("livesearch_client").style.border="0px";
         }
-  });
 
-  calendar.render();
+  function showResultClient(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_client").innerHTML="";
+                document.getElementById("livesearch_client").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_clients') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var clients = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < clients.length;i++){
+                                var name = clients[i].name
+                               // console.log(name+" " + clients[i].code);
+                               if(clients[i].code !== null){
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+':'+clients[i].code+'</a><br/>'
+                               }else{
+                                searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
+                               }
+                            }
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_client").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_client").innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
+                        }       
+                    }
+                });
+            }
+
+  var currentEvent;
+  var currentCalendar;
+
+  function render(){
+    var Calendar = FullCalendar.Calendar;
+    var Draggable = FullCalendar.Draggable;
+
+    var containerEl = document.getElementById('calendar-events');
+    var calendarEl = document.getElementById('calendar');
+    var checkbox = document.getElementById('drop-remove');  
+
+    // initialize the external events
+    // -----------------------------------------------------------------
+
+    new Draggable(containerEl, {
+        itemSelector: '.calendar-events',
+        eventData: function(eventEl) {
+            console.log(eventEl.getAttribute('data-class'));
+        return {
+            title: eventEl.innerText,
+            color: '#'+eventEl.getAttribute('data-class')
+        };
+        }
+    });
+
+    
+
+    // initialize the calendar
+    // -----------------------------------------------------------------
+
+    var calendar = new Calendar(calendarEl, {
+        headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,timeGridFourDay',
+        },
+        views: {
+            timeGridFourDay: {
+                type: 'timeGrid',
+                duration: { days: 8 },
+                buttonText: '4 dias',
+                
+            },
+            week: {
+            // options apply to dayGridWeek and timeGridWeek views
+            
+            }
+        },
+        //googleCalendarApiKey: 'AIzaSyDcnW6WejpTOCffshGDDb4neIrXVUA1EAE',
+       // events: 'en.usa#holiday@group.v.calendar.google.com',
+
+        defaultTimedEventDuration:'00:30',
+        expandRows:true,
+        weekends:false,
+        allDaySlot:false,
+        forceEventDuration:true,
+        slotMinTime: "07:00:00",
+        slotMaxTime: "23:00:00",
+        slotDuration: '00:30:00',
+        themeSystem: 'bootstrap',
+        locale: 'es-us',
+        dayMaxEvents: true,
+        eventMaxStack: 3,
+        buttonText: {month:'Mes',week:'Semana',day:'Dia',today:'Hoy'},
+        nowIndicator:true,
+        initialView: 'timeGridFourDay',
+        editable: true,
+        displayEventEnd :false,
+        droppable: true, // this allows things to be dropped onto the calendar
+        eventContent: function(arg) {
+            //return { html: arg.event.title+'-'+arg.event.start.getHours()+':'+(arg.event.start.getMinutes()<10?'0':'') + arg.event.start.getMinutes() }
+        },  
+        drop: function(info) {
+        //Add event with ajax and a modal lol
+            $('#myModal').modal('show');
+            var eventClient = $('.eventName');
+            var eventTreatment = $('.eventTreatment');
+            var eventDay = $('.eventDay');
+            var eventTime = $('.eventTime');
+            
+            var str = calendar.formatIso(info.date,true);
+
+            var startTime = str.substr(11,16);
+            startTime = startTime.substr(0,5);
+
+            $('.eventDay').val(str.substr(0, 10));
+            $('.eventTime').val(startTime);
+            //console.log(info);
+            //console.log(info.event);
+            //console.log(info.title);
+
+            
+
+
+        // is the "remove after drop" checkbox checked?
+        //if (checkbox.checked) {
+            // if so, remove the element from the "Draggable Events" list
+            //info.draggedEl.parentNode.removeChild(info.draggedEl);
+        //}
+        },
+        eventClick: function(calEvent, jsEvent, view) {
+        //Show event info
+            $('#editModal').modal('show');
+
+        },
+        eventResize: function(info) {
+        //change event time
+            currentEvent = info.event;
+            var str = calendar.formatIso(currentEvent.end,true);
+
+            var endTime = str.substr(11,16);
+            endTime = endTime.substr(0,5);
+
+            var eventDay = str.substr(0, 10);
+            var eventTime = endTime;
+
+            $.ajax({
+                url:"{{ path('event_resize') }}",
+                dataType:"text",
+                type: "POST",
+                data:{
+                    id:currentEvent.extendedProps.id,
+                    time:eventTime,
+                    day:eventDay,
+                },
+                success:function (php_result) {
+                    console.log(php_result);     
+                    currentEvent = undefined;
+                }
+            });
+        },
+        eventDrop: function(info) {
+        //When event is moved
+        currentEvent = info.event;
+        var str = calendar.formatIso(currentEvent.start,true);
+
+        var startTime = str.substr(11,16);
+        startTime = startTime.substr(0,5);
+
+        var eventDay = str.substr(0, 10);
+        var eventTime = startTime;
+
+            $.ajax({
+                url:"{{ path('event_move') }}",
+                dataType:"text",
+                type: "POST",
+                data:{
+                    id:currentEvent.extendedProps.id,
+                    time:eventTime,
+                    day:eventDay,
+                },
+                success:function (php_result) {
+                    console.log(php_result);     
+                    currentEvent = undefined;
+                }
+            });
+        
+       
+        
+        
+        },
+        eventAdd: function(info) {
+        },
+        eventReceive: function(info) {
+        //When the event is dropped from the calendar sidebar
+        currentEvent = info.event;
+
+        //console.log(info);
+        },
+        datesSet: function(dateInfo) {
+        calendar.removeAllEvents();
+        //Get Events with ajax
+        var dateStart = calendar.formatIso(dateInfo.start,true);
+        var dateEnd = calendar.formatIso(dateInfo.end,true);
+
+        $.ajax({
+                url:"{{ path('events_fetch') }}",
+                dataType:"text",
+                type: "POST",
+                data:{
+                    start:dateStart,
+                    end:dateEnd
+                  
+                },
+                success:function (php_result) {
+                    var events = JSON.parse(php_result);
+                    console.log(events);
+                    for(var i =0; i < events.length;i++){
+                    
+                        calendar.addEvent({
+                        title: events[i].title,
+                        color: '#'+events[i].color,
+                        start: calendar.formatIso(events[i].start.date),
+                        end: calendar.formatIso(events[i].end.date),
+                        extendedProps: {
+                            id: events[i].id,
+                            client: events[i].clientName,
+                            treatment: events[i].treatmentName
+                        }
+                        });    
+                                
+                    }
+                    
+                       
+                }
+        });
+
+        },
+    });
+
+        calendar.render();
+        currentCalendar = calendar;
+
     }
 
     setTimeout(function(){ render(); }, 100);
+    //setInterval(ReloadCalendar(){}, 10000);
+    $(document).on('click', '.eventAdd', function(){
+        var eventTime = $('.eventTime').val();
+        var eventTreatment = $('#treatments').val();
+        var eventClient = $('.eventName').val();
+        var eventDay = $('.eventDay').val();
+        var eventCalendar = currentEvent.title;
+        //console.log(eventDay+' '+eventTime+' ' +eventTreatment + ' ' + eventClient);
+        
+            $.ajax({
+                    url:"{{ path('event_slot_check') }}",
+                    dataType:"text",
+                    type: "POST",
+                    data:{
+                        client:eventClient,
+                        treatment:eventTreatment,
+                        time:eventTime,
+                        day:eventDay
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                        if(php_result == '1'){
+                            
+                            $('#eventConflictModal').modal('show');
+
+                        }else{
+                            $.ajax({
+                                url:"{{ path('event_create') }}",
+                                dataType:"text",
+                                type: "POST",
+                                data:{
+                                    client:eventClient,
+                                    treatment:eventTreatment,
+                                    time:eventTime,
+                                    day:eventDay,
+                                    calendar:eventCalendar
+                                },
+                                success:function (php_result) {
+                                    console.log(php_result);    
+                                    console.log(currentEvent);
+                                    currentEvent.setProp('title',eventClient + ' ' + $('#treatments option:selected').text() );
+                                    $('#myModal').modal('hide');
+                                    currentEvent = undefined;
+                                }
+                            });
+                        }
+                    }
+            });
+
+        });
+    
+    $(document).on('click', '.eventConfirmCreate', function(){
+        var eventTime = $('.eventTime').val();
+        var eventTreatment = $('#treatments').val();
+        var eventClient = $('.eventName').val();
+        var eventDay = $('.eventDay').val();
+        var eventCalendar = currentEvent.title;
+        
+            $.ajax({
+                    url:"{{ path('event_create') }}",
+                    dataType:"text",
+                    type: "POST",
+                    data:{
+                        client:eventClient,
+                        treatment:eventTreatment,
+                        time:eventTime,
+                        day:eventDay,
+                        calendar:eventCalendar
+
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);     
+                        currentEvent.setProp('title',eventClient + ' ' + $('#treatments option:selected').text() );
+
+                        $('#myModal').modal('hide');
+                        currentEvent = undefined;
+                    }
+            });
+            
+        });
+
+        $(document).on('click', '.eventConfirmCancel', function(){
+       
+            $('#myModal').modal('hide');
+            if(currentEvent !== undefined){
+                var eventTime = $('.eventTime');
+                var eventTreatment = $('.eventTreatment');
+                var eventClient = $('.eventName');
+                var eventDay = $('.eventDay');
+                currentEvent.remove();
+
+                eventTime.val('');
+                eventTreatment.val('');
+                eventClient.val('');
+                eventDay.val('');
+            }
+
+            
+        });
+
+        $(document).on('click', '.eventCancel', function(){
+            console.log(currentCalendar.view);
+            if(currentEvent !== undefined){
+                var eventTime = $('.eventTime');
+                var eventTreatment = $('.eventTreatment');
+                var eventClient = $('.eventName');
+                var eventDay = $('.eventDay');
+                currentEvent.remove();
+
+                eventTime.val('');
+                eventTreatment.val('');
+                eventClient.val('');
+                eventDay.val('');
+            }
+
+        });
+
+        $('#myModal').on('hidden.bs.modal', function (e) {
+
+            if(currentEvent !== undefined){
+                var eventTime = $('.eventTime');
+                var eventTreatment = $('.eventTreatment');
+                var eventClient = $('.eventName');
+                var eventDay = $('.eventDay');
+                currentEvent.remove();
+
+                eventTime.val('');
+                eventTreatment.val('');
+                eventClient.val('');
+                eventDay.val('');
+            }
+
+        })
 
   </script>
 

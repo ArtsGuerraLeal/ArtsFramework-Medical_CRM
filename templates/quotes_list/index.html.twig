@@ -14,6 +14,7 @@
            <table class="table table-bordered table-striped order_table" id="zero_config" >
                     <thead>
                     <tr>
+                        <th style="width:10%">ID</th>
                         <th style="width:10%">Fecha</th>
                         <th style="width:10%" >Cliente</th>
                         <th style="width:10%" >Total</th>
@@ -23,6 +24,8 @@
                     <tbody>
                     {% for quote in quotes %}
                         <tr>
+                            <td>{{ quote.id }} </td>
+
                             <td>{{ quote.time ? quote.time|date('Y-m-d H:i:s') : '' }}</td>
 
                             <td>{{ quote.client.name }} </td>

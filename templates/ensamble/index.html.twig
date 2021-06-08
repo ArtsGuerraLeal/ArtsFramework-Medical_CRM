@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ensamble index{% endblock %}
+
+{% block body %}
+    <h1>Ensamble index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Cost</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ensamble in ensambles %}
+            <tr>
+                <td>{{ ensamble.id }}</td>
+                <td>{{ ensamble.name }}</td>
+                <td>{{ ensamble.price }}</td>
+                <td>{{ ensamble.cost }}</td>
+                <td>
+                    <a href="{{ path('ensamble_show', {'id': ensamble.id}) }}">show</a>
+                    <a href="{{ path('ensamble_edit', {'id': ensamble.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('ensamble_new') }}">Create new</a>
+{% endblock %}

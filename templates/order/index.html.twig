@@ -22,6 +22,8 @@
                 <th style="width:10%" >Cliente</th>
                 <th style="width:10%" >Total</th>
                 <th style="width:10%" >Fecha</th>
+                <th style="width:10%" >Enviada</th>
+                <th style="width:10%" >Proveedor</th>
                 <th style="width:10%">Acciones</th>
             </tr>
         </thead>
@@ -33,6 +35,13 @@
                             <td>{{ order.client }} </td>
                             <td>${{ order.total }} USD</td>
                             <td>{{ order.time ? order.time|date('d-m-Y H:i:s') : '' }}</td>
+                            {% if order.isSent != null %}
+                            <td class="text-success">Enviado {{ order.dateSent ? order.dateSent|date('d-m-Y H:i') : '' }}</td>
+                            {% else %}
+                            <td class="text-danger">No enviado</td>
+                            {% endif %}
+                            <td>{{ order.vendor.name}}</td>
+
                             <td>
                                 <div class="btn btn-primary btn-sm">
                                     <a class="text-white" href="{{ path('order_show', {'id': order.id}) }}">Detalles</a>

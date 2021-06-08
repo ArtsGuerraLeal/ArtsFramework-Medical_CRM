@@ -105,6 +105,16 @@ class ProviderOrder
      */
     private $vendor;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isSent;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateSent;
+
     public function __construct()
     {
         $this->productOrdereds = new ArrayCollection();
@@ -333,6 +343,30 @@ class ProviderOrder
     public function setVendor(?Vendor $vendor): self
     {
         $this->vendor = $vendor;
+
+        return $this;
+    }
+
+    public function getIsSent(): ?bool
+    {
+        return $this->isSent;
+    }
+
+    public function setIsSent(?bool $isSent): self
+    {
+        $this->isSent = $isSent;
+
+        return $this;
+    }
+
+    public function getDateSent(): ?\DateTimeInterface
+    {
+        return $this->dateSent;
+    }
+
+    public function setDateSent(?\DateTimeInterface $dateSent): self
+    {
+        $this->dateSent = $dateSent;
 
         return $this;
     }

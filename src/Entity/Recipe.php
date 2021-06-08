@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RecipeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -43,6 +45,16 @@ class Recipe
      * @ORM\JoinColumn(nullable=false)
      */
     private $product;
+
+    /**
+     * @ORM\OneToMany(targetEntity=RecipeMaterials::class, mappedBy="recipe")
+     */
+    private $recipeMaterials;
+
+    public function __construct()
+    {
+        $this->recipeMaterials = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +117,36 @@ class Recipe
     public function setProduct(?Product $product): self
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RecipeMaterials[]
+     */
+    public function getRecipeMaterials(): Collection
+    {
+        return $this->recipeMaterials;
+    }
+
+    public function addRecipeMaterial(RecipeMaterials $recipeMaterial): self
+    {
+        if (!$this->recipeMaterials->contains($recipeMaterial)) {
+            $this->recipeMaterials[] = $recipeMaterial;
+            $recipeMaterial->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecipeMaterial(RecipeMaterials $recipeMaterial): self
+    {
+        if ($this->recipeMaterials->removeElement($recipeMaterial)) {
+            // set the owning side to null (unless already changed)
+            if ($recipeMaterial->getRecipe() === $this) {
+                $recipeMaterial->setRecipe(null);
+            }
+        }
 
         return $this;
     }

@@ -19,6 +19,24 @@ class EventTreatmentRepository extends ServiceEntityRepository
         parent::__construct($registry, EventTreatment::class);
     }
 
+    public function FindSameSlot($companyId,$start,$end){
+  
+          
+        $from = new \DateTime($start->format("Y-m-d H:i:s"));
+        $to   = new \DateTime($end->format("Y-m-d H:i:s"));
+
+        return $this->createQueryBuilder('eventTreatment')
+            ->andWhere('eventTreatment.company = :val')
+            ->andWhere('event.start = :from')
+            ->setParameter('from', $from )
+            //->setParameter('to', $to)
+            ->Join('eventTreatment.event', 'event')
+            ->setParameter('val', $companyId)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return EventTreatment[] Returns an array of EventTreatment objects
     //  */

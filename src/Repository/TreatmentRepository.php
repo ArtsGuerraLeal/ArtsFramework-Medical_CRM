@@ -65,6 +65,26 @@ class TreatmentRepository extends ServiceEntityRepository
             ;
     }
 
+    /**
+     * @param $name
+     * @param $companyId
+     * @return Treatment[] Returns an array of Content objects
+     */
+    public function searchOneByName($name,$companyId)
+    {
+
+        return $this->createQueryBuilder('treatment')
+            ->andWhere('treatment.company = :val')
+            ->andWhere('treatment.name = :name')
+            ->setParameter('val', $companyId)
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+            ;
+
+    }
+
     /*
     public function findOneBySomeField($value): ?Treatment
     {

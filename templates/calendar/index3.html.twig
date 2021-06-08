@@ -1,0 +1,42 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hello CalendarController!{% endblock %}
+
+{% block body %}
+ <div class="card">
+    <div class="card-header"><i class=""></i>Producto</div>
+        <div class="card-body">
+    <div id='calendar'></div>
+</div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block pagejs %}
+  <script src='{{ asset('lib/main.js') }}'></script>
+    <script>
+
+    function render(){
+              var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    locale: 'es',
+                    headerToolbar: { center: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' }, // buttons for switching between views
+                    buttonText: {month:'Mes',week:'Semana',day:'Dia',today:'Hoy'},
+                    nowIndicator:true,
+                    initialView: 'timeGridWeek'
+                });
+                calendar.render();
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+         setTimeout(function(){ render(); }, 100);
+    
+    });
+
+                
+       
+            
+
+    </script>
+{% endblock %}
