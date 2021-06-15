@@ -5,16 +5,27 @@ namespace App\Controller;
 use App\Entity\Material;
 use App\Form\MaterialType;
 use App\Repository\MaterialRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/material")
  */
 class MaterialController extends AbstractController
 {
+
+    private $entityManager;
+    private $security;
+
+    public function __construct(EntityManagerInterface $entityManager,Security $security){
+        $this->entityManager = $entityManager;
+        $this->security = $security;
+    }
+
     /**
      * @Route("/", name="material_index", methods={"GET"})
      */
@@ -36,6 +47,7 @@ class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $material->setCompany($this->security->getUser()->getCompany());
             $entityManager->persist($material);
             $entityManager->flush();
 

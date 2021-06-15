@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\ProductStock;
 use App\Entity\ProviderOrder;
 use App\Entity\ProductOrdered;
 use App\Repository\UserRepository;
@@ -91,12 +92,76 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/recieveorder", name="shopify_webhook", methods={"POST"})
+     * @Route("/{id}/updateproduct", name="shopify_update_product_webhook", methods={"POST"})
      * @param Request $request
      * @param $id
      * @return JsonResponse
      */
-    public function webhook(Request $request,$id): JsonResponse
+    public function UpdateProductWebhook(Request $request,$id): JsonResponse
+    {
+        if ($request->getMethod() == 'POST')
+        {
+            $variant = $request->request->get('variants'); 
+        }
+        else {
+            die();
+        }
+
+        $variants = $variant[0];
+
+        $em = $this->getDoctrine()->getManager();
+        $company = $this->companyRepository->findOneBy(['id'=>$id]);
+
+        $product = $this->productRepository->findOneByCompanySKU($company,$variants['sku']);
+
+        if($product != null){
+            $newQuantity = $variants['inventory_quantity'];
+
+            if($newQuantity != $product->getQuantity()){
+                if($newQuantity > $product->getQuantity())
+                {
+                    $product->setQuantity($newQuantity);
+                    $stock = new ProductStock();
+                    $stock->setCompany($company);
+
+                    $stock->setAmount($newQuantity - $product->getQuantity());
+                    $stock->setProduct($product);
+                    $stock->setTime(new \DateTime());
+                    $em->persist($stock);
+                    $em->persist($product);
+                    $em->flush();
+
+                }elseif ($newQuantity < $product->getQuantity())
+                {
+                    $product->setQuantity($newQuantity);
+                    $stock = new ProductStock();
+                    $stock->setCompany($company);
+                    $stock->setAmount(($product->getQuantity() - $newQuantity)/-1);
+                    $stock->setProduct($product);
+                    $stock->setTime(new \DateTime());
+                    $em->persist($stock);
+                    $em->persist($product);
+                    $em->flush();
+
+
+                }
+
+            }
+            
+            return new JsonResponse(['HTTPStatus' => 200]);
+        }
+
+        return new JsonResponse(['HTTPStatus' => 400]);
+
+    }
+
+    /**
+     * @Route("/{id}/recieveorder", name="shopify_recieve_order_webhook", methods={"POST"})
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function RecieveOrderWebhook(Request $request,$id): JsonResponse
     {
         if ($request->getMethod() == 'POST')
         {

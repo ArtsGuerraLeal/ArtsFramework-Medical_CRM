@@ -56,6 +56,11 @@ class Event
      */
     private $eventTreatments;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $note;
+
     public function __construct()
     {
         $this->eventTreatments = new ArrayCollection();
@@ -165,6 +170,18 @@ class Event
                 $eventTreatment->setEvent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): self
+    {
+        $this->note = $note;
 
         return $this;
     }

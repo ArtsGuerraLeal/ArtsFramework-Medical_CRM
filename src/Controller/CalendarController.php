@@ -2,13 +2,19 @@
 
 namespace App\Controller;
 
+use Safe\DateTime;
 use App\Entity\Event;
+use App\Service\Client;
+use App\Entity\Calendar;
+use Google_Service_Calendar;
 use App\Entity\EventTreatment;
+use Google_Service_Calendar_Event;
 use App\Repository\EventRepository;
 use App\Repository\ClientRepository;
 use App\Repository\CalendarRepository;
 use App\Repository\TreatmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Google_Service_Calendar_EventDateTime;
 use App\Repository\EventTreatmentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -37,9 +43,29 @@ class CalendarController extends AbstractController
     /**
      * @Route("/calendar", name="calendar")
      */
-    public function index(CalendarRepository $calendarRepository,TreatmentRepository $treatmentRepository): Response
+    public function index(CalendarRepository $calendarRepository,TreatmentRepository $treatmentRepository,Client $googleClient): Response
     {
+        $client = $googleClient->getClient($this->security->getUser()->getCompany()->getGoogleJson()[0]);
+        $user = $this->security->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+        $googlecals = array();
+        $service = new Google_Service_Calendar($client);
+        $calendarList = $service->calendarList->listCalendarList();
+        foreach ($calendarList->getItems() as $calendarListEntry) {
+         //   $calendar = new Calendar();
+          //  $calendar->setCompany($user->getCompany());
+         //   $calendar->setName($calendarListEntry->getSummary());
+          //  $calendar->setColor($calendarListEntry->getbackgroundColor());
+          //  $calendar->setGoogleId($calendarListEntry->getId());
+          //  $em->persist($calendar);
+            array_push($googlecals,$calendarListEntry->getSummary());
+          }
+        
+          //$em->flush();
+
         return $this->render('calendar/index.html.twig', [
+            'googlecalendars' => $googlecals,
             'calendars' => $calendarRepository->findAll(),
             'treatments'=> $treatmentRepository->findByCompany($this->security->getUser()->getCompany())
         ]);
@@ -53,7 +79,7 @@ class CalendarController extends AbstractController
      * @return JsonResponse
      * @throws Exception
      */
-    public function CreateEvent(Request $request,EventTreatmentRepository $eventTreatmentRepository, EventRepository $eventRepository,ClientRepository $clientRepository, TreatmentRepository $treatmentRepository, CalendarRepository $calendarRepository):JsonResponse
+    public function CreateEvent(Request $request,EventTreatmentRepository $eventTreatmentRepository, EventRepository $eventRepository,ClientRepository $clientRepository, TreatmentRepository $treatmentRepository, CalendarRepository $calendarRepository, Client $googleClient):JsonResponse
     {
 
         $user = $this->security->getUser();
@@ -72,6 +98,12 @@ class CalendarController extends AbstractController
         else {
             die();
         }
+        $client = $googleClient->getClient($this->security->getUser()->getCompany()->getGoogleJson()[0]);
+
+        $service = new Google_Service_Calendar($client);
+
+        
+
         $dateStart = new \DateTime($eventDay.' '.$eventTime);
         $dateEnd = new \DateTime($eventDay.' '.$eventTime);
 
@@ -109,8 +141,28 @@ class CalendarController extends AbstractController
 
         $em->persist($event);
         $em->flush();
+
+        $calendarId = $calendar->getGoogleId();
+
+
+        $event = new Google_Service_Calendar_Event(array(
+            'summary' => $client->getName() . $client->getPhone(),
+            'description' => $treatment->getName(),
+
+            'start' => array(
+                'dateTime' => $dateStart->format(DateTime::RFC3339),
+                'timeZone' => 'America/Monterrey',
+
+
+            ),
+            'end' => array(
+                'dateTime' => $dateEnd->format(DateTime::RFC3339),
+                'timeZone' => 'America/Monterrey',
+
+            )
+        ));
         
-        
+        $service->events->insert($calendarId, $event);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);

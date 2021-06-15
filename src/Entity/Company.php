@@ -283,6 +283,16 @@ class Company
      */
     private $eventTreatments;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductMaterial::class, mappedBy="company")
+     */
+    private $productMaterials;
+
+    /**
+     * @ORM\OneToMany(targetEntity=EnsambleProduct::class, mappedBy="company")
+     */
+    private $ensambleProducts;
+
 
 
     public function __construct()
@@ -320,6 +330,8 @@ class Company
         $this->calendars = new ArrayCollection();
         $this->events = new ArrayCollection();
         $this->eventTreatments = new ArrayCollection();
+        $this->productMaterials = new ArrayCollection();
+        $this->ensambleProducts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -1576,6 +1588,66 @@ class Company
             // set the owning side to null (unless already changed)
             if ($eventTreatment->getCompany() === $this) {
                 $eventTreatment->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductMaterial[]
+     */
+    public function getProductMaterials(): Collection
+    {
+        return $this->productMaterials;
+    }
+
+    public function addProductMaterial(ProductMaterial $productMaterial): self
+    {
+        if (!$this->productMaterials->contains($productMaterial)) {
+            $this->productMaterials[] = $productMaterial;
+            $productMaterial->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductMaterial(ProductMaterial $productMaterial): self
+    {
+        if ($this->productMaterials->removeElement($productMaterial)) {
+            // set the owning side to null (unless already changed)
+            if ($productMaterial->getCompany() === $this) {
+                $productMaterial->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EnsambleProduct[]
+     */
+    public function getEnsambleProducts(): Collection
+    {
+        return $this->ensambleProducts;
+    }
+
+    public function addEnsambleProduct(EnsambleProduct $ensambleProduct): self
+    {
+        if (!$this->ensambleProducts->contains($ensambleProduct)) {
+            $this->ensambleProducts[] = $ensambleProduct;
+            $ensambleProduct->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnsambleProduct(EnsambleProduct $ensambleProduct): self
+    {
+        if ($this->ensambleProducts->removeElement($ensambleProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($ensambleProduct->getCompany() === $this) {
+                $ensambleProduct->setCompany(null);
             }
         }
 

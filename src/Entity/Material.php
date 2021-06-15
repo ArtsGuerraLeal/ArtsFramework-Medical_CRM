@@ -45,9 +45,15 @@ class Material
      */
     private $recipeMaterials;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductMaterial::class, mappedBy="material")
+     */
+    private $productMaterials;
+
     public function __construct()
     {
         $this->recipeMaterials = new ArrayCollection();
+        $this->productMaterials = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,6 +133,36 @@ class Material
             // set the owning side to null (unless already changed)
             if ($recipeMaterial->getMaterial() === $this) {
                 $recipeMaterial->setMaterial(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductMaterial[]
+     */
+    public function getProductMaterials(): Collection
+    {
+        return $this->productMaterials;
+    }
+
+    public function addProductMaterial(ProductMaterial $productMaterial): self
+    {
+        if (!$this->productMaterials->contains($productMaterial)) {
+            $this->productMaterials[] = $productMaterial;
+            $productMaterial->setMaterial($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductMaterial(ProductMaterial $productMaterial): self
+    {
+        if ($this->productMaterials->removeElement($productMaterial)) {
+            // set the owning side to null (unless already changed)
+            if ($productMaterial->getMaterial() === $this) {
+                $productMaterial->setMaterial(null);
             }
         }
 

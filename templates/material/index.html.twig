@@ -1,13 +1,27 @@
 {% extends 'base_admin.html.twig' %}
 
-{% block title %}Material index{% endblock %}
+{% block title %}Catalogo de Materiales{% endblock %}
+
+{% block breadcrumb %}
+   
+{% endblock %}
 
 {% block body %}
-    <h1>Material index</h1>
+<div class="card">
 
-    <table class="table">
+<div class="card-header"><i class="fas fa-table"></i>Catalogo Materiales</div>
+    
+        <div class="card-body">
+        
+           <table class="table table-bordered table-striped " id="zero_config" >
+           <div class="btn btn-primary my-2">
+    <a class="text-white " href="{{ path('material_new') }}">Nuevo material</a>
+    </div>
+    <div class="btn btn-primary my-2 mx-2">
+    <a class="text-white " href="{{ path('inventory_adjustment') }}">Ajuste de Inventario</a>
+    </div>
         <thead>
-            <tr>
+        <tr>
                 <th>Id</th>
                 <th>Name</th>
                 <th>Cost</th>
@@ -36,4 +50,9 @@
     </table>
 
     <a href="{{ path('material_new') }}">Create new</a>
+{% endblock %}
+
+{% block pagejs %}
+    <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../theme/dist/js/pages/datatable/datatable-basic.init.js"></script>
 {% endblock %}

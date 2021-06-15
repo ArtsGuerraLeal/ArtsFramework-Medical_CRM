@@ -108,6 +108,21 @@ class Product
      */
     private $recipes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductMaterial::class, mappedBy="product")
+     */
+    private $productMaterials;
+
+    /**
+     * @ORM\OneToMany(targetEntity=EnsambleProduct::class, mappedBy="product")
+     */
+    private $ensambleProducts;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Ensamble::class, inversedBy="product", cascade={"persist", "remove"})
+     */
+    private $ensamble;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
@@ -115,6 +130,8 @@ class Product
         $this->productOrdereds = new ArrayCollection();
         $this->productStocks = new ArrayCollection();
         $this->recipes = new ArrayCollection();
+        $this->productMaterials = new ArrayCollection();
+        $this->ensambleProducts = new ArrayCollection();
     }
 
     public function __toString() {
@@ -430,6 +447,78 @@ class Product
                 $recipe->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProductMaterial[]
+     */
+    public function getProductMaterials(): Collection
+    {
+        return $this->productMaterials;
+    }
+
+    public function addProductMaterial(ProductMaterial $productMaterial): self
+    {
+        if (!$this->productMaterials->contains($productMaterial)) {
+            $this->productMaterials[] = $productMaterial;
+            $productMaterial->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductMaterial(ProductMaterial $productMaterial): self
+    {
+        if ($this->productMaterials->removeElement($productMaterial)) {
+            // set the owning side to null (unless already changed)
+            if ($productMaterial->getProduct() === $this) {
+                $productMaterial->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EnsambleProduct[]
+     */
+    public function getEnsambleProducts(): Collection
+    {
+        return $this->ensambleProducts;
+    }
+
+    public function addEnsambleProduct(EnsambleProduct $ensambleProduct): self
+    {
+        if (!$this->ensambleProducts->contains($ensambleProduct)) {
+            $this->ensambleProducts[] = $ensambleProduct;
+            $ensambleProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnsambleProduct(EnsambleProduct $ensambleProduct): self
+    {
+        if ($this->ensambleProducts->removeElement($ensambleProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($ensambleProduct->getProduct() === $this) {
+                $ensambleProduct->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getEnsamble(): ?Ensamble
+    {
+        return $this->ensamble;
+    }
+
+    public function setEnsamble(?Ensamble $ensamble): self
+    {
+        $this->ensamble = $ensamble;
 
         return $this;
     }

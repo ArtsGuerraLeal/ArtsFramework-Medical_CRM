@@ -1,11 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block title %}New Material{% endblock %}
 
 {% block body %}
-    <h1>Create new Material</h1>
 
-    {{ include('material/_form.html.twig') }}
+<div class="card">
+    <div class="card-header">Material
+    </div>
+    
+        <div class="card-body">
+ 
+        {{ include('material/_form.html.twig', {'button_label': 'Guardar'}) }}
 
+        </div>
+
+        
+</div>
     <a href="{{ path('material_index') }}">back to list</a>
 {% endblock %}

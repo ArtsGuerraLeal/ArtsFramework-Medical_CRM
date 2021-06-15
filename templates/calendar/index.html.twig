@@ -22,33 +22,14 @@
                             <div id="calendar-events" class="">
                             
                                 {% for calendar in calendars %}
-                                    {% if calendar.color == '4bb863'%}
-                                        <div class="calendar-events mb-3" data-class="4bb863">
-                                        <i class="fa fa-circle text-success mr-2"></i>{{ calendar.name }}</div>
-                                    {% elseif calendar.color == '074beb' %}
-                                        <div class="calendar-events mb-3" data-class="074beb">
-                                        <i class="fa fa-circle text-primary mr-2"></i>{{ calendar.name }}</div>
-                                    {% elseif calendar.color == 'e01d1d' %}
-                                        <div class="calendar-events mb-3" data-class="e01d1d">
-                                        <i class="fa fa-circle text-danger mr-2"></i>{{ calendar.name }}</div>
-                                    {% elseif calendar.color == 'ab34eb' %}
-                                        <div class="calendar-events mb-3" data-class="ab34eb">
-                                        <i class="fa fa-circle mr-2" style='color:#ab34eb'></i>{{ calendar.name }}</div>
-                                    {% elseif calendar.color == '55c7d9' %}
-                                        <div class="calendar-events mb-3" data-class="55c7d9">
-                                        <i class="fa fa-circle mr-2" style='color:#55c7d9'></i>{{ calendar.name }}</div>
-                                    {% elseif calendar.color == 'f28633' %}
-                                        <div class="calendar-events mb-3" data-class="f28633">
-                                        <i class="fa fa-circle mr-2" style='color:#f28633'></i>{{ calendar.name }}</div>
-                                    {% elseif calendar.color == '2e2e2e' %}
-                                        <div class="calendar-events mb-3" data-class="2e2e2e">
-                                        <i class="fa fa-circle text-dark mr-2" ></i>{{ calendar.name }}</div>
-                                    {% endif %}
+                                 
+                                        <div class="calendar-events mb-3" data-class="{{calendar.color}}">
+                                        <i class="fa fa-circle mr-2" style='color:#{{calendar.color}}'></i>{{ calendar.name }}</div>
+                                  
 
-                                    
-                                
                                 
                                 {% endfor %}
+                                
                             </div>
                             <!-- checkbox -->
                           
