@@ -15,7 +15,7 @@ class LandingController extends AbstractController
      */
     public function index()
     {
-        return $this->render('landing/index.html.twig', [
+        return $this->render('landing/index2.html.twig', [
             'controller_name' => 'LandingController',
         ]);
     }

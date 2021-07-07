@@ -32,6 +32,24 @@ class EventRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findByCompanyIDArray($companyId,$id)
+    {
+        return $this->createQueryBuilder('event')
+            ->Select('event.id')
+            ->addSelect('event.title')
+            ->addSelect('event.note')
+            ->addSelect('client.name as clientName')
+            ->andWhere('event.company = :val')
+            ->andWhere('event.id = :id')
+            ->Join('event.client', 'client')
+            ->setParameter('val', $companyId)
+            ->setParameter('id', $id)
+            ->orderBy('event.id', 'ASC')
+            ->getQuery()
+            ->getArrayResult()
+            ;
+    }
+
     public function findAllByCompanyDate($companyId,$start,$end)
     {
         

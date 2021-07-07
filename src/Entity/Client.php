@@ -129,12 +129,18 @@ class Client
      */
     private $events;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="client")
+     */
+    private $projects;
+
     public function __construct()
     {
         $this->creditSales = new ArrayCollection();
         $this->quotes = new ArrayCollection();
         $this->sales = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -474,6 +480,36 @@ class Client
             // set the owning side to null (unless already changed)
             if ($event->getClient() === $this) {
                 $event->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getClient() === $this) {
+                $project->setClient(null);
             }
         }
 

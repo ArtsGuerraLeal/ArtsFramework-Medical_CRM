@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Area{% endblock %}
+
+{% block body %}
+    <h1>Edit Area</h1>
+
+    {{ include('area/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('area_index') }}">back to list</a>
+
+    {{ include('area/_delete_form.html.twig') }}
+{% endblock %}

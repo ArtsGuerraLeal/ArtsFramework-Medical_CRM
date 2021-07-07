@@ -37,7 +37,7 @@ class CalendarController extends AbstractController
     public function __construct(EntityManagerInterface $entityManager,Security $security){
         $this->entityManager = $entityManager;
         $this->security = $security;
-
+        
     }
 
     /**
@@ -93,6 +93,7 @@ class CalendarController extends AbstractController
             $eventDay = $request->request->get('day');
             $eventTime = $request->request->get('time');
             $eventCalendar = $request->request->get('calendar');
+            $eventNotes = $request->request->get('notes');
 
         }
         else {
@@ -138,6 +139,7 @@ class CalendarController extends AbstractController
         $event->setTitle($clientName. " " . $treatment->getName());
         $event->setStart($dateStart);
         $event->setEnd($dateEnd->modify("+30 minutes"));
+        $event->setNote($eventNotes);
 
         $em->persist($event);
         $em->flush();
@@ -146,8 +148,8 @@ class CalendarController extends AbstractController
 
 
         $event = new Google_Service_Calendar_Event(array(
-            'summary' => $client->getName() . $client->getPhone(),
-            'description' => $treatment->getName(),
+            'summary' => $client->getCode().' '. $client->getName() . ' ' . $client->getPhone(),
+            'description' => $treatment->getName() . ' ' . $event->getNote(),
 
             'start' => array(
                 'dateTime' => $dateStart->format(DateTime::RFC3339),
@@ -340,6 +342,41 @@ class CalendarController extends AbstractController
        
         
         $response = json_encode($events);
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/eventfetch", name="event_fetch", methods={"POST"})
+     * @param Request $request
+     * @param EventRepository $eventRepository
+     * @param CalendarRepository $calendarRepository
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function FetchEvent(Request $request, EventRepository $eventRepository, CalendarRepository $calendarRepository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $eventID = $request->request->get('id');
+        
+        }
+        else {
+            die();
+        }
+
+        $event = $eventRepository->findByCompanyIDArray($user->getCompany(),$eventID);
+        
+        $response = json_encode($event);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);

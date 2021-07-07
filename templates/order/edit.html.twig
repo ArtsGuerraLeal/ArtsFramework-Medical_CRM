@@ -91,7 +91,7 @@
                 <td> 
                 <div class="search-button-name input-group">
                 <input id="product_search_input_name" class="form-control rounded my-1" type="text" placeholder="Nombre del Producto" onkeyup="showResultName(this.value)">
-                <button class="btn btn-success btn-sm add_product" onclick="searchName()">Agregar</button>
+                <button class="btn btn-success btn-sm add_product">Agregar</button>
                 </div>
                 <div class="" id="livesearch_name" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
 
@@ -157,13 +157,6 @@ function selectProductName(str){
                 });
             }
 
-
-    function searchName() {
-
-        
-
-
-    }
 
     //add on change to product selector too
     $(document).on('change', '#quantity', function(data){

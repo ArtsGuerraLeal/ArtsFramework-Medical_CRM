@@ -103,6 +103,8 @@
             <input id="eventDay" class="eventDay form-control rounded my-1" type="date">
             <h4 class="card-title">Hora</h4>
             <input id="eventTime" class="eventTime form-control rounded my-1" type="time" step="300">
+            <h4 class="card-title">Notas</h4>
+            <input id="eventNotes" class="eventNotes form-control rounded my-1" type="text">
             </div>
             <div class="modal-footer">
                 <button type="button" class="eventCancel btn btn-light"
@@ -125,11 +127,17 @@
             </div>
             <div class="modal-body">
             <h4 class="card-title">Paciente</h4>
+            <input id="infoName" class="infoName form-control rounded my-1" type="text">
 
             <h4 class="card-title">Tratamiento</h4>
-           
+            <input id="infoTreatment" class="infoTreatment form-control rounded my-1" type="text">
+
             <h4 class="card-title">Dia</h4>
             <h4 class="card-title">Hora</h4>
+            <h4 class="card-title">Notas</h4>
+            <input id="infoNotes" class="infoNotes form-control rounded my-1" type="text">
+
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light"
@@ -353,7 +361,25 @@
         },
         eventClick: function(calEvent, jsEvent, view) {
         //Show event info
-            $('#editModal').modal('show');
+            $.ajax({
+                url:"{{ path('event_fetch') }}",
+                dataType:"text",
+                type: "POST",
+                data:{
+                    id:calEvent.event.extendedProps.id
+                },
+                success:function (php_result) {
+                    var event = JSON.parse(php_result);
+                    console.log(event);
+
+                    $('#editModal').modal('show');
+                    $('.infoName').val(event[0].clientName);
+                    $('.infoTreatment').val(event[0].title);
+                    $('.infoNotes').val(event[0].note);
+
+                }
+            });
+           
 
         },
         eventResize: function(info) {
@@ -473,6 +499,8 @@
         var eventTreatment = $('#treatments').val();
         var eventClient = $('.eventName').val();
         var eventDay = $('.eventDay').val();
+        var eventNotes = $('.eventNotes').val();
+
         var eventCalendar = currentEvent.title;
         //console.log(eventDay+' '+eventTime+' ' +eventTreatment + ' ' + eventClient);
         
@@ -502,7 +530,8 @@
                                     treatment:eventTreatment,
                                     time:eventTime,
                                     day:eventDay,
-                                    calendar:eventCalendar
+                                    calendar:eventCalendar,
+                                    notes:eventNotes
                                 },
                                 success:function (php_result) {
                                     console.log(php_result);    

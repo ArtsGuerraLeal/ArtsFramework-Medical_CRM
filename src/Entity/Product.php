@@ -123,6 +123,11 @@ class Product
      */
     private $ensamble;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectProduct::class, mappedBy="product")
+     */
+    private $projectProducts;
+
     public function __construct()
     {
         $this->productSolds = new ArrayCollection();
@@ -132,6 +137,7 @@ class Product
         $this->recipes = new ArrayCollection();
         $this->productMaterials = new ArrayCollection();
         $this->ensambleProducts = new ArrayCollection();
+        $this->projectProducts = new ArrayCollection();
     }
 
     public function __toString() {
@@ -519,6 +525,36 @@ class Product
     public function setEnsamble(?Ensamble $ensamble): self
     {
         $this->ensamble = $ensamble;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectProduct[]
+     */
+    public function getProjectProducts(): Collection
+    {
+        return $this->projectProducts;
+    }
+
+    public function addProjectProduct(ProjectProduct $projectProduct): self
+    {
+        if (!$this->projectProducts->contains($projectProduct)) {
+            $this->projectProducts[] = $projectProduct;
+            $projectProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectProduct(ProjectProduct $projectProduct): self
+    {
+        if ($this->projectProducts->removeElement($projectProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($projectProduct->getProduct() === $this) {
+                $projectProduct->setProduct(null);
+            }
+        }
 
         return $this;
     }

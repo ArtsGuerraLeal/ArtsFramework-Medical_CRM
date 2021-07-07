@@ -1,0 +1,201 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block body %}
+
+
+<div class="card">
+    <div class="card-header">Projecto
+    </div>
+    
+        <div class="card-body">
+ <h2>Resumen</h2>
+     <table class="table table-bordered " id="zero_config" >
+          <thead>
+                    <tr>
+                        <th style="width:10%" >Nombre</th>
+                        <th style="width:10%" >Area</th>                
+                    </tr>
+        </thead>
+        <tbody>
+           
+           
+             <tr>
+            {% for product in project.projectProducts %}
+            <tr id="{{product.id}}" data-id="{{product.id}}">
+                <th>
+                {{product.product.name}}
+                </th>
+
+                <td>{{product.area.name}}</td>
+            </tr>
+            
+            {% endfor %}
+        
+
+            </tr>
+
+        </tbody>
+        
+    </table>
+
+
+
+
+<h2>Areas</h2>
+     <table class="table table-bordered areas_table" id="zero_config" >
+          <thead>
+                    <tr>
+                        <th style="width:10%" >Nombre</th>
+                        <th style="width:10%" >Acciones</th>                
+                    </tr>
+        </thead>
+        <tbody>
+           {% for area in project.projectAreas %}
+            <tr id="{{area.id}}" data-id="{{area.id}}">
+                <th>
+                {{area.area.name}}
+                </th>
+
+                <td> <button class = "btn btn-danger remove_area" >Borrar</button></td>
+            </tr>
+            
+            {% endfor %}
+           
+             <tr>
+                <td> 
+                <div class="search-button-name input-group">
+                <input id="area_search_input_name" class="form-control rounded my-1" type="text" placeholder="Nombre de Area" onkeyup="showResultName(this.value)">
+                <button class="btn btn-success btn-sm add_area">Agregar</button>
+                </div>
+                <div class="" id="livesearch_name" style="z-index:1;position:absolute; border-radius: 5px; background: white none repeat scroll 0% 0%; width: 50%;"></div>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+        
+    </table>
+        </div>
+
+        
+</div>
+
+
+    <a href="{{ path('project_index') }}">Regresar</a>
+
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+
+
+{% endblock %}
+
+
+{% block pagejs %}
+
+<script type="text/javascript">
+
+function selectProductName(str){
+            document.getElementById("area_search_input_name").value=str;
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function clearProductName(){
+            document.getElementById("area_search_input_name").value='';
+            document.getElementById("livesearch_name").innerHTML="";
+            document.getElementById("livesearch_name").style.border="0px";
+        }
+
+        function showResultName(str) {
+             if (str.length==0) {
+                document.getElementById("livesearch_name").innerHTML="";
+                document.getElementById("livesearch_name").style.border="0px";
+                return;
+            }
+            $.ajax({
+                    url:"{{ path('fetch_areas_name') }}",
+                    type: "POST",
+                    dataType:"text",
+                    data:{
+                        name:str
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var products = JSON.parse(php_result);
+                            var searchResults = ""
+                            for(var i =0; i < products.length;i++){
+                                var name = products[i].name
+                                
+                                searchResults += '<a class="text-primary" onclick="selectProductName(this.innerHTML)">'+products[i].name+'</a><br/>'
+                            }
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = searchResults;
+                        }
+                        else{
+                            document.getElementById("livesearch_name").style.border="1px solid #A5ACB2"
+                            document.getElementById("livesearch_name").innerHTML = '<a class="text-success" onclick="clearProductName()">Sin Resultados</a><br/>';
+                        }       
+                    }
+                });
+            }
+
+    $(document).on('click', '.add_area', function(){
+        var products_table = $('.areas_table > tbody:last-child');
+
+        var name = $('#area_search_input_name').val();
+        $.ajax({
+                url:"{{ path('fetch_area_name') }}",
+                type: "POST",
+                dataType: "text",
+                data:{
+                    name:name,
+                },
+                success: function(data){
+                    var obj = jQuery.parseJSON(data);
+//                    console.log(obj.name);
+
+                        var areaName = obj.name;
+                        var areaID = obj.id;
+
+                        //products_table.prepend('<tr id="'+obj.id+'"><th>'+ prodName +'</th> <td><input type="number" id="quantity" name="quantity" min="1" max="5" value="1"></td> <td>'+obj.cost+'</td> <td> <button class="btn btn-danger remove_product">Borrar</button></td></tr>');
+
+                        $.ajax({
+                            url:"{{ path('project_add_area') }}",
+                            type: "POST",
+                            dataType: "text",
+                            data:{
+                                areaID:obj.id,
+                                projectID:{{project.id}}
+                            },
+                            success: function(order_data){
+         
+                            products_table.prepend('<tr id="'+obj.id+'" data-id="'+order_data+'"><th>'+ areaName +'</th><td><button class="btn btn-danger remove_area">Borrar</button></td></tr>');
+   
+                            },
+                            error: function(error){
+                                console.log("Error:");
+                                console.log(error);
+                            }
+
+                        });
+
+                    
+                },
+                error: function(error){
+                    console.log("Error:");
+                    console.log(error);
+                }
+
+            });
+
+        //Get products from if product is valid add to list...
+
+    });
+        
+
+</script>
+{% endblock %}

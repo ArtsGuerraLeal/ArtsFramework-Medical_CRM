@@ -1045,7 +1045,7 @@ class OrderController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $order = $providerOrderRepository->findOneByCompanyID($user->getCompany(), $id);
 
-      
+        header('Content-Type: application/pdf');
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
@@ -1073,11 +1073,8 @@ class OrderController extends AbstractController
         $dompdf->render();
 
         // Output the generated PDF to Browser (inline view)
-        $dompdf->stream($user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf", [
-            //Show download box on open
-            "Attachment" => false
-        ]);
-
+        $dompdf->stream($user->getCompany()->getName().' - PO '.$order->getOrderNumber().".pdf",array("Attachment" => false));
+        
     }
 
     /**

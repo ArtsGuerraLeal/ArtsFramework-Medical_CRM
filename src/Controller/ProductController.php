@@ -248,32 +248,36 @@ class ProductController extends AbstractController
                                     $product->setName($data[$c]);
                                 }
                                 if($c==3){
-                                    $vendor = $this->vendorRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
-                                    if($vendor == null){
-                                        $vendor = new Vendor;
-                                        $vendor->setName($data[$c]);
-                                        $vendor->setCompany($user->getCompany());
-                                        $entityManager->persist($vendor);
-    
-                                        $product->setVendor($vendor);
-                                    }else{
-                                        $product->setVendor($vendor);
-    
+                                    if($data[$c] != ''){
+                                        $vendor = $this->vendorRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                        if($vendor == null){
+                                            $vendor = new Vendor;
+                                            $vendor->setName($data[$c]);
+                                            $vendor->setCompany($user->getCompany());
+                                            $entityManager->persist($vendor);
+        
+                                            $product->setVendor($vendor);
+                                        }else{
+                                            $product->setVendor($vendor);
+        
+                                        }
                                     }
                                 }
                                 
                                 if($c==4){
-                                    $category = $this->categoryRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
-                                    if($category == null){
-                                        $category = new Category;
-                                        $category->setName($data[$c]);
-                                        $category->setCompany($user->getCompany());
-                                        $entityManager->persist($category);
-    
-                                        $product->setCategory($category);
-                                    }else{
-                                        $product->setCategory($category);
-    
+                                    if($data[$c] != ''){
+                                        $category = $this->categoryRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                        if($category == null){
+                                            $category = new Category;
+                                            $category->setName($data[$c]);
+                                            $category->setCompany($user->getCompany());
+                                            $entityManager->persist($category);
+        
+                                            $product->setCategory($category);
+                                        }else{
+                                            $product->setCategory($category);
+        
+                                        }
                                     }
                                 }
                                 
@@ -343,6 +347,7 @@ class ProductController extends AbstractController
                                     $product->setName($data[$c]);
                                 }
                                 if($c==3){
+                                    if($data[$c] != ''){
                                     $vendor = $this->vendorRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
                                     if($vendor == null){
                                         $vendor = new Vendor;
@@ -356,8 +361,10 @@ class ProductController extends AbstractController
     
                                     }
                                 }
+                                }
                                 
                                 if($c==4){
+                                    if($data[$c] != ''){
                                     $category = $this->categoryRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
                                     if($category == null){
                                         $category = new Category;
@@ -371,6 +378,7 @@ class ProductController extends AbstractController
     
                                     }
                                 }
+                                }
                                                             
                                 if($c==16){
                                     $product->setQuantity(intval($data[$c]));
@@ -380,6 +388,261 @@ class ProductController extends AbstractController
                                 }
     
                                 if($c==24){
+                                $product->setImage($data[$c]);
+    
+                                    if($product->getImage() != ''){
+                                        $image = file_get_contents($data[$c]);
+                                        $uID = md5(uniqid());
+    
+                                        $file = file_put_contents($this->getParameter('uploads_dir').$uID.'.png', $image);
+                                        
+                                        $filename = $uID. '.png';
+                                        $product->setImage($filename);
+                                   
+                                        $s3->putObject([
+                                            'Bucket' => 'pos.artstech',
+                                            'Key'    => $user->getCompany()->getName().'/'.$filename,
+                                            'SourceFile' => $this->getParameter('uploads_dir').$filename,
+                                            'ACL'    => 'public-read'
+                                        ]);
+    
+                                       unlink($this->getParameter('uploads_dir').$filename);
+    
+                                    }else{
+    
+                                        $product->setImage(null);
+                                    }
+                    
+    
+                                }
+                                if($c==46){
+                                    $product->setCost(floatval($data[$c]));
+                                }
+                                $product->setCompany($user->getCompany());
+    
+                            }
+                        }
+                       
+                        
+                        
+                        if($product->getSku()!=null){
+                            $entityManager->persist($product);
+                            $entityManager->flush();
+                        }
+                        
+                        
+                      }
+                      fclose($fp);
+                }
+            }
+           
+        //   $entityManager->persist($product);
+
+            return $this->redirectToRoute('product_index');
+        }
+
+        return $this->render('product/upload.html.twig', [
+    
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/uploadnoinventory", name="product_upload_no_inventory", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function uploadNoInventory(Request $request): Response
+    {
+        $user = $this->security->getUser();
+        $form = $this->createForm(ProductUploadType::class);
+        $form->handleRequest($request);
+
+        $config = parse_ini_file('../AmazonConfig.ini');
+        $skey = $config['amazon_secret_key'];
+        $key = $config['amazon_key'];
+
+        $s3 = new S3Client([
+            'region'  => 'us-east-1',
+            'version' => 'latest',
+            'credentials' => [
+                'key'    => $key,
+                'secret' => $skey,
+            ]
+        ]);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            /**@var UploadedFile $file */
+            $file = $request->files->get('product_upload')['attachment'];
+            if($file){
+                
+                if (($fp = fopen($file, "r")) !== FALSE) {
+                    $flag = true;
+                    while (($data = fgetcsv($fp, 1000, ",")) !== FALSE) {
+                        if($flag) { $flag = false; continue; }
+                        
+                       
+                        $product = new Product();
+                        
+                        $num = count($data);
+
+                        $s = $data[13];
+                               
+                            if( isset($s[0]) ){
+                                if($s[0]=="'"){
+                                    $s = ltrim($s, $s[0]);
+                                    }
+                                }
+                        
+                        if($this->productRepository->findOneByCompanySKU($user->getCompany(),$s) == null ){
+                            for ($c=0; $c < $num; $c++) {
+                                //3 Vendor. Look for one and if it doesnt exist, create one
+                                //4 Category. Look for one and if it doesnt exist, create one.
+                                if($c==0){
+                                    $product->setUpc($data[$c]);
+                                }
+                                if($c==1){
+                                    $product->setName($data[$c]);
+                                }
+                                if($c==3){
+                                    if($data[$c] != ''){
+                                    $vendor = $this->vendorRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                    if($vendor == null){
+                                        $vendor = new Vendor;
+                                        $vendor->setName($data[$c]);
+                                        $vendor->setCompany($user->getCompany());
+                                        $entityManager->persist($vendor);
+    
+                                        $product->setVendor($vendor);
+                                    }else{
+                                        $product->setVendor($vendor);
+    
+                                    }}
+                                }
+                                
+                                if($c==4){
+                                    if($data[$c] != ''){
+                                    $category = $this->categoryRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                    if($category == null){
+                                        $category = new Category;
+                                        $category->setName($data[$c]);
+                                        $category->setCompany($user->getCompany());
+                                        $entityManager->persist($category);
+    
+                                        $product->setCategory($category);
+                                    }else{
+                                        $product->setCategory($category);
+    
+                                    }}
+                                }
+                                
+                                if($c==13){
+                                    $s = $data[$c];
+                                   
+                                    if( isset($s[0]) ){
+                                        if($s[0]=="'"){
+                                            $s = ltrim($s, $s[0]);
+                                        }
+                                        $product->setSku($s);
+                                    }
+                                 
+                                }
+                               
+                                    $product->setQuantity(0);
+                                
+                                if($c==18){
+                                    $product->setPrice(floatval($data[$c]));
+                                }
+    
+                                if($c==23){
+                                $product->setImage($data[$c]);
+    
+                                    if($product->getImage() != ''){
+                                        $image = file_get_contents($data[$c]);
+                                        $uID = md5(uniqid());
+    
+                                        $file = file_put_contents($this->getParameter('uploads_dir').$uID.'.png', $image);
+                                        
+                                        $filename = $uID. '.png';
+                                        $product->setImage($filename);
+                                   
+                                        $s3->putObject([
+                                            'Bucket' => 'pos.artstech',
+                                            'Key'    => $user->getCompany()->getName().'/'.$filename,
+                                            'SourceFile' => $this->getParameter('uploads_dir').$filename,
+                                            'ACL'    => 'public-read'
+                                        ]);
+    
+                                       unlink($this->getParameter('uploads_dir').$filename);
+    
+                                    }else{
+    
+                                        $product->setImage(null);
+                                    }
+                    
+    
+                                }
+                                if($c==45){
+                                    $product->setCost(floatval($data[$c]));
+                                }
+                                $product->setCompany($user->getCompany());
+    
+                            }
+
+                        }else{
+                            $product = $this->productRepository->findOneByCompanySKU($user->getCompany(),$s);
+
+                            for ($c=0; $c < $num; $c++) {
+                                //3 Vendor. Look for one and if it doesnt exist, create one
+                                //4 Category. Look for one and if it doesnt exist, create one.
+                                if($c==0){
+                                    $product->setUpc($data[$c]);
+                                }
+                                if($c==1){
+                                    $product->setName($data[$c]);
+                                }
+                                if($c==3){
+                                    if($data[$c] != ''){
+                                    $vendor = $this->vendorRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                    if($vendor == null){
+                                        $vendor = new Vendor;
+                                        $vendor->setName($data[$c]);
+                                        $vendor->setCompany($user->getCompany());
+                                        $entityManager->persist($vendor);
+    
+                                        $product->setVendor($vendor);
+                                    }else{
+                                        $product->setVendor($vendor);
+    
+                                    }}
+                                }
+                                
+                                if($c==4){
+                                    if($data[$c] != ''){
+                                    $category = $this->categoryRepository->findOneByCompanyName($user->getCompany(),$data[$c]);
+                                    if($category == null){
+                                        $category = new Category;
+                                        $category->setName($data[$c]);
+                                        $category->setCompany($user->getCompany());
+                                        $entityManager->persist($category);
+    
+                                        $product->setCategory($category);
+                                    }else{
+                                        $product->setCategory($category);
+    
+                                    }
+                                }
+                                }
+                                                            
+                                if($c==16){
+                                    $product->setQuantity(intval($data[$c]));
+                                }
+                                if($c==19){
+                                    $product->setPrice(floatval($data[$c]));
+                                }
+    
+                                if($c==23){
                                 $product->setImage($data[$c]);
     
                                     if($product->getImage() != ''){

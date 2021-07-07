@@ -1,0 +1,57 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Invoice index{% endblock %}
+
+{% block body %}
+    <h1>Invoice index</h1>
+    <button class="btn btn-primary" onclick="test()">Test</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.id }}</td>
+                <td>
+                    <a href="{{ path('invoice_show', {'id': invoice.id}) }}">show</a>
+                    <a href="{{ path('invoice_edit', {'id': invoice.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('invoice_new') }}">Create new</a>
+{% endblock %}
+
+{% block pagejs %}
+
+
+  
+
+    <script type="text/javascript">
+
+        function test() {
+                $.ajax({
+                    url:"{{ path('test_invoice') }}",
+                    dataType:"text",
+                    type: "POST",
+                    success:function (php_result) {
+                        console.log(php_result);
+                    
+                    }
+                });
+
+            }
+           
+
+    </script>
+{% endblock %}

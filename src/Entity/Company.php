@@ -293,6 +293,31 @@ class Company
      */
     private $ensambleProducts;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Area::class, mappedBy="company")
+     */
+    private $areas;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="company")
+     */
+    private $projects;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectArea::class, mappedBy="company")
+     */
+    private $projectAreas;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectProduct::class, mappedBy="company")
+     */
+    private $projectProducts;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="company")
+     */
+    private $invoices;
+
 
 
     public function __construct()
@@ -332,6 +357,11 @@ class Company
         $this->eventTreatments = new ArrayCollection();
         $this->productMaterials = new ArrayCollection();
         $this->ensambleProducts = new ArrayCollection();
+        $this->areas = new ArrayCollection();
+        $this->projects = new ArrayCollection();
+        $this->projectAreas = new ArrayCollection();
+        $this->projectProducts = new ArrayCollection();
+        $this->invoices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -1648,6 +1678,156 @@ class Company
             // set the owning side to null (unless already changed)
             if ($ensambleProduct->getCompany() === $this) {
                 $ensambleProduct->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Area[]
+     */
+    public function getAreas(): Collection
+    {
+        return $this->areas;
+    }
+
+    public function addArea(Area $area): self
+    {
+        if (!$this->areas->contains($area)) {
+            $this->areas[] = $area;
+            $area->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArea(Area $area): self
+    {
+        if ($this->areas->removeElement($area)) {
+            // set the owning side to null (unless already changed)
+            if ($area->getCompany() === $this) {
+                $area->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getCompany() === $this) {
+                $project->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectArea[]
+     */
+    public function getProjectAreas(): Collection
+    {
+        return $this->projectAreas;
+    }
+
+    public function addProjectArea(ProjectArea $projectArea): self
+    {
+        if (!$this->projectAreas->contains($projectArea)) {
+            $this->projectAreas[] = $projectArea;
+            $projectArea->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectArea(ProjectArea $projectArea): self
+    {
+        if ($this->projectAreas->removeElement($projectArea)) {
+            // set the owning side to null (unless already changed)
+            if ($projectArea->getCompany() === $this) {
+                $projectArea->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectProduct[]
+     */
+    public function getProjectProducts(): Collection
+    {
+        return $this->projectProducts;
+    }
+
+    public function addProjectProduct(ProjectProduct $projectProduct): self
+    {
+        if (!$this->projectProducts->contains($projectProduct)) {
+            $this->projectProducts[] = $projectProduct;
+            $projectProduct->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectProduct(ProjectProduct $projectProduct): self
+    {
+        if ($this->projectProducts->removeElement($projectProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($projectProduct->getCompany() === $this) {
+                $projectProduct->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Invoice[]
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoice $invoice): self
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices[] = $invoice;
+            $invoice->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoice $invoice): self
+    {
+        if ($this->invoices->removeElement($invoice)) {
+            // set the owning side to null (unless already changed)
+            if ($invoice->getCompany() === $this) {
+                $invoice->setCompany(null);
             }
         }
 

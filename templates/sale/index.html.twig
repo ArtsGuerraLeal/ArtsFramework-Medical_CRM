@@ -116,58 +116,7 @@
                             </div>
 
                     {% endfor %}
-                    
-                    {% for product in products %}
-
-                     {%  if product.category != null %}
-                        <div class="col-lg-3 col-md-6 filterDiv {{ product.category.name }}" style="max-height: 500px">
-                            {% else %}
-                            <div class="col-lg-3 col-md-6 filterDiv General">
-                                {% endif %}
-
-                                <div class="card ">
-                                    <div class="card-body">
-                                    {%  if product.image != null %}
-                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
-                                    {% else %}
-                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" alt="image"/>
-                                    {% endif %}
-                                        <h4 class="card-title">{{ product.name }}</h4>
-                                       {%  if product.quantity is not null %}
-                                        <h6 class="text-muted">Existencia: <p class="my-0"id="product-quantity">{{ product.quantity }}</p></h6>
-                                    {% else %}
-                                        <h6 class="text-muted">Existencia Ilimitada <p class="my-0"id="product-quantity">999</p></h6>
-                                    {% endif %}
-
-
-                                    {%  if product.price is not null %}
-                                        <h4 class="text-danger">${{ product.price }}</h4>
-                                    {% else %}
-                                    <div class="add-button input-group">
-                                        <h5 class="text-danger my-1 mx-1">Precio:</h5><input id="product_price" class=" form-control container-fluid rounded my-0" type="number" placeholder="0">
-                                    </div>
-                                        {% endif %}
-
-                                    <div class="add-button input-group">
-                                        {%  if product.price is not null %}
-
-                                            <button id="add_product" class="mx-1 add_product btn btn-sm btn-primary">Agregar</button>
-                                            <input id="product_amount" class="form-control rounded my-1" type="number" pattern="[0-9]" value="1">
-
-                                        {% else %}
-
-                                            <button id="add_service" class="mx-auto add_service btn btn-primary my-2">Agregar</button>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                    {% endfor %}
-
+                        
                 </div>
             </div>
             
@@ -187,10 +136,16 @@
                                     <input type="text" id="client_code" class="form-control " placeholder="Codigo" onkeyup="showResultCode(this.value)">
                                 </div>
                             </div>
-                            <div class="col-sm-9 pl-0">
+                            <div class="col-sm-6 pl-0">
                                 <div class="form-group">
                                     <input type="text" id="client_name" class="form-control" placeholder="Nombre" onkeyup="showResultClient(this.value)">
                                 </div>
+
+                                </div>
+                            <div class="col-sm-3 pl-0">
+                            <button class="editClient btn btn-primary " id="editClient" type="button" data-toggle="modal" data-target="#myModal3">Editar</button>
+                            </div>
+                            
                             </div>
                         </div>
                         <div class="" id="livesearch_client" style="  border-radius: 5px; position: absolute; top: 95px; background: white none repeat scroll 0% 0%; width: 95%;"></div>
@@ -319,6 +274,61 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<!-- sample modal content -->
+<div id="myModal3" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel3" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel3">Editar Cliente</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+            <h4 class="card-title">Nombre</h4>
+                <input id="clientName" class="clientName form-control rounded my-1" type="text" placeholder="Nombre">
+            <h4 class="card-title">Correo</h4>
+                <input id="clientEmail" class="clientEmail form-control rounded my-1" type="text" placeholder="Correo">
+            <h4 class="card-title">Telefono</h4>
+                <input id="clientPhone" class="clientPhone form-control rounded my-1" type="text" placeholder="Telefono">
+            <h4 class="card-title">Celular</h4>
+                <input id="clientCellphone" class="clientCellphone form-control rounded my-1" type="text" placeholder="Celular">
+            <h4 class="card-title">Compañia</h4>
+                <input id="clientBusiness" class="clientBusiness form-control rounded my-1" type="text" placeholder="Compañia">
+            <h4 class="card-title">RFC</h4>
+                <input id="clientTaxID" class="clientTaxID form-control rounded my-1" type="text" placeholder="RFC">
+            <h4 class="card-title">Direccion</h4>
+                <input id="clientLine1" class="clientLine1 form-control rounded my-1" type="text" placeholder="Direccion">
+            <h4 class="card-title">Colonia</h4>
+                <input id="clientLine2" class="clientLine2 form-control rounded my-1" type="text" placeholder="Colonia">
+            <h4 class="card-title">Ciudad</h4>
+                <input id="clientCity" class="clientCity form-control rounded my-1" type="text" placeholder="Ciudad">
+            <h4 class="card-title">Estado</h4>
+                <input id="clientState" class="clientState form-control rounded my-1" type="text" placeholder="Estado">
+            <h4 class="card-title">Codigo Postal</h4>
+                <input id="clientPC" class="clientPC form-control rounded my-1" type="text" placeholder="C.P">
+            <h4 class="card-title">Pais</h4>
+                <input id="clientCountry" class="clientCountry form-control rounded my-1" type="text" placeholder="Pais">
+            <h4 class="card-title">Tipo</h4>
+                <input id="clientType" class="clientType form-control rounded my-1" type="text" placeholder="Tipo">
+            <h4 class="card-title">Nota</h4>
+                <input id="clientNote" class="clientNote form-control rounded my-1" type="text" placeholder="Nota">
+            
+            <h4 class="card-title">Codigo</h4>
+                <input id="clientCode" class="clientCode form-control rounded my-1" type="text" placeholder="Codigo">
+                    
+                     
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light"
+                    data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success clientSave">Guardar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 <!-- sample modal content -->
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog"
@@ -792,6 +802,73 @@
 
             $(this).parent().parent().remove();
 
+            });
+
+            $(document).on('click', '.editClient', function(){
+                var name = $('#client_name').val();
+                console.log(name);
+                $.ajax({
+                    url:"{{ path('fetch_client') }}",
+                    type: "POST",
+                    dataType: "text",
+                    data:{
+                        name:name
+                    },
+                    success:function (php_result) {
+                        if(php_result !== '[]') {
+                            var obj = jQuery.parseJSON(php_result);
+                            console.log(obj);
+                            $('#clientName').val(obj.name);
+                            $('#clientEmail').val(obj.email);
+                            $('#clientPhone').val(obj.phone);
+                            $('#clientCellphone').val(obj.cellphone);
+                            $('#clientBusiness').val(obj.business);
+                            $('#clientTaxID').val(obj.taxid);
+                            $('#clientLine1').val(obj.line1);
+                            $('#clientLine2').val(obj.line2);
+                            $('#clientCity').val(obj.city);
+                            $('#clientState').val(obj.state);
+                            $('#clientCountry').val(obj.country);
+                            $('#clientPC').val(obj.postalcode);
+                            $('#clientType').val(obj.type);
+                            $('#clientCode').val(obj.code);
+                            $('#clientNote').val(obj.note);
+
+                        }else{
+                          
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.clientSave', function(){
+
+                $.ajax({
+                    url:"{{ path('save_client') }}",
+                    type: "POST",
+                    dataType: "text",
+                    data:{
+                        name:$('#clientName').val(),
+                        email:$('#clientEmail').val(),
+                        phone:$('#clientPhone').val(),
+                        cellphone:$('#clientCellphone').val(),
+                        business:$('#clientBusiness').val(),
+                        taxID:$('#clientTaxID').val(),
+                        line1:$('#clientLine1').val(),
+                        line2:$('#clientLine2').val(),
+                        city:$('#clientCity').val(),
+                        state:$('#clientState').val(),
+                        country:$('#clientCountry').val(),
+                        postalcode:$('#clientPC').val(),
+                        type:$('#clientType').val(),
+                        code:$('#clientCode').val(),
+                        note:$('#clientNote').val(),
+                    },
+                    success:function (php_result) {
+                        $('#myModal3').modal('hide')
+
+                    }
+                });
             });
 
             $(document).on('click', '.remove_all', function(){

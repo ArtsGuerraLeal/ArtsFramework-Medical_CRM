@@ -1,0 +1,27 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Nuevo Producto{% endblock %}
+
+{% block body %}
+
+
+<div class="card">
+    <div class="card-header">Producto
+    </div>
+    
+        <div class="card-body">
+ 
+        {{ include('project/_form.html.twig', {'button_label': 'Guardar'}) }}
+
+        </div>
+
+        
+</div>
+
+
+    <a href="{{ path('product_index') }}">Catalogo</a>
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+
+
+{% endblock %}
