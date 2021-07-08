@@ -40,6 +40,7 @@
         font-size: 45px;
         line-height: 45px;
         color: #333;
+        align:right;
     }
 
     .invoice-box table tr.information table td {
@@ -132,8 +133,8 @@
                         
                             <td>
                                 Cliente: {{ quote.client.name}}<br>
-                                Telefono: {{ quote.client.phone}}<br>
-                                Correo Electronico: {{ quote.client.email}}
+                                Telefono: <br>
+                                Correo Electronico: 
                             </td>
 
                             <td>
@@ -179,9 +180,9 @@
                 </td>
             </tr>
             {% else %}
-<h5 style="margin-bottom:3px">Notes: {{ quote.note }}</h5>
+        <h5 style="margin-bottom:3px">Notes: {{ quote.note }}</h5>
 
-{% endif %}
+        {% endif %}
             <tr class="heading">
                 <td>
                     
