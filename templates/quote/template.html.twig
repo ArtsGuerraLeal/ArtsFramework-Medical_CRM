@@ -40,7 +40,7 @@
         font-size: 45px;
         line-height: 45px;
         color: #333;
-        align:right;
+
     }
 
     .invoice-box table tr.information table td {
@@ -115,7 +115,7 @@
                                 <img src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" style=" width:100%; max-width:150px;">
                             </td>
                             
-                            <td>
+                            <td style="text-align:right;">
                                 <strong>Presupuesto</strong><br>
                                 Folio {{quote.id}}<br>
                                 Creado: {{ quote.time ? quote.time|date('d-m-Y') : '' }}<br>
@@ -137,7 +137,7 @@
                                 Correo Electronico: 
                             </td>
 
-                            <td>
+                            <td style="text-align:right;">
                                 Cajero: {{ quote.user.firstName ~ ' '~ quote.user.lastName}}
                             </td>
                             
