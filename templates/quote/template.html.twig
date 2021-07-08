@@ -1,0 +1,289 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{quote.id}}</title>
+
+    <style>
+    .invoice-box {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+        font-size: 16px;
+        line-height: 24px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #555;
+    }
+
+    .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+    }
+
+    .invoice-box table td {
+        padding: 5px;
+        vertical-align: top;
+    }
+
+    .invoice-box table tr td:nth-child(2) {
+        text-align: right;
+    }
+
+    .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+    }
+
+    .invoice-box table tr.top table td.title {
+        font-size: 45px;
+        line-height: 45px;
+        color: #333;
+    }
+
+    .invoice-box table tr.information table td {
+        padding-bottom: 1px;
+    }
+
+    .invoice-box table tr.heading td {
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+    }
+
+    .invoice-box table tr.details td {
+        padding-bottom: 20px;
+    }
+
+    .invoice-box table tr.item td{
+        border-bottom: 1px solid #eee;
+    }
+
+    .invoice-box table tr.item.last td {
+        border-bottom: none;
+    }
+
+    .invoice-box table tr.total td:nth-child(6) {
+        border-top: 2px solid #eee;
+        font-weight: bold;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .invoice-box table tr.top table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .invoice-box table tr.information table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+    }
+
+    /** RTL **/
+    .rtl {
+        direction: rtl;
+        font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+    }
+
+    .rtl table {
+        text-align: right;
+    }
+
+    .rtl table tr td:nth-child(2) {
+        text-align: left;
+    }
+    </style>
+</head>
+
+<body>
+
+{% set totalDiscount = 0 %}
+
+    <div class="invoice-box">
+    
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="6">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" style=" width:100%; max-width:150px;">
+                            </td>
+                            
+                            <td>
+                                <strong>Presupuesto</strong><br>
+                                Folio {{quote.id}}<br>
+                                Creado: {{ quote.time ? quote.time|date('d-m-Y') : '' }}<br>
+                                Valido Hasta: {{ quote.expirationdate ? quote.expirationdate|date('d-m-Y') : '' }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="6">
+                    <table>
+                        <tr>
+                        
+                            <td>
+                                Cliente: {{ quote.client.name}}<br>
+                                Telefono: {{ quote.client.phone}}<br>
+                                Correo Electronico: {{ quote.client.email}}
+                            </td>
+
+                            <td>
+                                Cajero: {{ quote.user.firstName ~ ' '~ quote.user.lastName}}
+                            </td>
+                            
+                            
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+    {% if quote.note == null %}
+
+            <tr class="notes">
+                <td colspan="6">
+                    <table>
+                    <h4>Datos Bancarios para Depósito ó Transferencia <br></h4>
+
+                        <tr >
+                        
+                            <td>
+                            Banregio<br>
+                            Altima Viveros S.P.R de R.L. de C.V.<br>
+                            Cuenta: 012048860018 <br>
+                            Clabe: 0585 8012 0488 6001 86<br>
+
+                            </td>
+
+                            <td>
+                            BBVA Bancomer<br>
+                            Altima Viveros S.P.R. de R.L. de C.V.<br>
+                            Cuenta: 0112816342 <br>
+                            Clabe: 0125 8000 1128 1634 20<br>
+                            
+                            </td>
+                            
+                            
+                        </tr>
+                        Envíos se realizan todos los días de lunes a viernes al recibir pago ántes de la 1 PM. Sujeto a existencia.<br>
+                        <br>
+                        {{note}}
+                    </table>
+                </td>
+            </tr>
+            {% else %}
+<h5 style="margin-bottom:3px">Notes: {{ quote.note }}</h5>
+
+{% endif %}
+            <tr class="heading">
+                <td>
+                    
+                </td>
+                <td>
+                    SKU
+                </td>
+                <td>
+                    Producto
+                </td>
+                <td>
+                    Cantidad
+                </td>
+                <td>
+                    Precio Unitario
+                </td>
+                <td>
+                    Total
+                </td>
+            </tr>
+
+            
+
+            
+
+           {% for product in quote.productQuotes %}
+           {% set totalDiscount = totalDiscount + product.discount %}
+
+           <tr class="item">
+                <td>
+                    <img src="" style=" width:100%; max-width:50px;">
+                </td>
+
+                <td>
+                    {{ product.product.sku }}
+                </td>
+                <td>
+                    {{ product.product.name }}
+                </td>
+                <td>
+                    {{ product.amount }}
+                </td>
+                <td>
+                   $ {{ (product.product.price - ( product.discount / product.amount) )|number_format(2, '.', ',') }}
+                </td>
+                <td>
+                    $ {{ ((product.amount * product.product.price ) - product.discount  )|number_format(2, '.', ',')  }}
+                </td>
+            </tr>
+
+            {% endfor %}
+
+            <tr class="subtotal">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Subtotal: </td>
+
+                <td>
+                   ${{ quote.subtotal|number_format(2, '.', ',') }}
+                </td>
+            </tr>
+            {% if quote.discount > 0 %}
+            <tr class="discount">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Descuento: </td>
+
+                <td>
+                   ${{ totalDiscount|number_format(2, '.', ',') }}
+                </td>
+            </tr>
+            {% endif %}
+              
+            <tr class="tax">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>IVA: </td>
+
+                <td>
+                   ${{ quote.tax|number_format(2, '.', ',') }}
+                </td>
+            </tr>
+          
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total: </td>
+
+                <td>
+                   ${{ quote.total|number_format(2, '.', ',') }}
+                </td>
+            </tr>
+        </table>
+        
+    </div>
+</body>
+</html>

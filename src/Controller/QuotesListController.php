@@ -216,7 +216,7 @@ class QuotesListController extends AbstractController
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
         $pdfOptions->setIsRemoteEnabled(true);
-        //$pdfOptions->setIsHtml5ParserEnabled(true);
+        $pdfOptions->setIsHtml5ParserEnabled(true);
         // Instantiate Dompdf with our options
         $dompdf = new Dompdf();
         
@@ -225,7 +225,7 @@ class QuotesListController extends AbstractController
         //$base = $this->renderView('base.html.twig');
 
         // Retrieve the HTML generated in our twig file
-        $html = $this->renderView('quote/purchase_order.html.twig', [
+        $html = $this->renderView('quote/template.html.twig', [
             'title' => "",
             'quote' => $quote,
             'note' => ''
