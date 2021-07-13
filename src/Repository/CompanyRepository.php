@@ -19,6 +19,16 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
+    public function findByID($companyId)
+    {
+        return $this->createQueryBuilder('company')
+            ->andWhere('company.id = :val')
+            ->setParameter('val', $companyId)
+            ->getQuery()
+            ->getArrayResult()
+            ;
+    }
+
     // /**
     //  * @return Company[] Returns an array of Company objects
     //  */

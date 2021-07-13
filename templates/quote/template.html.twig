@@ -5,6 +5,9 @@
     <title>{{quote.id}}</title>
 
     <style>
+
+    
+
     .invoice-box {
         max-width: 800px;
         margin: auto;
@@ -83,6 +86,8 @@
             text-align: center;
         }
     }
+    
+    
 
     /** RTL **/
     .rtl {
@@ -97,6 +102,8 @@
     .rtl table tr td:nth-child(2) {
         text-align: left;
     }
+
+   
     </style>
 </head>
 
@@ -108,13 +115,12 @@
     
         <table cellpadding="0" cellspacing="0">
             <tr class="top">
-                <td colspan="6">
+                <td colspan="7">
                     <table>
                         <tr>
                             <td class="title">
                                 <img src="https://cdn.shopify.com/s/files/1/0461/5661/1738/files/logotipo_podajardin_616x300.png" style=" width:100%; max-width:150px;">
                             </td>
-                            
                             <td style="text-align:right;">
                                 <strong>Presupuesto</strong><br>
                                 Folio {{quote.id}}<br>
@@ -127,14 +133,14 @@
             </tr>
 
             <tr class="information">
-                <td colspan="6">
+                <td colspan="7">
                     <table>
                         <tr>
                         
                             <td>
                                 Cliente: {{ quote.client.name}}<br>
-                                Telefono: <br>
-                                Correo Electronico: 
+                                Telefono: {{ quote.client.phone}}<br>
+                                Correo Electronico: {{ quote.client.email}}
                             </td>
 
                             <td style="text-align:right;">
@@ -149,7 +155,7 @@
     {% if quote.note == null %}
 
             <tr class="notes">
-                <td colspan="6">
+                <td colspan="7">
                     <table>
                     <h4>Datos Bancarios para Depósito ó Transferencia <br></h4>
 
@@ -200,6 +206,9 @@
                     Precio Unitario
                 </td>
                 <td>
+                    Descuento
+                </td>
+                <td>
                     Total
                 </td>
             </tr>
@@ -226,10 +235,26 @@
                     {{ product.amount }}
                 </td>
                 <td>
-                   $ {{ (product.product.price - ( product.discount / product.amount) )|number_format(2, '.', ',') }}
+                {% if product.product.isTaxable == true %}
+                   $ {{ (product.product.price / 1.16)|number_format(2, '.', ',') }}
+                {% else %}
+                    $ {{ (product.product.price)|number_format(2, '.', ',') }}
+                {% endif %}
                 </td>
                 <td>
-                    $ {{ ((product.amount * product.product.price ) - product.discount  )|number_format(2, '.', ',')  }}
+                {% if product.product.isTaxable == true %}
+                   $ {{ (product.discount / 1.16)|number_format(2, '.', ',') }}
+                {% else %}
+                    $ {{ (product.discount)|number_format(2, '.', ',') }}
+                {% endif %}
+                </td>
+                <td>
+                 {% if product.product.isTaxable == true %}
+                    $ {{ ((product.amount * product.product.price )/ 1.16  )|number_format(2, '.', ',')  }}
+                {% else %}
+                    $ {{ ((product.amount * product.product.price )  )|number_format(2, '.', ',')  }}
+                {% endif %}
+
                 </td>
             </tr>
 
@@ -240,10 +265,11 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
                 <td>Subtotal: </td>
 
                 <td>
-                   ${{ quote.subtotal|number_format(2, '.', ',') }}
+                   ${{ (quote.subtotal + (totalDiscount / 1.16 ))|number_format(2, '.', ',') }}
                 </td>
             </tr>
             {% if quote.discount > 0 %}
@@ -252,15 +278,29 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
                 <td>Descuento: </td>
 
                 <td>
-                   ${{ totalDiscount|number_format(2, '.', ',') }}
+                   ${{ ( totalDiscount / 1.16)|number_format(2, '.', ',') }}
                 </td>
             </tr>
             {% endif %}
+            <tr class="subtotal" style="line-height:16px;">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Subtotal con Descuento: </td>
+
+                <td style="line-height:25px;">
+                   ${{ ((quote.subtotal + (totalDiscount / 1.16 ))-( totalDiscount / 1.16))|number_format(2, '.', ',') }}
+                </td>
+            </tr>
               
             <tr class="tax">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -273,6 +313,7 @@
             </tr>
           
             <tr class="total">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

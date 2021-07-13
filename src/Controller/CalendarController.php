@@ -11,9 +11,11 @@ use App\Entity\EventTreatment;
 use Google_Service_Calendar_Event;
 use App\Repository\EventRepository;
 use App\Repository\ClientRepository;
+use App\Repository\CompanyRepository;
 use App\Repository\CalendarRepository;
 use App\Repository\TreatmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Google\Service\Calendar\EventDateTime;
 use Google_Service_Calendar_EventDateTime;
 use App\Repository\EventTreatmentRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +67,7 @@ class CalendarController extends AbstractController
           //$em->flush();
 
         return $this->render('calendar/index.html.twig', [
+           // 'lastChange' => $user->getCompany()->getLastCalendarChange()->format('d-m-Y')
             'googlecalendars' => $googlecals,
             'calendars' => $calendarRepository->findAll(),
             'treatments'=> $treatmentRepository->findByCompany($this->security->getUser()->getCompany())
@@ -103,7 +106,10 @@ class CalendarController extends AbstractController
 
         $service = new Google_Service_Calendar($client);
 
+        $company = $user->getCompany();
         
+        $company->setCalendarChange(new \DateTime());
+        $em->persist($company);
 
         $dateStart = new \DateTime($eventDay.' '.$eventTime);
         $dateEnd = new \DateTime($eventDay.' '.$eventTime);
@@ -141,30 +147,32 @@ class CalendarController extends AbstractController
         $event->setEnd($dateEnd->modify("+30 minutes"));
         $event->setNote($eventNotes);
 
-        $em->persist($event);
-        $em->flush();
-
+        
         $calendarId = $calendar->getGoogleId();
-
-
-        $event = new Google_Service_Calendar_Event(array(
+        
+        
+        $googleEvent = new Google_Service_Calendar_Event(array(
             'summary' => $client->getCode().' '. $client->getName() . ' ' . $client->getPhone(),
             'description' => $treatment->getName() . ' ' . $event->getNote(),
-
+            
             'start' => array(
                 'dateTime' => $dateStart->format(DateTime::RFC3339),
                 'timeZone' => 'America/Monterrey',
-
-
+                
+                
             ),
             'end' => array(
                 'dateTime' => $dateEnd->format(DateTime::RFC3339),
                 'timeZone' => 'America/Monterrey',
-
-            )
-        ));
-        
-        $service->events->insert($calendarId, $event);
+                
+                )
+            ));
+            
+        $googleEventID = $service->events->insert($calendarId, $googleEvent);
+            
+        $event->setGoogleID($googleEventID->id);
+        $em->persist($event);
+        $em->flush();
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);
@@ -181,7 +189,7 @@ class CalendarController extends AbstractController
      * @return JsonResponse
      * @throws Exception
      */
-    public function ResizeEvent(Request $request,EventTreatmentRepository $eventTreatmentRepository, EventRepository $eventRepository,ClientRepository $clientRepository, TreatmentRepository $treatmentRepository, CalendarRepository $calendarRepository):JsonResponse
+    public function ResizeEvent(Request $request, EventTreatmentRepository $eventTreatmentRepository, EventRepository $eventRepository,ClientRepository $clientRepository, TreatmentRepository $treatmentRepository, CalendarRepository $calendarRepository,Client $googleClient):JsonResponse
     {
 
         $user = $this->security->getUser();
@@ -193,10 +201,18 @@ class CalendarController extends AbstractController
             $eventID = $request->request->get('id');
             $eventDay = $request->request->get('day');
             $eventTime = $request->request->get('time');
+
         }
         else {
             die();
         }
+
+        $company = $user->getCompany();
+
+        $company->setCalendarChange(new \DateTime());
+        $em->persist($company);
+
+
         $dateEnd = new \DateTime($eventDay.' '.$eventTime);
 
         $event = $eventRepository->findByCompanyID($user->getCompany(),$eventID);
@@ -205,6 +221,22 @@ class CalendarController extends AbstractController
 
         $em->persist($event);
         $em->flush();
+
+        $client = $googleClient->getClient($this->security->getUser()->getCompany()->getGoogleJson()[0]);
+
+        $service = new Google_Service_Calendar($client);
+        
+        $googleEvent = $service->events->get($event->getCalendar()->getGoogleId(), $event->getGoogleID());
+        
+        $end = new EventDateTime();
+
+        $end->setDateTime($dateEnd->format(DateTime::RFC3339));
+
+        $googleEvent->setEnd($end);
+
+
+        $updatedEvent = $service->events->update($event->getCalendar()->getGoogleId(), $event->getGoogleID(), $googleEvent);
+
         
         
 
@@ -223,7 +255,7 @@ class CalendarController extends AbstractController
      * @return JsonResponse
      * @throws Exception
      */
-    public function MoveEvent(Request $request,EventTreatmentRepository $eventTreatmentRepository, EventRepository $eventRepository,ClientRepository $clientRepository, TreatmentRepository $treatmentRepository, CalendarRepository $calendarRepository):JsonResponse
+    public function MoveEvent(Request $request,EventTreatmentRepository $eventTreatmentRepository, EventRepository $eventRepository,ClientRepository $clientRepository, TreatmentRepository $treatmentRepository, CalendarRepository $calendarRepository, Client $googleClient):JsonResponse
     {
 
         $user = $this->security->getUser();
@@ -235,22 +267,48 @@ class CalendarController extends AbstractController
             $eventID = $request->request->get('id');
             $eventDay = $request->request->get('day');
             $eventTime = $request->request->get('time');
+            $endTime = $request->request->get('end');
+            $endDay = $request->request->get('endDay');
+
         }
         else {
             die();
         }
+
+        $company = $user->getCompany();
+
+        $company->setCalendarChange(new \DateTime());
+        $em->persist($company);
+
         $dateStart = new \DateTime($eventDay.' '.$eventTime);
-        $dateEnd = new \DateTime($eventDay.' '.$eventTime);
+        $dateEnd = new \DateTime($endDay.' '.$endTime);
 
         $event = $eventRepository->findByCompanyID($user->getCompany(),$eventID);
   
         $event->setStart($dateStart);
-        $event->setEnd($dateEnd->modify("+30 minutes"));
+        $event->setEnd($dateEnd);
 
         $em->persist($event);
         $em->flush();
+
+        $client = $googleClient->getClient($this->security->getUser()->getCompany()->getGoogleJson()[0]);
+
+        $service = new Google_Service_Calendar($client);
         
+        $googleEvent = $service->events->get($event->getCalendar()->getGoogleId(), $event->getGoogleID());
         
+        $start = new EventDateTime();
+        $end = new EventDateTime();
+
+        $start->setDateTime($dateStart->format(DateTime::RFC3339)) ;
+        $end->setDateTime($dateEnd->format(DateTime::RFC3339));
+
+        $googleEvent->setStart($start);
+        $googleEvent->setEnd($end);
+
+
+        $updatedEvent = $service->events->update($event->getCalendar()->getGoogleId(), $event->getGoogleID(), $googleEvent);
+
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson(1);
@@ -302,6 +360,77 @@ class CalendarController extends AbstractController
 
         }  
 
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/fetchlastchange", name="fetch_last_change", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function FetchLastChange(Request $request):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+
+
+        if ($request->getMethod() == 'POST')
+        {
+            $currentEventChange = $request->request->get('currentDate');
+       
+        }
+        else {
+            die();
+        }
+
+        $fixedDate = str_replace('"', "", $currentEventChange);
+        $fixedDate = stripslashes($fixedDate);
+   
+        $lastDate = $user->getCompany()->getCalendarChange()->format('Y-m-d H:i:s');
+
+        if($fixedDate == $lastDate){
+            $response = json_encode(1);
+        }else{
+            $response = json_encode(0);
+       }
+        
+        
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setjson($response);
+
+        return $returnResponse;
+
+    }
+
+    /**
+     * @Route("/lastchange", name="last_change", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function LastChange(Request $request,CompanyRepository $companyRepository):JsonResponse
+    {
+
+        $user = $this->security->getUser();
+
+        if ($request->getMethod() == 'POST')
+        {
+       
+        }
+        else {
+            die();
+        }
+
+        $calendarChange = $companyRepository->findByID($user->getCompany()->getId());
+
+        $response = json_encode($user->getCompany()->getCalendarChange()->format('Y-m-d H:i:s'));
+    
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);
 

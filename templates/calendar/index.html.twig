@@ -6,9 +6,7 @@
 <style>
 
 </style>
-        
 <div class="card">
-   
     <div class="row">
         <div class="col-lg-2 border-right pr-0">
             <div class="card-body border-bottom">
@@ -261,6 +259,22 @@
 
   var currentEvent;
   var currentCalendar;
+  var currentDateSet;
+  var currentLastChange;
+
+    $.ajax({
+        url:"{{ path('last_change') }}",
+        dataType:"text",
+        type: "POST",
+        data:{
+        },
+        success:function (php_result) {
+            currentLastChange = php_result;
+            console.log("current time is" + php_result);
+            console.log("current set time is " + currentLastChange);
+
+        }
+    }); 
 
   function render(){
     var Calendar = FullCalendar.Calendar;
@@ -405,6 +419,19 @@
                 success:function (php_result) {
                     console.log(php_result);     
                     currentEvent = undefined;
+                        $.ajax({
+                            url:"{{ path('last_change') }}",
+                            dataType:"text",
+                            type: "POST",
+                            data:{
+                            },
+                            success:function (php_result) {
+                                currentLastChange = php_result;
+                                // console.log("current time is" + php_result);
+                                // console.log("current set time is " + currentLastChange);
+
+                            }
+                        });
                 }
             });
         },
@@ -419,6 +446,14 @@
         var eventDay = str.substr(0, 10);
         var eventTime = startTime;
 
+        str = calendar.formatIso(currentEvent.end,true);
+
+        var endTime = str.substr(11,16);
+        endTime = endTime.substr(0,5);
+
+        var eventEndDay = str.substr(0, 10);
+        var eventEnd = endTime;
+
             $.ajax({
                 url:"{{ path('event_move') }}",
                 dataType:"text",
@@ -427,16 +462,27 @@
                     id:currentEvent.extendedProps.id,
                     time:eventTime,
                     day:eventDay,
+                    end:eventEnd,
+                    endDay:eventEndDay
                 },
                 success:function (php_result) {
                     console.log(php_result);     
                     currentEvent = undefined;
+                    $.ajax({
+                            url:"{{ path('last_change') }}",
+                            dataType:"text",
+                            type: "POST",
+                            data:{
+                            },
+                            success:function (php_result) {
+                                currentLastChange = php_result;
+                                // console.log("current time is" + php_result);
+                                // console.log("current set time is " + currentLastChange);
+
+                            }
+                        });
                 }
-            });
-        
-       
-        
-        
+            });        
         },
         eventAdd: function(info) {
         },
@@ -447,6 +493,7 @@
         //console.log(info);
         },
         datesSet: function(dateInfo) {
+        currentDateSet = dateInfo;
         calendar.removeAllEvents();
         //Get Events with ajax
         var dateStart = calendar.formatIso(dateInfo.start,true);
@@ -492,8 +539,91 @@
 
     }
 
+    
+
     setTimeout(function(){ render(); }, 100);
-    //setInterval(ReloadCalendar(){}, 10000);
+    
+    function CalendarRefresh(){
+       
+
+        $.ajax({
+                url:"{{ path('fetch_last_change') }}",
+                dataType:"text",
+                type: "POST",
+                data:{
+                    currentDate:currentLastChange
+                },
+                success:function (php_result) {
+                    
+                console.log("Last Change is " + php_result);
+                if(php_result == 0){
+                        currentCalendar.removeAllEvents(); 
+                        var dateStart = currentCalendar.formatIso(currentDateSet.start,true);
+                        var dateEnd = currentCalendar.formatIso(currentDateSet.end,true);
+
+                        $.ajax({
+                                url:"{{ path('events_fetch') }}",
+                                dataType:"text",
+                                type: "POST",
+                                data:{
+                                    start:dateStart,
+                                    end:dateEnd
+                                
+                                },
+                                success:function (php_result) {
+                                    var events = JSON.parse(php_result);
+                                    console.log(events);
+                                    for(var i =0; i < events.length;i++){
+                                    
+                                        currentCalendar.addEvent({
+                                        title: events[i].title,
+                                        color: '#'+events[i].color,
+                                        start: currentCalendar.formatIso(events[i].start.date),
+                                        end: currentCalendar.formatIso(events[i].end.date),
+                                        extendedProps: {
+                                            id: events[i].id,
+                                            client: events[i].clientName,
+                                            treatment: events[i].treatmentName
+                                        }
+                                        });    
+                                                
+                                        }
+
+                                        $.ajax({
+                                            url:"{{ path('last_change') }}",
+                                            dataType:"text",
+                                            type: "POST",
+                                            data:{
+                                            },
+                                            success:function (php_result) {
+                                                currentLastChange = php_result;
+                                               // console.log("current time is" + php_result);
+                                               // console.log("current set time is " + currentLastChange);
+
+                                            }
+                                        });
+                                    
+                                    
+                                    }
+                                });   
+
+                                
+                            }
+                }
+            });
+                
+        
+        setTimeout(CalendarRefresh, 30000);
+    }
+
+    setTimeout(function(){
+
+        CalendarRefresh();
+        
+         }, 1000);
+
+
+
     $(document).on('click', '.eventAdd', function(){
         var eventTime = $('.eventTime').val();
         var eventTreatment = $('#treatments').val();
@@ -537,8 +667,25 @@
                                     console.log(php_result);    
                                     console.log(currentEvent);
                                     currentEvent.setProp('title',eventClient + ' ' + $('#treatments option:selected').text() );
+                                    
                                     $('#myModal').modal('hide');
+                                    $('.eventName').val('');
+                                    $('#client_code').val('');
+                                    $('.eventNotes').val('');
                                     currentEvent = undefined;
+                                    $.ajax({
+                                        url:"{{ path('last_change') }}",
+                                        dataType:"text",
+                                        type: "POST",
+                                        data:{
+                                        },
+                                        success:function (php_result) {
+                                            currentLastChange = php_result;
+                                            // console.log("current time is" + php_result);
+                                            // console.log("current set time is " + currentLastChange);
+
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -553,7 +700,8 @@
         var eventClient = $('.eventName').val();
         var eventDay = $('.eventDay').val();
         var eventCalendar = currentEvent.title;
-        
+        var eventNotes = $('.eventNotes').val();
+
             $.ajax({
                     url:"{{ path('event_create') }}",
                     dataType:"text",
@@ -563,7 +711,8 @@
                         treatment:eventTreatment,
                         time:eventTime,
                         day:eventDay,
-                        calendar:eventCalendar
+                        calendar:eventCalendar,
+                        notes:eventNotes
 
                     },
                     success:function (php_result) {
@@ -571,7 +720,23 @@
                         currentEvent.setProp('title',eventClient + ' ' + $('#treatments option:selected').text() );
 
                         $('#myModal').modal('hide');
+                        $('.eventName').val('');
+                        $('#client_code').val('');
+                        $('.eventNotes').val('');
                         currentEvent = undefined;
+                            $.ajax({
+                                url:"{{ path('last_change') }}",
+                                dataType:"text",
+                                type: "POST",
+                                data:{
+                                },
+                                success:function (php_result) {
+                                    currentLastChange = php_result;
+                                    // console.log("current time is" + php_result);
+                                    // console.log("current set time is " + currentLastChange);
+
+                                }
+                            });
                     }
             });
             

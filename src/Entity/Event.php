@@ -61,6 +61,11 @@ class Event
      */
     private $note;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $googleID;
+
     public function __construct()
     {
         $this->eventTreatments = new ArrayCollection();
@@ -182,6 +187,18 @@ class Event
     public function setNote(?string $note): self
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getGoogleID(): ?string
+    {
+        return $this->googleID;
+    }
+
+    public function setGoogleID(?string $googleID): self
+    {
+        $this->googleID = $googleID;
 
         return $this;
     }

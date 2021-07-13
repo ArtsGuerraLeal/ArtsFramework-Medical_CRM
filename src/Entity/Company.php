@@ -104,7 +104,7 @@ class Company
     private $isPaid;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $paymentDate;
 
@@ -317,6 +317,14 @@ class Company
      * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="company")
      */
     private $invoices;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $calendarChange;
+
+  
+
 
 
 
@@ -791,6 +799,8 @@ class Company
 
         return $this;
     }
+
+    
 
     public function getStripeId(): ?string
     {
@@ -1833,6 +1843,22 @@ class Company
 
         return $this;
     }
+
+    public function getCalendarChange(): ?\DateTimeInterface
+    {
+        return $this->calendarChange;
+    }
+
+    public function setCalendarChange(?\DateTimeInterface $calendarChange): self
+    {
+        $this->calendarChange = $calendarChange;
+
+        return $this;
+    }
+
+    
+
+   
 
     
 
