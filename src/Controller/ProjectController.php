@@ -8,6 +8,7 @@ use App\Entity\ProjectProduct;
 use App\Repository\AreaRepository;
 use App\Repository\UserRepository;
 use App\Repository\ClientRepository;
+use App\Repository\VendorRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\CategoryRepository;
@@ -50,9 +51,13 @@ class ProjectController extends AbstractController
       * @var UserRepository
       */
       private $userRepository;
+
+      /**
+      * @var VendorRepository
+      */
+      private $vendorRepository;
  
- 
-     public function __construct(ProjectRepository $projectRepository, ClientRepository $clientRepository, UserRepository $userRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
+     public function __construct(VendorRepository $vendorRepository, ProjectRepository $projectRepository, ClientRepository $clientRepository, UserRepository $userRepository, DiscountRepository $discountRepository, CategoryRepository $categoryRepository, ProductRepository $productRepository, EntityManagerInterface $entityManager,PaymentMethodRepository $paymentMethodRepository, Security $security){
          $this->entityManager = $entityManager;
          $this->security = $security;
          $this->productRepository = $productRepository;
@@ -61,6 +66,7 @@ class ProjectController extends AbstractController
          $this->discountRepository = $discountRepository;
          $this->projectRepository = $projectRepository;
          $this->UserRepository = $userRepository;
+         $this->vendorRepository = $vendorRepository;
      }
 
      
@@ -84,9 +90,10 @@ class ProjectController extends AbstractController
 
         return $this->render('project/app.html.twig', [
             'project' => $project,
-            'products' => $this->productRepository->findByCompany($user->getCompany()),
+            'products' => $this->productRepository->findHundredByCompany($user->getCompany()),
             'paymentMethods' => $this->paymentMethodRepository->findByCompany($user->getCompany()),
             'categories' => $this->categoryRepository->findByCompany($user->getCompany()),
+            'vendors' => $this->vendorRepository->findByCompany($user->getCompany()),
             'discounts' =>  $this->discountRepository->findByCompany($user->getCompany())
         ]);
     }

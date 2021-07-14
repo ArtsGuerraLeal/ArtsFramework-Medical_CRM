@@ -5,12 +5,16 @@
 {% block body %}
     <h1>Area index</h1>
 
-    <table class="table">
+ <div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Areas</div>
+        <div class="card-body">
+           <table class="table table-bordered table-striped " id="zero_config" >
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>actions</th>
+        <tr>
+                <th style="width:10%">ID</th>
+          
+            <th>Nombre</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -29,7 +33,12 @@
             </tr>
         {% endfor %}
         </tbody>
-    </table>
+  </table>
+    <div class="btn btn-primary ">
+    <a class="text-white" href="{{ path('area_new') }}">Nueva Area</a>
 
-    <a href="{{ path('area_new') }}">Create new</a>
+    </div>
+</div>
+
+
 {% endblock %}

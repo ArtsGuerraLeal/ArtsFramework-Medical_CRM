@@ -503,9 +503,14 @@ class CalendarController extends AbstractController
             die();
         }
 
-        $event = $eventRepository->findByCompanyIDArray($user->getCompany(),$eventID);
-        
-        $response = json_encode($event);
+        $eventArray = $eventRepository->findByCompanyIDArray($user->getCompany(),$eventID);
+        $event = $eventRepository->findByCompanyID($user->getCompany(),$eventID);
+
+        $treatments = $event->getEventTreatments();
+
+        $treatName = $treatments[0]->getTreatment()->getName();
+        array_push($eventArray,$treatName);
+        $response = json_encode($eventArray);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setjson($response);

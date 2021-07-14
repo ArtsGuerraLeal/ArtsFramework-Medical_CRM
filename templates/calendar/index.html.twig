@@ -78,12 +78,12 @@
             <div class="row">
                 <div class="col-sm-3 pr-0">
                     <div class="form-group">
-                        <input type="text" id="client_code" class="form-control " placeholder="Codigo" onkeyup="showResultCode(this.value)">
+                        <input type="text" id="client_code" class="form-control " placeholder="Codigo" onkeyup="showResultCode(this.value,'livesearch_client')">
                     </div>
                 </div>
                 <div class="col-sm-9 pl-0">
                     <div class="form-group">
-                        <input type="text" id="client_name" class="eventName form-control" placeholder="Nombre" onkeyup="showResultClient(this.value)">
+                        <input type="text" id="client_name" class="eventName form-control" placeholder="Nombre" onkeyup="showResultClient(this.value,'livesearch_client')">
                     </div>
                 </div>
             </div>
@@ -125,13 +125,14 @@
             </div>
             <div class="modal-body">
             <h4 class="card-title">Paciente</h4>
-            <input id="infoName" class="infoName form-control rounded my-1" type="text">
+            
+            <input id="infoName" class="infoName form-control rounded my-1" type="text" disabled>
 
             <h4 class="card-title">Tratamiento</h4>
-            <input id="infoTreatment" class="infoTreatment form-control rounded my-1" type="text">
+            {% for treatment in treatments %}
+            <option class="infoTreatment" value="{{treatment.id}}">{{treatment.name}}</option>
+            {% endfor %}
 
-            <h4 class="card-title">Dia</h4>
-            <h4 class="card-title">Hora</h4>
             <h4 class="card-title">Notas</h4>
             <input id="infoNotes" class="infoNotes form-control rounded my-1" type="text">
 
@@ -166,10 +167,10 @@
 
   }
 
-  function showResultCode(str) {
+  function showResultCode(str,livesearch) {
              if (str.length==0) {
-                document.getElementById("livesearch_client").innerHTML="";
-                document.getElementById("livesearch_client").style.border="0px";
+                document.getElementById(livesearch).innerHTML="";
+                document.getElementById(livesearch).style.border="0px";
                 return;
             }
             $.ajax({
@@ -191,13 +192,13 @@
                                }else{
                                 searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
                                }                            }
-                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
-                            document.getElementById("livesearch_client").innerHTML = searchResults;
+                            document.getElementById(livesearch).style.border="1px solid #A5ACB2"
+                            document.getElementById(livesearch).innerHTML = searchResults;
                         }
                         else{
                             if(document.getElementById("client_name").value !== ''){
-                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2";
-                            document.getElementById("livesearch_client").innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
+                            document.getElementById(livesearch).style.border="1px solid #A5ACB2";
+                            document.getElementById(livesearch).innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
 
                             }
                         }       
@@ -220,10 +221,11 @@
             document.getElementById("livesearch_client").style.border="0px";
         }
 
-  function showResultClient(str) {
+  function showResultClient(str,livesearch) {
              if (str.length==0) {
-                document.getElementById("livesearch_client").innerHTML="";
-                document.getElementById("livesearch_client").style.border="0px";
+                 //livesearch_client
+                document.getElementById(livesearch).innerHTML="";
+                document.getElementById(livesearch).style.border="0px";
                 return;
             }
             $.ajax({
@@ -246,12 +248,12 @@
                                 searchResults += '<a class="text-primary" onclick="selectClient(this.innerHTML)">'+clients[i].name+'</a><br/>'
                                }
                             }
-                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
-                            document.getElementById("livesearch_client").innerHTML = searchResults;
+                            document.getElementById(livesearch).style.border="1px solid #A5ACB2"
+                            document.getElementById(livesearch).innerHTML = searchResults;
                         }
                         else{
-                            document.getElementById("livesearch_client").style.border="1px solid #A5ACB2"
-                            document.getElementById("livesearch_client").innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
+                            document.getElementById(livesearch).style.border="1px solid #A5ACB2"
+                            document.getElementById(livesearch).innerHTML = '<a class="text-success" onclick="CreateNewClient()">Crear Cliente</a><br/>';
                         }       
                     }
                 });
@@ -387,8 +389,8 @@
                     console.log(event);
 
                     $('#editModal').modal('show');
-                    $('.infoName').val(event[0].clientName);
-                    $('.infoTreatment').val(event[0].title);
+                    $('.infoName').val(event[0].clientName + ' #' + event[0].clientCode);
+                    $('.infoTreatment').val(event[1]);
                     $('.infoNotes').val(event[0].note);
 
                 }

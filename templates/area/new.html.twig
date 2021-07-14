@@ -1,11 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block title %}New Area{% endblock %}
 
 {% block body %}
-    <h1>Create new Area</h1>
+    <h1>Crear nueva Area</h1>
 
+    <div class="card">
+    <div class="card-header"><i class="fas fa-table"></i>Areas</div>
+        <div class="card-body">
+           
     {{ include('area/_form.html.twig') }}
+    </div>
+</div>
+
 
     <a href="{{ path('area_index') }}">back to list</a>
 {% endblock %}

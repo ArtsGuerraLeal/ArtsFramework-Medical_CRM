@@ -40,6 +40,25 @@ class ProductRepository extends ServiceEntityRepository
 
     /**
      * @param $companyId
+     * @return Product
+     * @throws NonUniqueResultException
+     */
+    public function findHundredByCompany($companyId)
+    {
+        return $this->createQueryBuilder('product')
+            ->andWhere('product.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('product.id', 'ASC')
+            ->setMaxResults(100)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    
+
+    /**
+     * @param $companyId
      * @param $id
      * @return Product
      * @throws NonUniqueResultException

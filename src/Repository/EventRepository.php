@@ -39,6 +39,7 @@ class EventRepository extends ServiceEntityRepository
             ->addSelect('event.title')
             ->addSelect('event.note')
             ->addSelect('client.name as clientName')
+            ->addSelect('client.code as clientCode')
             ->andWhere('event.company = :val')
             ->andWhere('event.id = :id')
             ->Join('event.client', 'client')

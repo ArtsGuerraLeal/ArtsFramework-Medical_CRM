@@ -32,19 +32,42 @@
         </div>
 
         <div class="card-body">
-                <button class="btn btn-primary" onclick="filterSelection('all')"> Todos</button>
+        <div class ="row">
+                <button class="btn btn-primary mx-1" onclick="filterSelection('all')">Todas</button>
+                </div>
+        <div class ="row">
 
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle my-2" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Categorias
-                </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        {% for category in categories %}
-                        <a class="dropdown-item" onclick="filterSelection('{{ category.name }}')">{{ category.name }}</a>
-                        {% endfor %}
+            <div class="my-2" id="myBtnContainer">
+                <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                        </div>
+                        <select class="custom-select" id="inputGroupSelect01">
+                            <option selected>Categorias...</option>
+                            {% for category in categories %}
+                            <option value="{{category.id}}">{{category.name}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
+                    
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect01">
+                        <option selected>Proveedores...</option>
+                        {% for vendor in vendors %}
+                        <option value="{{vendor.id}}">{{vendor.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                        
+                
+                
             </div>
-     
+
+            
+           
+
+        </div>
             
                 
             <div id="ParentContainer" class="container-fluid">
@@ -84,7 +107,7 @@
                                 <div class="card ">
                                     <div class="card-body">
                                     {%  if product.image != null %}
-                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ '/uploads/' ~ product.image }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
+                                        <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ 'https://s3.amazonaws.com/pos.artstech/' ~ app.user.company.name ~ '/' ~ product.image }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}"  alt="image"/>
                                     {% else %}
                                         <img class="card-img-top img-fluid product_drag " style="height:150px;  width:100%;" src="{{ asset('assets/images/product_placeholder.jpg') }}" data-id="{{ product.id }}" data-upc="{{ product.upc }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-taxable="{{ product.isTaxable }}" alt="image"/>
                                     {% endif %}
@@ -1574,8 +1597,6 @@
 {% endblock %}
 
  {% block pagejs %}
-   <script src="../theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script>
+   <script src="{{asset('/theme/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js')}}"></script>
   
-    </script>
     {% endblock %}

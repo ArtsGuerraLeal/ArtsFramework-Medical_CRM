@@ -323,6 +323,11 @@ class Company
      */
     private $calendarChange;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $amazonURL;
+
   
 
 
@@ -1852,6 +1857,18 @@ class Company
     public function setCalendarChange(?\DateTimeInterface $calendarChange): self
     {
         $this->calendarChange = $calendarChange;
+
+        return $this;
+    }
+
+    public function getAmazonURL(): ?string
+    {
+        return $this->amazonURL;
+    }
+
+    public function setAmazonURL(?string $amazonURL): self
+    {
+        $this->amazonURL = $amazonURL;
 
         return $this;
     }

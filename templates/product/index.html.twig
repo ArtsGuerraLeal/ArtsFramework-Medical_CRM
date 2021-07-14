@@ -37,7 +37,7 @@
         {% for product in products %}
             <tr>
                 {%  if product.image != null %}
-                    <td><img class="img-thumbnail rounded mx-auto d-block" width="70px" height="70px" style="height:70px" src="{{ '/uploads/' ~ product.image }}" />
+                    <td><img class="img-thumbnail rounded mx-auto d-block" width="70px" height="70px" style="height:70px" src="{{ 'https://s3.amazonaws.com/pos.artstech/' ~ app.user.company.name ~ '/' ~ product.image }}" />
                     </td>
 
                     {% else %}
