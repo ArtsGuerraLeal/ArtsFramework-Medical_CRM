@@ -93,7 +93,7 @@
             <h4 class="card-title">Tratamiento</h4>
             <select name="treatments" id="treatments" onchange="selectTreatment(this)">
             {% for treatment in treatments %}
-            <option value="{{treatment.id}}">{{treatment.name}}</option>
+                <option value="{{treatment.id}}">{{treatment.name}}</option>
             {% endfor %}
             </select>
             <input id="eventTreatment" class="eventTreatment form-control rounded my-1" type="hidden" placeholder="Tratamiento">
@@ -129,9 +129,11 @@
             <input id="infoName" class="infoName form-control rounded my-1" type="text" disabled>
 
             <h4 class="card-title">Tratamiento</h4>
+            <select name="treatments" id="selectedTreatment" onchange="selectTreatment(this)">
             {% for treatment in treatments %}
-            <option class="infoTreatment" value="{{treatment.id}}">{{treatment.name}}</option>
+                <option value="{{treatment.id}}">{{treatment.name}}</option>
             {% endfor %}
+            </select>
 
             <h4 class="card-title">Notas</h4>
             <input id="infoNotes" class="infoNotes form-control rounded my-1" type="text">
